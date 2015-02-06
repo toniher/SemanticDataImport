@@ -44,3 +44,56 @@ $(document).ready( function() {
 
 	});
 });
+
+
+$( document ).on( "click", ".smwdata-commit", function() {
+
+	var param = {};
+	var selector = $(this).attr('data-selector');
+	param.delimiter=",";
+	param.enclosure='"';
+	
+	//Let's get data from selector
+	param.text = convertData2str( $( selector ).handsontable( 'getData' ), param.delimiter, param.enclosure );
+
+	param.title = wgCanonicalNamespace + ":" + wgTitle;
+
+	console.log(param);
+
+	param.action = "smwdata";
+	param.format = "json";
+
+	var posting = $.post( wgScriptPath + "/api.php", param );
+	posting.done(function( data ) {
+		var newlocation = location.protocol + '//' + location.host + location.pathname;
+		// Go to page with no reloading (with no reload)
+		window.setTimeout( window.location.href = newlocation, 1500);
+	})
+	.fail( function( data ) {
+		alert("Error!");
+	});
+});
+
+
+/** @param Array
+* return string
+**/
+function convertData2str ( data, delimiter, enclosure ) {
+	var str = "";
+	var newArr = [];
+	if ( data.length > 0 ) {
+		// We put \\n or \\t for ensuring proper conversion afterwards
+		for ( var i = 0; i < data.length; i++ ) {
+			// TODO: Handle enclosure
+			var rowstr = data[i].join(delimiter);
+			newArr.push( rowstr );
+		}
+		str = newArr.join("\n");
+	}
+
+	return str;
+}
+
+
+
+
