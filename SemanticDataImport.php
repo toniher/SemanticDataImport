@@ -4,7 +4,7 @@
 if (!defined('MEDIAWIKI')) { die(-1); } 
 
 if ( !defined( 'SMW_VERSION' ) ) {
-	die( '<b>Error:</b> You need to have <a href="https://semantic-mediawiki.org/">Semantic MediaWiki</a> installed in order to use Semantic Watchlist.' );
+	die( '<b>Error:</b> You need to have <a href="https://semantic-mediawiki.org/">Semantic MediaWiki</a> installed in order to use Semantic Data Import.' );
 }
 if ( version_compare( SMW_VERSION, '1.9', '<' ) ) {
 	die( '<b>Error:</b> Semantic Data Import requires Semantic MediaWiki 1.9 or above.' );
