@@ -35,6 +35,23 @@ call_user_func( function () {
 		'styles' => array( 'libs/jquery-handsontable/jquery.handsontable.full.css', 'libs/sdimport.less' ),
 		'remoteExtPath' => 'SemanticDataImport'
 	);
+	
+	# Example NS definition
+	#$wgSDImportDataPage["SDImport"] = array();
+	#$wgSDImportDataPage["SDImport"]["separator"] = "\t";
+	#$wgSDImportDataPage["SDImport"]["delimiter"] = '"';
+	#$wgSDImportDataPage["SDImport"]["rowobject"] = "SDImport";
+	#$wgSDImportDataPage["SDImport"]["rowfields"] = array("Page1", "Page2");
+	#$wgSDImportDataPage["SDImport"]["typefields"] = array("Page", "Page");
+	#$wgSDImportDataPage["SDImport"]["ref"] = array("ref" => "{{PAGENAME}}");
+	#$wgSDImportDataPage["SDImport"]["prefields"] = array( "", "" );
+	#$wgSDImportDataPage["SDImport"]["postfields"] = array( "", "" );
+	#define("NS_SDImport", 2000);
+	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
+	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
+
+	
+	
 } );
 
 
