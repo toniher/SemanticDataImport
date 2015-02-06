@@ -29,7 +29,7 @@ call_user_func( function () {
 	
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
 	
-	$wgResourceModules['ext.sdimport'] = array(
+	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),
 		'scripts' => array( 'libs/jquery-handsontable/jquery.handsontable.full.js', 'libs/sdimport.js',  ),
 		'styles' => array( 'libs/jquery-handsontable/jquery.handsontable.full.css', 'libs/sdimport.less' ),
