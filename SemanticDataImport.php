@@ -38,6 +38,7 @@ call_user_func( function () {
 	
 	# Example NS definition
 	#$wgSDImportDataPage["SDImport"] = array();
+	#$wgSDImportDataPage["SDImport"]["edit"] = false;
 	#$wgSDImportDataPage["SDImport"]["separator"] = "\t";
 	#$wgSDImportDataPage["SDImport"]["delimiter"] = '"';
 	#$wgSDImportDataPage["SDImport"]["rowobject"] = "SDImport";
