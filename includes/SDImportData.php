@@ -34,13 +34,15 @@ class SDImportData {
 				$nsRepo = $wgSDImportDataPage[$ns];
 				
 				$separator = self::getSelector( $args, $nsRepo, "separator" ); // String
-				$delimiter = self::getSelector( $args, $nsRepo, "delimiter" ); // Srtring
+				$delimiter = self::getSelector( $args, $nsRepo, "delimiter" ); // String
 				$object = self::getSelector( $args, $nsRepo, "rowobject" ); // String
 				$fields = self::getSelector( $args, $nsRepo, "rowfields" ); // Array
 				$props = self::getSelector( $args, $nsRepo, "typefields" ); // Array
 				$refs = self::getSelector( $args, $nsRepo, "ref" ); // Hash
 				$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
 				$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
+				$editable = self::getSelector( $args, $nsRepo, "edit" ); // Boolean
+				
 
 				// TODO: Should we add props here if they don't exist?
 				
@@ -103,8 +105,13 @@ class SDImportData {
 			if ( sizeof( $fields ) > 0 ) {
 				$fieldList = " data-cols='".implode(",", $fields)."' ";
 			}
+			
+			$dataedit = "";
+			if ( $editable ) {
+				$dataedit = "data-edit='data-edit'";
+			}
 
-			$output = "<div class='smwdata' data-delimiter='".$delimiter."' data-separator='".$separator."'".$fieldList.">".$input."</div>";
+			$output = "<div class='smwdata' data-delimiter='".$delimiter."' data-separator='".$separator."'".$fieldList." ".$dataedit.">".$input."</div>";
 		}
 
 		return array( $output, 'noparse' => true, 'isHTML' => true );
