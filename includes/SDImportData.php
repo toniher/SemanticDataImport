@@ -98,7 +98,7 @@ class SDImportData {
 		}
 		
 		if ( !empty( $input ) ) {
-			global $wgOut;
+			$wgOut = $parser->getOutput();
 			$wgOut->addModules( 'ext.sdimport' );
 
 			$fieldList = "";
