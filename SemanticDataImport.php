@@ -24,7 +24,6 @@ call_user_func( function () {
 	
 	$GLOBALS['wgMessagesDirs']['SemanticDataImport'] = __DIR__ . '/i18n';
 	$GLOBALS['wgExtensionMessagesFiles']['SemanticDataImport'] = __DIR__ . '/SemanticDataImport.i18n.php';
-	$GLOBALS['wgExtensionMessagesFiles']['SemanticDataImport-magic'] = __DIR__ . '/SemanticDataImport.i18n.magic.php';
 	$GLOBALS['wgAutoloadClasses']['SDImportData'] = __DIR__ . '/includes/SDImportData.php';
 	
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
@@ -37,22 +36,20 @@ call_user_func( function () {
 	);
 	
 	# Example NS definition
-	#$wgSDImportDataPage["SDImport"] = array();
-	#$wgSDImportDataPage["SDImport"]["edit"] = false;
-	#$wgSDImportDataPage["SDImport"]["separator"] = "\t";
-	#$wgSDImportDataPage["SDImport"]["delimiter"] = '"';
-	#$wgSDImportDataPage["SDImport"]["rowobject"] = "SDImport";
-	#$wgSDImportDataPage["SDImport"]["rowfields"] = array("Page1", "Page2");
-	#$wgSDImportDataPage["SDImport"]["typefields"] = array("Page", "Page");
-	#$wgSDImportDataPage["SDImport"]["ref"] = array("ref" => "{{PAGENAME}}");
-	#$wgSDImportDataPage["SDImport"]["prefields"] = array( "", "" );
-	#$wgSDImportDataPage["SDImport"]["postfields"] = array( "", "" );
+	#$GLOBALS["$GLOBALS["wgSDImportDataPage"]"]["SDImport"] = array();
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["edit"] = false;
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["separator"] = "\t";
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["delimiter"] = '"';
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["rowobject"] = "SDImport";
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["rowfields"] = array("Page1", "Page2");
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["typefields"] = array("Page", "Page");
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["ref"] = array("ref" => "{{PAGENAME}}");
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["prefields"] = array( "", "" );
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["postfields"] = array( "", "" );
 	#define("NS_SDImport", 2000);
 	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
 	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
 
-	
-	
 } );
 
 
