@@ -265,23 +265,62 @@ class SDImportData {
 	* @enclosure Enclosure of CSV
 	* @return status of update
 	*/
-	public static function importConf( $text, $pagetitle, $separator="\t", $delimiter="\"" ) {
+	public static function importConf( $text, $pagetitle, $separator=NULL, $delimiter=NULL ) {
 
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
 		
-		// TODO: Only append extra attrs if different from default conf in LocalSettings.php
+		$extraInfo = "";
 
-		$prefix = "<smwdata separator=\"".$separator."\" delimiter='".$delimiter."'>";
-		$sufix = "</smwdata>";
-		$text = $prefix."\n".$text."\n".$sufix."\n";
-		
+		$ns = $title->getSubjectNsText();
+		if ( $GLOBALS["wgSDImportDataPage"] && array_key_exists( $ns, $GLOBALS["wgSDImportDataPage"] ) ) {
+
+			if ( $separator !== NULL ) {
+				if ( array_key_exists( "separator", $GLOBALS["wgSDImportDataPage"][$ns] ) ) {
+					if ( $GLOBALS["wgSDImportDataPage"][$ns]["separator"] != $separator ) {
+						$extraInfo = $extraInfo . " separator=\"".$separator."\"";
+					}
+				}
+			}
+			if ( $delimiter !== NULL ) {
+				if ( array_key_exists( "delimiter", $GLOBALS["wgSDImportDataPage"][$ns] ) ) {
+					if ( $GLOBALS["wgSDImportDataPage"][$ns]["delimiter"] != $delimiter ) {
+						$extraInfo = $extraInfo . " delimiter='".$delimiter."' ";
+					}
+				}
+			}
+		}
+
+		// Retrievet text of page
 		// Back-compatibility, just in case
-		if ( method_exists ( $wikipage, "doEditContent" ) ) {
-			$content = new WikiTextContent( $text );
-			$status = $wikipage->doEditContent( $content, "Updating content" );
+		if ( method_exists ( $wikipage, "getContent" ) ) {
+			$mainContent = $wikipage->getContent();
+			$mainText = $mainContent->getNativeData();
 		} else {
-			$status = $wikipage->doEdit( $text, "Updating content" );
+			$mainText = $wikipage->getText();
+		}
+
+		// Get matches
+		preg_match ( "/(.*)(\<smwdata.*\>.*?\<\/smwdata\>)(.*)/s" , $mainText, $matches );
+
+		$status = 0;
+
+		// IF 3 parts
+		if ( count( $matches ) == 3 ) {
+
+			$prefix = "<smwdata".$extraInfo.">";
+			$sufix = "</smwdata>";
+			$tableText = $matches[0].$prefix."\n".$text."\n".$sufix."\n".$matches[2];
+			
+			// Submit content
+			// Back-compatibility, just in case
+			if ( method_exists ( $wikipage, "doEditContent" ) ) {
+				$content = new WikiTextContent( $tableText );
+				$status = $wikipage->doEditContent( $content, "Updating content" );
+			} else {
+				$status = $wikipage->doEdit( $tableText, "Updating content" );
+			}
+
 		}
 
 		return $status;
