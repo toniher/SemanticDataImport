@@ -32,6 +32,10 @@ $(document).ready( function() {
 
 		$(this).hide();
 
+		if ( $(this).data('edit') ) {
+			readonly = false;
+		}
+
 		$('#'+divval).handsontable({
 			data: celldata,
 			readOnly: readonly,
