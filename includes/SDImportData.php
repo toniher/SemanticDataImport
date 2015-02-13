@@ -300,17 +300,18 @@ class SDImportData {
 			$mainText = $wikipage->getText();
 		}
 
+		// TODO: Handle different smwdata
 		// Get matches
 		preg_match ( "/(.*)(\<smwdata.*\>.*?\<\/smwdata\>)(.*)/s" , $mainText, $matches );
 
 		$status = 0;
 
 		// IF 3 parts
-		if ( count( $matches ) == 3 ) {
+		if ( count( $matches ) == 4 ) {
 
 			$prefix = "<smwdata".$extraInfo.">";
 			$sufix = "</smwdata>";
-			$tableText = $matches[0].$prefix."\n".$text."\n".$sufix."\n".$matches[2];
+			$tableText = $matches[1].$prefix."\n".$text."\n".$sufix."\n".$matches[3];
 			
 			// Submit content
 			// Back-compatibility, just in case
