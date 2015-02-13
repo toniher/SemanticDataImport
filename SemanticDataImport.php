@@ -25,7 +25,10 @@ call_user_func( function () {
 	$GLOBALS['wgMessagesDirs']['SemanticDataImport'] = __DIR__ . '/i18n';
 	$GLOBALS['wgExtensionMessagesFiles']['SemanticDataImport'] = __DIR__ . '/SemanticDataImport.i18n.php';
 	$GLOBALS['wgAutoloadClasses']['SDImportData'] = __DIR__ . '/includes/SDImportData.php';
-	
+	$GLOBALS['wgAutoloadClasses']['SDImportApi'] = __DIR__ . '/includes/SDImportApi.php';
+
+	$GLOBALS['wgAPIModules']['sdimport'] = 'SDImportApi.php';
+
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
 	
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(

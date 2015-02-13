@@ -256,4 +256,31 @@ class SDImportData {
 
 	}
 
+
+	/** Import of Configuration, let's say, at commit */
+	/**
+	* @text Bulk data text
+	* @pagetitle Title of the page
+	* @delimiter Delimiter of CSV
+	* @enclosure Enclosure of CSV
+	* @return status of update
+	*/
+	public static function importConf( $text, $pagetitle, $delimiter=',', $enclosure="\"" ) {
+
+		$title = Title::newFromText( $pagetitle );
+		$wikipage = WikiPage::factory( $title );
+		
+		// TODO: Only append extra attrs if different from default conf
+
+		$prefix = "<smwdata data-delimiter='".$delimiter."' data-enclosure='".$enclosure."'>";
+		$sufix = "</smwdata>";
+		$text = $prefix."\n".$text."\n".$sufix."\n";
+		
+		$content = new WikiTextContent( $text );
+		$status = $wikipage->doEditContent( $content, "Updating content" );
+
+		return $status;
+		
+	}
+
 }
