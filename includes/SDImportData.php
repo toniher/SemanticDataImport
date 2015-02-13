@@ -311,7 +311,7 @@ class SDImportData {
 
 			$prefix = "<smwdata".$extraInfo.">";
 			$sufix = "</smwdata>";
-			$tableText = $matches[1].$prefix."\n".$text."\n".$sufix."\n".$matches[3];
+			$tableText = $matches[1].$prefix."\n".$text."\n".$sufix.$matches[3];
 			
 			// Submit content
 			// Back-compatibility, just in case
