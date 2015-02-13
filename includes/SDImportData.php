@@ -272,7 +272,7 @@ class SDImportData {
 		
 		// TODO: Only append extra attrs if different from default conf in LocalSettings.php
 
-		$prefix = "<smwdata data-separator='".$separator."' data-delimiter='".$delimiter."'>";
+		$prefix = "<smwdata separator=\"".$separator."\" delimiter='".$delimiter."'>";
 		$sufix = "</smwdata>";
 		$text = $prefix."\n".$text."\n".$sufix."\n";
 		
