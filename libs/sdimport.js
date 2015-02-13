@@ -1,5 +1,6 @@
 /*global $ document jQuery console mw window wgScriptPath alert location */
 
+//TODO: Handle delimiter
 /** Load SpreadSheet **/
 $(document).ready( function() {
 
@@ -12,13 +13,24 @@ $(document).ready( function() {
 
 		var celldata = [];
 
+		var separator = "\t";
+		var delimiter = '"';
+
+		if ( $(this).data('separator') ) {
+			separator = $(this).data('separator');
+		}
+
+		if ( $(this).data('delimiter') ) {
+			delimiter = $(this).data('delimiter');
+		}
+
 		var text = $(this).text();
 		var lines = text.split("\n");
 	
 		for ( var i = 0; i< lines.length; i++ ) {
 
 			if ( lines[i] !== "" ) {
-				var row = lines[i].split("\t");
+				var row = lines[i].split(separator);
 				celldata.push( row );
 			}
 
