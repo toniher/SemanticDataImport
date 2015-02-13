@@ -28,7 +28,7 @@ $(document).ready( function() {
 		var cols = strcols.split(",");
 
 		var divval = "SMWData-"+numdata;
-		$(this).parent().append("<div id='"+divval+"'>");
+		$(this).after("<div id='"+divval+"'>");
 
 		$(this).hide();
 
