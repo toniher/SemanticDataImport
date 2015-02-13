@@ -21,7 +21,7 @@ class SDImportData {
 		$pageTitle = $parser->getTitle();
 		$output = "";
 
-		$separator='\t';
+		$separator="\t";
 		$delimiter='"';
 		$fields = array();
 
