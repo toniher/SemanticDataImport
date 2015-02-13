@@ -58,10 +58,10 @@ $( document ).on( "click", ".smwdata-commit", function() {
 
 	var param = {};
 	var selector = $(this).attr('data-selector');
-	param.separator=",";
+	param.separator="\t";
 	param.delimiter='"';
 	
-	var parent = $(this).parents('.smwdata').get(0);
+	var parent = $(this).parent().parent().find('.smwdata').get(0);
 
 	if ( $(parent).data('separator') ) {
 		param.separator = $(parent).data('separator');

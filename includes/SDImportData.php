@@ -265,22 +265,26 @@ class SDImportData {
 	* @enclosure Enclosure of CSV
 	* @return status of update
 	*/
-	public static function importConf( $text, $pagetitle, $separator=',', $delimiter="\"" ) {
+	public static function importConf( $text, $pagetitle, $separator="\t", $delimiter="\"" ) {
 
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
 		
-		// TODO: Only append extra attrs if different from default conf
+		// TODO: Only append extra attrs if different from default conf in LocalSettings.php
 
 		$prefix = "<smwdata data-separator='".$separator."' data-delimiter='".$delimiter."'>";
 		$sufix = "</smwdata>";
 		$text = $prefix."\n".$text."\n".$sufix."\n";
 		
-		$content = new WikiTextContent( $text );
-		$status = $wikipage->doEditContent( $content, "Updating content" );
+		// Back-compatibility, just in case
+		if ( method_exists ( $wikipage, "doEditContent" ) ) {
+			$content = new WikiTextContent( $text );
+			$status = $wikipage->doEditContent( $content, "Updating content" );
+		} else {
+			$status = $wikipage->doEdit( $text, "Updating content" );
+		}
 
 		return $status;
-		
 	}
 
 }
