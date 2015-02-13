@@ -58,11 +58,21 @@ $( document ).on( "click", ".smwdata-commit", function() {
 
 	var param = {};
 	var selector = $(this).attr('data-selector');
-	param.delimiter=",";
-	param.enclosure='"';
+	param.separator=",";
+	param.delimiter='"';
 	
+	var parent = $(this).parents('.smwdata').get(0);
+
+	if ( $(parent).data('separator') ) {
+		param.separator = $(parent).data('separator');
+	}
+
+	if ( $(parent).data('delimiter') ) {
+		param.delimiter = $(parent).data('delimiter');
+	}
+
 	//Let's get data from selector
-	param.text = convertData2str( $( selector ).handsontable( 'getData' ), param.delimiter, param.enclosure );
+	param.text = convertData2str( $( selector ).handsontable( 'getData' ), param.separator, param.delimiter );
 
 	param.title = wgCanonicalNamespace + ":" + wgTitle;
 

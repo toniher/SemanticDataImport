@@ -265,14 +265,14 @@ class SDImportData {
 	* @enclosure Enclosure of CSV
 	* @return status of update
 	*/
-	public static function importConf( $text, $pagetitle, $delimiter=',', $enclosure="\"" ) {
+	public static function importConf( $text, $pagetitle, $separator=',', $delimiter="\"" ) {
 
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
 		
 		// TODO: Only append extra attrs if different from default conf
 
-		$prefix = "<smwdata data-delimiter='".$delimiter."' data-enclosure='".$enclosure."'>";
+		$prefix = "<smwdata data-separator='".$separator."' data-delimiter='".$delimiter."'>";
 		$sufix = "</smwdata>";
 		$text = $prefix."\n".$text."\n".$sufix."\n";
 		
