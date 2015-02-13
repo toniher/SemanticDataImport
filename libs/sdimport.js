@@ -66,8 +66,6 @@ $( document ).on( "click", ".smwdata-commit", function() {
 
 	param.title = wgCanonicalNamespace + ":" + wgTitle;
 
-	console.log(param);
-
 	param.action = "smwdata";
 	param.format = "json";
 
