@@ -66,7 +66,7 @@ $( document ).on( "click", ".smwdata-commit", function() {
 
 	param.title = wgCanonicalNamespace + ":" + wgTitle;
 
-	param.action = "smwdata";
+	param.action = "sdimport";
 	param.format = "json";
 
 	var posting = $.post( wgScriptPath + "/api.php", param );
