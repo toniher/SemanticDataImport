@@ -40,7 +40,7 @@ $(document).ready( function() {
 			contextMenu: true
 		});
 
-		if ( $(this).data('data-edit') ) {
+		if ( $(this).data('edit') ) {
 			$('#'+divval).append("<p class='smwdata-commit' data-selector='#"+divval+"'>Commit</p>");
 		}
 		
