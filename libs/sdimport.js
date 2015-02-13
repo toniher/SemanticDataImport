@@ -94,14 +94,14 @@ $( document ).on( "click", ".smwdata-commit", function() {
 /** @param Array
 * return string
 **/
-function convertData2str ( data, delimiter, enclosure ) {
+function convertData2str ( data, separator, delimiter ) {
 	var str = "";
 	var newArr = [];
 	if ( data.length > 0 ) {
 		// We put \\n or \\t for ensuring proper conversion afterwards
 		for ( var i = 0; i < data.length; i++ ) {
 			// TODO: Handle enclosure
-			var rowstr = data[i].join(delimiter);
+			var rowstr = data[i].join(separator);
 			newArr.push( rowstr );
 		}
 		str = newArr.join("\n");

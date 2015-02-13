@@ -111,7 +111,7 @@ class SDImportData {
 				$dataedit = "data-edit='data-edit'";
 			}
 
-			$output = "<div class='smwdata' data-delimiter='".$delimiter."' data-separator='".$separator."'".$fieldList." ".$dataedit.">".$input."</div>";
+			$output = "<div class='smwdata' data-delimiter='".$delimiter."' data-separator=\"".$separator."\"".$fieldList." ".$dataedit.">".$input."</div>";
 		}
 
 		return array( $output, 'noparse' => true, 'isHTML' => true );
