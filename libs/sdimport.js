@@ -45,25 +45,28 @@
 			$(this).after("<div id='"+divval+"'>");
 	
 			$(this).hide();
-	
+
 			if ( $(this).data('edit') ) {
 				readonly = false;
 			}
+
+			var $container  = $('#'+divval);
 	
-			$('#'+divval).handsontable({
+			$container.handsontable({
 				data: celldata,
 				readOnly: readonly,
 				minSpareRows: extrarows,
 				colHeaders: cols,
-				contextMenu: true
+				contextMenu: true,
+				columnSorting: true
 			});
 	
 			if ( $(this).data('edit') ) {
-				$('#'+divval).append("<p class='smwdata-commit' data-selector='#"+divval+"'>Commit</p>");
+				$container.append("<p class='smwdata-commit' data-selector='#"+divval+"'>Commit</p>");
 			}
 			
 			numdata = numdata + 1 ;
-	
+
 		});
 	});
 	
@@ -85,14 +88,25 @@
 			param.delimiter = $(parent).data('delimiter');
 		}
 	
-		//Let's get data from selector
-		param.text = convertData2str( $( selector ).handsontable( 'getData' ), param.separator, param.delimiter );
-	
 		param.title = wgCanonicalNamespace + ":" + wgTitle;
 	
 		param.action = "sdimport";
 		param.format = "json";
-	
+
+		var instance = $( selector ).handsontable('getInstance');
+		
+		var rows = instance.countRows();
+
+		var data = [];
+
+		// Push
+		for ( var r = 0; r < rows; r = r + 1 ) {
+			data.push( instance.getDataAtRow( r ) );
+		}
+
+		//Let's get data from selector
+		param.text = convertData2str( data, param.separator, param.delimiter );
+
 		var posting = $.post( wgScriptPath + "/api.php", param );
 		posting.done(function( data ) {
 			var newlocation = location.protocol + '//' + location.host + location.pathname;
