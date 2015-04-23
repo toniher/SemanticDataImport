@@ -35,6 +35,12 @@ call_user_func( function () {
 		'localBasePath' => dirname( __FILE__ ),
 		'scripts' => array( 'libs/sdimport.js' ),
 		'styles' => array( 'libs/handsontable/handsontable.full.css', 'libs/sdimport.less' ),
+		'dependencies' => array(
+			'mediawiki.jqueryMsg',
+		),
+		'messages' => array(
+			'sdimport-commit'
+		),
 		'remoteExtPath' => 'SemanticDataImport'
 	);
 	

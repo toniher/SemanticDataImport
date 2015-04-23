@@ -62,7 +62,7 @@
 			});
 	
 			if ( $(this).data('edit') ) {
-				$container.append("<p class='smwdata-commit' data-selector='#"+divval+"'>Commit</p>");
+				$container.append("<p class='smwdata-commit' data-selector='#"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 			}
 			
 			numdata = numdata + 1 ;
