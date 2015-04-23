@@ -33,8 +33,8 @@ call_user_func( function () {
 	
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),
-		'scripts' => array( 'libs/jquery-handsontable/jquery.handsontable.full.js', 'libs/sdimport.js',  ),
-		'styles' => array( 'libs/jquery-handsontable/jquery.handsontable.full.css', 'libs/sdimport.less' ),
+		'scripts' => array( 'libs/sdimport.js' ),
+		'styles' => array( 'libs/handsontable/handsontable.full.css', 'libs/sdimport.less' ),
 		'remoteExtPath' => 'SemanticDataImport'
 	);
 	

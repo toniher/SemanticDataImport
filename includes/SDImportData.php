@@ -99,6 +99,10 @@ class SDImportData {
 		
 		if ( !empty( $input ) ) {
 			$wgOut = $parser->getOutput();
+
+			global $wgScriptPath;
+			$handsonpath = $wgScriptPath."/extensions/SemanticDataImport/libs/handsontable/handsontable.full.js";
+			$wgOut->addHeadItem( '<script src="'.$handsonpath.'"></script>' ); //Hack because of handsontable for last versions :/
 			$wgOut->addModules( 'ext.sdimport' );
 
 			$fieldList = "";
