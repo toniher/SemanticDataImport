@@ -267,9 +267,10 @@ class SDImportData {
 	* @pagetitle Title of the page
 	* @delimiter Delimiter of CSV
 	* @enclosure Enclosure of CSV
+	* @num Occurrence in page. If only one, then 0
 	* @return status of update
 	*/
-	public static function importConf( $text, $pagetitle, $separator=NULL, $delimiter=NULL ) {
+	public static function importConf( $text, $pagetitle, $separator=NULL, $delimiter=NULL, $num=0 ) {
 
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
@@ -304,18 +305,36 @@ class SDImportData {
 			$mainText = $wikipage->getText();
 		}
 
-		// TODO: Handle different smwdata
 		// Get matches
-		preg_match ( "/(.*)(\<smwdata.*\>.*?\<\/smwdata\>)(.*)/s" , $mainText, $matches );
+		$page_parts = preg_split( "/(<smwdata.*?>)/", $mainText, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+		$count = 0;
+		$outcome = array();
+
+		foreach ( $page_parts as $page_part ) {
+
+			if ( preg_match( "/<smwdata/", $page_part ) ) {
+				$count = $count + 1;
+			} else {
+				if ( $num == $count - 1 ) {
+					if ( preg_match( "/<\/smwdata/", $page_part ) ) {
+
+						$in_parts = preg_split( "/(<\/smwdata.*?>)/", $page_part, -1, PREG_SPLIT_DELIM_CAPTURE );
+						$in_parts[0] = "\n".$text."\n";
+						$page_part = implode( "", $in_parts );
+					}
+				}
+			}
+
+			array_push( $outcome, $page_part );
+		}
 
 		$status = 0;
 
-		// IF 3 parts
-		if ( count( $matches ) == 4 ) {
+		// If stuff
+		if ( count( $outcome ) > 0 ) {
 
-			$prefix = "<smwdata".$extraInfo.">";
-			$sufix = "</smwdata>";
-			$tableText = $matches[1].$prefix."\n".$text."\n".$sufix.$matches[3];
+			$tableText = implode( "", $outcome );
 			
 			// Submit content
 			// Back-compatibility, just in case

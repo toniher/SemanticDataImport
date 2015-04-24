@@ -5,7 +5,7 @@ class SDImportApi extends ApiBase {
 
 		$params = $this->extractRequestParams();
 
-		$status = SDImportData::importConf( $params['text'], $params['title'], $params['separator'], $params['delimiter'] );
+		$status = SDImportData::importConf( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
 
 		$this->getResult()->addValue( null, $this->getModuleName(), array ( 'status' => $status ) );
 
@@ -28,6 +28,10 @@ class SDImportApi extends ApiBase {
 			),
 			'enclosure' => array(
 				ApiBase::PARAM_TYPE => 'string',
+				ApiBase::PARAM_REQUIRED => false
+			),
+			'num' => array(
+				ApiBase::PARAM_TYPE => 'integer',
 				ApiBase::PARAM_REQUIRED => false
 			)
 		);

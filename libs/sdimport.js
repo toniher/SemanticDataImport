@@ -87,6 +87,8 @@
 		if ( $(parent).data('delimiter') ) {
 			param.delimiter = $(parent).data('delimiter');
 		}
+
+		param.num = parseInt( selector.replace( "#SMWData-", "" ), 10 );
 	
 		param.title = wgCanonicalNamespace + ":" + wgTitle;
 	
