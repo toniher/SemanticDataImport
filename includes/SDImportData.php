@@ -238,7 +238,8 @@ class SDImportData {
 
 		# TODO: Check if this will work
 		if ( ! $parser ) {
-			$parser = new Parser();		
+			$parser = new Parser();
+			$parser->setTitle( $pageTitle ); // Put context
 		}
 		
 		$subobjectArgs = array( &$parser );
