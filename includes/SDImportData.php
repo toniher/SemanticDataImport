@@ -90,7 +90,7 @@ class SDImportData {
 						$struct[ $dpropk ] = $dpropv;
 					}
 					
-					self::insertInternalObject( $parser, $object, $struct );
+					self::insertInternalObject( $parser, $pageTitle, $object, $struct );
 				}
 
 			}
@@ -162,7 +162,7 @@ class SDImportData {
 				
 						if ( $nsRepo["json"] ) {
 				
-							list( $args, $data ) = self::getJSONContent( $content );
+							list( $args, $table ) = self::getJSONContent( $content );
 						
 							$object = self::getSelector( $args, $nsRepo, "rowobject" ); // String
 							$fields = self::getSelector( $args, $nsRepo, "rowfields" ); // Array
@@ -180,6 +180,38 @@ class SDImportData {
 								foreach ( $refs as $key => $val ) {
 									$dprops[ $key ] = self::processWikiText( $val, $pageTitle );
 								}
+							}
+							
+							if ( $table ) {
+							
+								foreach ( $table as $row ) {
+									$fieldcount = 0;
+									$struct = array();
+									foreach ( $row as $field ) {
+				
+										$field = trim( $field );
+										
+										if ( ! empty( $field ) ) {
+											$pretxt = "";
+											if ( isset( $pre[ $fieldcount ] ) && !empty( $pre[ $fieldcount ] ) ) {
+												$pretxt = $pre[ $fieldcount ].":"; // : for pre
+											}
+											$postxt = "";
+											if ( isset( $post[ $fieldcount ] ) && !empty( $post[ $fieldcount ] ) ) {
+												$postxt = "@".$post[ $fieldcount ]; // @ for post
+											}
+											$struct[ $fields[ $fieldcount ] ] =  $pretxt.$field.$postxt;
+										}
+										$fieldcount++;
+									}
+									foreach ( $dprops as $dpropk => $dpropv ) {
+										$struct[ $dpropk ] = $dpropv;
+									}
+
+									
+									self::insertInternalObject( null, $pageTitle, $object, $struct );
+								}
+							
 							}
 						
 						}
@@ -202,10 +234,13 @@ class SDImportData {
 	 * 
 	 * @return boolean
 	*/
-	public static function insertInternalObject( $parser, $object, $struct ) {
+	public static function insertInternalObject( $parser, $pageTitle, $object, $struct ) {
 
-		$pageTitle = $parser->getTitle();
-
+		# TODO: Check if this will work
+		if ( ! $parser ) {
+			$parser = new Parser();		
+		}
+		
 		$subobjectArgs = array( &$parser );
 		// Blank first argument, so that subobject ID will be
 		// an automatically-generated random number.
@@ -349,15 +384,77 @@ class SDImportData {
 		$args = null;
 		$data = null;
 		
-		// TODO: Check JSON is valid
+		$SDIJSON = false;
 		
-		// TODO: Process JSON
+		// Check JSON is valid
+		$jsonObj = json_decode( $json, true );
+		
+		if ( $jsonObj ) {
+		
+			if ( array_key_exists( "meta", $jsonObj ) ) {
+				
+				$meta = $jsonObj["meta"];
 
+				if ( array_key_exists( "app", $meta ) ) {
+					
+					if ( $meta["app"] === "SDI" ) {
+						$SDIJSON = true;
+					}
+				}
+				
+				if ( array_key_exists( "version", $meta ) ) {
+
+					$args["version"] = $meta["version"];
+					
+				}
+				
+				# TODO: Addding more custom fields to args
+				
+				
+				if ( array_key_exists( "data", $jsonObj ) && $SDIJSON ) {
+				
+					$dataObj = $jsonObj["data"];
+				
+					$data = self::checkJSONData( $dataObj );
+				
+				}
+			}
+		
+		}
 		
 		array_push( $outcome, $args );
 		array_push( $outcome, $data );
 
 		return $outcome;	
+		
+	}
+	
+	private static function checkJSONData( $dataObj ) {
+		
+		$data = null;
+		
+		if ( is_array( $dataObj ) ) {
+			
+			if ( count( $dataObj ) > 0 ) {
+				
+				$bad = false;
+				
+				// We should have an array of arrays
+				foreach ( $dataObj as $row ) {
+					
+					if ( ! is_array( $row ) ) {
+						$bad = true;
+					}
+				}
+				
+				if ( ! $bad ) {
+					$data = $dataObj;
+				}
+				
+			}
+		}
+		
+		return $data;
 		
 	}
 
