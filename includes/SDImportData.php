@@ -121,6 +121,80 @@ class SDImportData {
 		return array( $output, 'noparse' => true, 'isHTML' => true );
 	}
 
+
+	/**
+	 * Occurs after the save page request has been processed.
+	 *
+	 * @param WikiPage $wikiPage
+	 * @param User $user
+	 * @param Content $content
+	 * @param string $summary
+	 * @param boolean $isMinor
+	 * @param boolean $isWatch
+	 * @param $section Deprecated
+	 * @param integer $flags
+	 * @param {Revision|null} $revision
+	 * @param Status $status
+	 * @param integer $baseRevId
+	 * @param integer $undidRevId
+	 *
+	 * @return boolean
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageContentSaveComplete
+	 */
+	public static function saveJSONData( $wikiPage, $user, $content, $summary, $isMinor, $isWatch, $section, $flags, $revision, $status, $baseRevId, $undidRevId ) {
+		
+		global $wgSDImportDataPage;
+
+		if ( $wikiPage ) {
+			
+			// Get NS
+			$pageTitle = $wikiPage->getTitle();
+
+			if ( is_object( $pageTitle ) ) {
+
+				$ns = $pageTitle->getNsText();
+
+				if ( key_exists( $ns, $wgSDImportDataPage ) ) {
+
+					$nsRepo = $wgSDImportDataPage[$ns];
+
+					if ( array_key_exists( "json", $nsRepo ) ) {
+				
+						if ( $nsRepo["json"] ) {
+				
+							list( $args, $data ) = self::getJSONContent( $content );
+						
+							$object = self::getSelector( $args, $nsRepo, "rowobject" ); // String
+							$fields = self::getSelector( $args, $nsRepo, "rowfields" ); // Array
+							$props = self::getSelector( $args, $nsRepo, "typefields" ); // Array
+							$refs = self::getSelector( $args, $nsRepo, "ref" ); // Hash
+							$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
+							$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
+							
+		
+							// TODO: Should we add props here if they don't exist?
+		
+							$dprops = array();
+		
+							if ( $refs ) {
+								foreach ( $refs as $key => $val ) {
+									$dprops[ $key ] = self::processWikiText( $val, $pageTitle );
+								}
+							}
+						
+						}
+					
+					}
+		
+				}
+			
+			}
+		
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * @param $pageTitle Title
 	 * @param $object string
@@ -239,6 +313,53 @@ class SDImportData {
 		return $text;
 	}
 
+	
+	private static function getJSONData( $content ) {
+
+		$outcome = array( );
+		$args = null;
+		$data = null;
+
+		if ( $content ) {
+			
+			if ( is_object( $content ) ) {
+				
+				if ( $content->getModel() == CONTENT_MODEL_JSON ) {
+
+					// Only act if JSON
+					
+					$json = $content->getNativeData();
+					
+					list( $args, $data ) = self::processJSON( $json );
+				}
+				
+			}
+		}
+		
+		array_push( $outcome, $args );
+		array_push( $outcome, $data );
+
+		return $outcome;
+	}
+
+	
+	private static function processJSON( $json ) {
+		
+		$outcome = array( );
+		$args = null;
+		$data = null;
+		
+		// TODO: Check JSON is valid
+		
+		// TODO: Process JSON
+
+		
+		array_push( $outcome, $args );
+		array_push( $outcome, $data );
+
+		return $outcome;	
+		
+	}
 
 	private static function getCSVData( $text, $separator="\t", $delimiter='"' ) {
 

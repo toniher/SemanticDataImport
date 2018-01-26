@@ -30,6 +30,7 @@ call_user_func( function () {
 	$GLOBALS['wgAPIModules']['sdimport'] = 'SDImportApi';
 
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
+	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportData::saveJSONData';
 	
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),
@@ -55,6 +56,7 @@ call_user_func( function () {
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["ref"] = array("ref" => "{{PAGENAME}}");
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["prefields"] = array( "", "" );
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["postfields"] = array( "", "" );
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["json"] = false; # Whether content is stored directly in JSON
 	#define("NS_SDImport", 2000);
 	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
 	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
