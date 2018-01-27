@@ -46,7 +46,7 @@ call_user_func( function () {
 	);
 	
 	# Example NS definition
-	#$GLOBALS["$GLOBALS["wgSDImportDataPage"]"]["SDImport"] = array();
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"] = array();
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["edit"] = false;
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["separator"] = "\t";
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["delimiter"] = '"';
