@@ -30,7 +30,7 @@ call_user_func( function () {
 	$GLOBALS['wgAPIModules']['sdimport'] = 'SDImportApi';
 
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
-	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportData::saveJSONData';
+	$GLOBALS['wgHooks']['PageContentSaveComplete'][] = 'SDImportData::saveJSONData';
 	
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),

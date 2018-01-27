@@ -350,7 +350,7 @@ class SDImportData {
 	}
 
 	
-	private static function getJSONData( $content ) {
+	private static function getJSONContent( $content ) {
 
 		$outcome = array( );
 		$args = null;
