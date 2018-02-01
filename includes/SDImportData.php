@@ -272,11 +272,15 @@ class SDImportData {
 	}
 	
 	/**
-	 * @param $pageTitle Title
+	 * @param $wikiPage wikiPage
+     * @param $revision revision
+     * @param $user user
 	 * @param $object string
 	 * @param struct object
 	 * 
 	 * @return boolean
+     * 
+     * Code from: https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/2974
 	*/
 	public static function insertInternalObjectviaJSON( $wikiPage, $revision, $user, $object, $struct ) {
 
