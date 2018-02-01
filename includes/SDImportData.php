@@ -158,10 +158,10 @@ class SDImportData {
 
 					$nsRepo = $wgSDImportDataPage[$ns];
 
-					if ( array_key_exists( "json", $nsRepo ) ) {
-				
+					if ( array_key_exists( "json", $nsRepo ) ) {		
+
 						if ( $nsRepo["json"] ) {
-				
+
 							list( $args, $table ) = self::getJSONContent( $content );
 						
 							$object = self::getSelector( $args, $nsRepo, "rowobject" ); // String
@@ -208,8 +208,10 @@ class SDImportData {
 										$struct[ $dpropk ] = $dpropv;
 									}
 
+									if ( count( array_keys( $struct ) ) > 0 ) {
+										self::insertInternalObjectviaJSON( $wikiPage, $revision, $user, $object, $struct );
+									}
 									
-									self::insertInternalObject( null, $pageTitle, $object, $struct );
 								}
 							
 							}
@@ -267,6 +269,76 @@ class SDImportData {
 			call_user_func_array( array( 'SMWSubobject', 'render' ), $subobjectArgs );
 		}
 		return;
+	}
+	
+	/**
+	 * @param $pageTitle Title
+	 * @param $object string
+	 * @param struct object
+	 * 
+	 * @return boolean
+	*/
+	public static function insertInternalObjectviaJSON( $wikiPage, $revision, $user, $object, $struct ) {
+
+		$applicationFactory = \SMW\ApplicationFactory::getInstance();
+		
+		$mwCollaboratorFactory = $applicationFactory->newMwCollaboratorFactory();
+		
+		/** * Initialize the ParserOuput object */
+		$editInfoProvider = $mwCollaboratorFactory->newEditInfoProvider( $wikiPage, $revision, $user );
+		
+		$parserOutput = $editInfoProvider->fetchEditInfo()->getOutput();
+
+		if ( !$parserOutput instanceof \ParserOutput ) {
+			return true;
+		}
+		
+		$parserData = $applicationFactory->newParserData( $wikiPage->getTitle(), $parserOutput );
+
+		$subject = $parserData->getSubject();
+		
+		// Identify the content as unique
+		$subobjectName = '_SDI' . md5( json_encode( $struct ) );
+
+		$subject = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki(), $subobjectName );
+
+		// Build the subobject by using a separate container object
+		$containerSemanticData = new \SMWContainerSemanticData( $subject );
+
+		// Iterate through here
+		
+		foreach ( $struct as $property => $value ) {
+			// If you don't know the type, use the DataValueFactory
+			$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByText( $property, $value );
+			$containerSemanticData->addDataValue( $dataValue );
+		}
+		
+		// Object assignation
+		
+		if ( $object ) {
+			
+			if ( ! empty( $object ) ) {
+				
+				if ( $wikiPage->getTitle() ) {
+					
+					$fullTitle = $wikiPage->getTitle()->getPrefixedText();
+					
+					$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByText( $object, $fullTitle );
+					$containerSemanticData->addDataValue( $dataValue );
+					
+				}
+				
+			}
+			
+		}
+		
+		
+		// This part is used to add the subobject the the main subject
+		$parserData->getSemanticData()->addPropertyObjectValue( new \SMW\DIProperty( \SMW\DIProperty::TYPE_SUBOBJECT ), new \SMWDIContainer( $containerSemanticData ) );
+		$parserData->pushSemanticDataToParserOutput();
+		
+		
+		return true;
 	}
 
 
