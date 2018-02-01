@@ -3,8 +3,14 @@
 Stuff to be implemented
 
 * Commit system via jQuery handsontable (if editable)
+    * Implementation in wikitext content model version
+    * Implementation in JSON content model version
 * Import data interfaces (Special Pages)
-	* Allow appending data to existing pages
-* Allow other types of data (e.g. JSON)
+    * Selection from configuration
+        * Allow change separator, delimiter and ignore first row
+    * First column is page title (not needed prefix)
+    * Check if CSV compatible with configurarion 
+	* Overwrite: yes, no, append
+    * Job queue processing
 
 
