@@ -12,5 +12,5 @@ Stuff to be implemented
     * Check if CSV compatible with configurarion 
 	* Overwrite: yes, no, append
     * Job queue processing
-
-
+* Allow SD Import capabilites to be called from other extensions
+    * Design classes so that this is allowed
