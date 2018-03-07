@@ -1,4 +1,8 @@
 {
 	"sdimport-desc": "Extension for importing CSV-like structured data into MediaWiki pages using Semantic MediaWiki",
-	"sdimport-commit": "Commit"
+	"sdimport-commit": "Commit",
+    "sdimport": "Semantic Data Import",
+    "sdimport-form": "Import Data",
+    "sdimport-form-upload": "Import Data",
+    "sdimport-form-submit-button": "Submit"
 }

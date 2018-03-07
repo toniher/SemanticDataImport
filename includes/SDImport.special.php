@@ -41,20 +41,21 @@ class SpecialSDImport extends SpecialPage {
 	
 			'fileupload' => array(
 				'section' => 'upload',
-				'label' => 'Upload file', # What's the label of the field
+				'label' => 'Upload file',
+                'class' => 'HTMLTextField',
 				'type' => 'file'
 			),
 			'separator' => array(
 				'section' => 'upload',
 				'type' => 'select',
 				'label' => 'Separator',
-				'options' => array( "{TAB}", ",", ";" )
+				'options' => array( "{TAB}" => "{TAB}", "," => ",", ";" => ";" )
 			),
 			'delimiter' => array(
 				'section' => 'upload',
 				'type' => 'select',
 				'label' => 'Delimiter',
-				'options' => array( "\"", "'" )
+				'options' => array( "\"" => "\"" , "'" => "'" )
 			),
 			'namespace' => array(
 				'section' => 'upload',
@@ -66,9 +67,9 @@ class SpecialSDImport extends SpecialPage {
 
 		);
 	
-		$htmlForm = new HTMLForm( $formDescriptor, 'sdimport_form' );
+		$htmlForm = new HTMLForm( $formDescriptor, 'sdimport-form' );
 	
-		$htmlForm->setSubmitText( wfMessage('sdimport_form-submit-button')->text() ); # What text does the submit button display
+		$htmlForm->setSubmitText( wfMessage('sdimport-form-submit-button')->text() ); # What text does the submit button display
 		$htmlForm->setTitle( $this->getTitle() ); # You must call setTitle() on an HTMLForm
 	
 		/* We set a callback function */

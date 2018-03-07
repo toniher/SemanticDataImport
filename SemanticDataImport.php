@@ -32,6 +32,13 @@ call_user_func( function () {
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
 	$GLOBALS['wgHooks']['PageContentSaveComplete'][] = 'SDImportData::saveJSONData';
 	
+
+    $GLOBALS['wgAutoloadClasses']['SpecialSDImport'] = __DIR__ . '/includes/SDImport.special.php';
+
+    # SpecialPage referencing
+    $GLOBALS['wgSpecialPages']['SDImport'] = 'SpecialSDImport';
+
+
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),
 		'scripts' => array( 'libs/handsontable/handsontable.full.js', 'libs/sdimport.js' ),
