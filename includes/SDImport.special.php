@@ -18,9 +18,18 @@ class SpecialSDImport extends SpecialPage {
 
 	}
 	
-	
-	// Count BioRound -> for templates -> should be changes for hash
-	#	private static $countBioRound = array();
+	private static function getKeyOptionsWithBlank( $keys ) {
+		
+		$list_namespaces = array( "" => "" );
+		
+		foreach ( $keys as $key ) {
+			
+			$listnamespaces[ $key ] = $key;
+		}
+		
+		return $list_namespaces;
+	}
+
 	
 	/**
 	 * Special page entry point
@@ -30,11 +39,12 @@ class SpecialSDImport extends SpecialPage {
 		
 		global $wgSDImportDataPage; // Configuration options
 	
+		$list_namespaces = self::getKeyOptionsWithBlank( array_keys( $wgSDImportDataPage ) );
+	
 		$wgOut->addModules( 'ext.sdimport' );
 		$this->setHeaders();
 	
 		// TODO: We should handle request in the form in a better way. $wgRequest Check examples here: involved http://www.mediawiki.org/wiki/Category:Special_page_extensions
-
 	
 		# A formDescriptor for uploading stuff
 		$formDescriptor = array(
@@ -61,7 +71,7 @@ class SpecialSDImport extends SpecialPage {
 				'section' => 'upload',
 				'type' => 'select',
 				'label' => 'Namespace',
-				'options' => array()
+				'options' => $list_namespaces
 			)
 			
 
@@ -77,6 +87,9 @@ class SpecialSDImport extends SpecialPage {
 	
 		$htmlForm->suppressReset(false); # Get back reset button
 	
+		$wgOut->addHTML( "<div id='sdintro' class='sdimport_section'>" );
+		$wgOut->addHTML( wfMessage('sdimport-form-intro')->text() );			
+		$wgOut->addHTML( "</div>" );
 		$wgOut->addHTML( "<div id='sdform' class='sdimport_section'>" );
 		$htmlForm->show(); # Displaying the form
 		$wgOut->addHTML( "</div>" );

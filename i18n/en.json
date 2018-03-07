@@ -4,5 +4,6 @@
     "sdimport": "Semantic Data Import",
     "sdimport-form": "Import Data",
     "sdimport-form-upload": "Import Data",
+    "sdimport-form-intro": "You can upload data from the form below...",
     "sdimport-form-submit-button": "Submit"
 }
