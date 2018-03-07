@@ -72,7 +72,7 @@ class SpecialSDImport extends SpecialPage {
 		$htmlForm->setTitle( $this->getTitle() ); # You must call setTitle() on an HTMLForm
 	
 		/* We set a callback function */
-		$htmlForm->setSubmitCallback( array( 'SpecialAnnoWiki', 'processCSV' ) );  # Call processInput() in SpecialAnnoWiki on submit
+		$htmlForm->setSubmitCallback( array( 'SpecialSDImport', 'processCSV' ) );  # Call processInput() in SpecialAnnoWiki on submit
 	
 		$htmlForm->suppressReset(false); # Get back reset button
 	

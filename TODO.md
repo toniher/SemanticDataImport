@@ -14,3 +14,4 @@ Stuff to be implemented
     * Job queue processing
 * Allow SD Import capabilites to be called from other extensions
     * Design classes so that this is allowed
+* Upgrade handsontable
