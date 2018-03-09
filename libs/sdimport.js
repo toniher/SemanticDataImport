@@ -2,7 +2,7 @@
 
 //TODO: Handle delimiter
 /** Load SpreadSheet **/
-(function($) {
+(function($, mw) {
 
 	$(document).ready( function() {
 	
@@ -50,9 +50,9 @@
 				readonly = false;
 			}
 
-			var $container  = $('#'+divval);
+			var container  = document.getElementById( divval );
 	
-			$container.handsontable({
+			var table = new Handsontable( container, {
 				data: celldata,
 				readOnly: readonly,
 				minSpareRows: extrarows,
@@ -62,7 +62,7 @@
 			});
 	
 			if ( $(this).data('edit') ) {
-				$container.append("<p class='smwdata-commit' data-selector='#"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+				$( container ).append("<p class='smwdata-commit' data-selector='#"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 			}
 			
 			numdata = numdata + 1 ;
@@ -90,13 +90,14 @@
 
 		param.num = parseInt( selector.replace( "#SMWData-", "" ), 10 );
 	
-		param.title = wgCanonicalNamespace + ":" + wgTitle;
+		param.title = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
 	
 		param.action = "sdimport";
 		param.format = "json";
 
+		console.log( $( selector ) );
 		var instance = $( selector ).handsontable('getInstance');
-		
+		console.log( instance );
 		var rows = instance.countRows();
 
 		var data = [];
@@ -109,7 +110,7 @@
 		//Let's get data from selector
 		param.text = convertData2str( data, param.separator, param.delimiter );
 
-		var posting = $.post( wgScriptPath + "/api.php", param );
+		var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
 		posting.done(function( data ) {
 			var newlocation = location.protocol + '//' + location.host + location.pathname;
 			// Go to page with no reloading (with no reload)
@@ -140,4 +141,4 @@
 		return str;
 	}
 
-}( jQuery ) );
+}( jQuery, mediaWiki ) );

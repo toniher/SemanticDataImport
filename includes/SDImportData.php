@@ -141,7 +141,7 @@ class SDImportData {
 	 * @return boolean
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageContentSaveComplete
 	 */
-	public static function saveJSONData( $wikiPage, $user, $content, $summary, $isMinor, $isWatch, $section, $flags, $revision, $status, $baseRevId, $undidRevId ) {
+	public static function saveJSONData( $wikiPage, $user, $content, $summary, $isMinor, $isWatch, $section, $flags, $revision, $status, $baseRevId, $undidRevId=null ) {
 		
 		global $wgSDImportDataPage;
 
