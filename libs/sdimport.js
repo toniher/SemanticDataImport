@@ -1,6 +1,9 @@
 /*global $ document jQuery console mw window wgScriptPath alert location */
 
-//TODO: Handle delimiter
+var tableSDImport = {};
+
+// TODO: Handle delimiter
+
 /** Load SpreadSheet **/
 (function($, mw) {
 
@@ -61,8 +64,11 @@
 				columnSorting: true
 			});
 	
+			// Let's store in global variable
+			tableSDImport[ divval ] = table;
+	
 			if ( $(this).data('edit') ) {
-				$( container ).append("<p class='smwdata-commit' data-selector='#"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+				$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 			}
 			
 			numdata = numdata + 1 ;
@@ -75,6 +81,7 @@
 	
 		var param = {};
 		var selector = $(this).attr('data-selector');
+
 		param.separator="\t";
 		param.delimiter='"';
 		
@@ -95,9 +102,8 @@
 		param.action = "sdimport";
 		param.format = "json";
 
-		console.log( $( selector ) );
-		var instance = $( selector ).handsontable('getInstance');
-		console.log( instance );
+
+		var instance = tableSDImport[ selector ];
 		var rows = instance.countRows();
 
 		var data = [];
