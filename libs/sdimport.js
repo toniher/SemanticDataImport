@@ -8,72 +8,162 @@ var tableSDImport = {};
 (function($, mw) {
 
 	$(document).ready( function() {
-	
+		
 		var readonly = true;
 		var extrarows = 0;
-	
 		var numdata = 0;
-	
-		$('.smwdata').each( function() {
-	
-			var celldata = [];
-	
-			var separator = "\t";
-			var delimiter = '"';
-	
-			if ( $(this).data('separator') ) {
-				separator = $(this).data('separator');
-			}
-	
-			if ( $(this).data('delimiter') ) {
-				delimiter = $(this).data('delimiter');
-			}
-	
-			var text = $(this).text();
-			var lines = text.split("\n");
 		
-			for ( var i = 0; i< lines.length; i++ ) {
-	
-				if ( lines[i] !== "" ) {
-					var row = lines[i].split(separator);
-					celldata.push( row );
+		var SDIJSONpage = false;
+		
+		// Detect namespace
+		// If JSON namespace
+		
+		// TODO: Handle main page namespace, alias, etc.
+		var pageTitle = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+
+		var detectTableNS = mw.config.get( "wgCanonicalNamespace" );
+		
+		var pageConfig = mw.config.get( "wgSDImportDataPage" );
+		
+		if ( pageConfig ) {
+			
+			if ( pageConfig.hasOwnProperty( detectTableNS ) ) {
+				
+				var actualNS = pageConfig[ detectTableNS ];
+				
+				if ( actualNS.hasOwnProperty( "json" ) ) {
+					
+					SDIJSONpage = actualNS.json;
 				}
-	
-			}
-	
-			var strcols = $(this).attr("data-cols");
-			var cols = strcols.split(",");
-	
-			var divval = "SMWData-"+numdata;
-			$(this).after("<div id='"+divval+"'>");
-	
-			$(this).hide();
-
-			if ( $(this).data('edit') ) {
-				readonly = false;
-			}
-
-			var container  = document.getElementById( divval );
-	
-			var table = new Handsontable( container, {
-				data: celldata,
-				readOnly: readonly,
-				minSpareRows: extrarows,
-				colHeaders: cols,
-				contextMenu: true,
-				columnSorting: true
-			});
-	
-			// Let's store in global variable
-			tableSDImport[ divval ] = table;
-	
-			if ( $(this).data('edit') ) {
-				$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 			}
 			
-			numdata = numdata + 1 ;
+		}
 
-		});
+		if ( SDIJSONpage ) {
+			
+			// Get API
+			// /w/api.php?action=query&prop=revisions&rvprop=content&format=jsonfm&formatversion=2&titles=SDImport:Test
+			
+			var param = {};
+			param.action = "query";
+			param.prop = "revisions";
+			param.rvprop = "content";
+			param.format= "json";
+			param.formatversion = 2;
+			param.titles = pageTitle;
+			
+			var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
+			posting.done(function( data ) {
+
+				// Create Handsontable from content
+				var celldata = createTableFromJSON( data );
+			
+				if ( celldata ) {
+				
+					var divval = "SMWData-"+numdata;
+					
+					// Temp TODO: Columns handling
+					var cols = null;
+					
+					// Endpoint where to add - Put as first child
+					$("#mw-content-text").prepend("<div id='"+divval+"'>");
+				
+					// TODO: Handle edit mode
+				
+					var container  = document.getElementById( divval );
+				
+					var table = new Handsontable( container, {
+						data: celldata,
+						readOnly: readonly,
+						minSpareRows: extrarows,
+						colHeaders: cols,
+						contextMenu: true,
+						columnSorting: true
+					});
+				
+					// Let's store in global variable
+					tableSDImport[ divval ] = table;
+				
+					// TODO: Handle edit
+					//if ( $(this).data('edit') ) {
+					//	$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+					//}
+					
+					numdata = numdata + 1 ;
+				
+				}
+			
+			})
+			.fail( function( data ) {
+				alert("Error!");
+			});
+				
+			
+		} else {
+	
+			$('.smwdata').each( function() {
+		
+				var celldata = [];
+		
+				var separator = "\t";
+				var delimiter = '"';
+		
+				if ( $(this).data('separator') ) {
+					separator = $(this).data('separator');
+				}
+		
+				if ( $(this).data('delimiter') ) {
+					delimiter = $(this).data('delimiter');
+				}
+		
+				var text = $(this).text();
+				var lines = text.split("\n");
+			
+				for ( var i = 0; i< lines.length; i++ ) {
+		
+					if ( lines[i] !== "" ) {
+						var row = lines[i].split(separator);
+						celldata.push( row );
+					}
+		
+				}
+		
+				var strcols = $(this).attr("data-cols");
+				var cols = strcols.split(",");
+		
+				var divval = "SMWData-"+numdata;
+				$(this).after("<div id='"+divval+"'>");
+		
+				$(this).hide();
+	
+				if ( $(this).data('edit') ) {
+					readonly = false;
+				}
+	
+				var container  = document.getElementById( divval );
+		
+				var table = new Handsontable( container, {
+					data: celldata,
+					readOnly: readonly,
+					minSpareRows: extrarows,
+					colHeaders: cols,
+					contextMenu: true,
+					columnSorting: true
+				});
+		
+				// Let's store in global variable
+				tableSDImport[ divval ] = table;
+		
+				if ( $(this).data('edit') ) {
+					$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+				}
+				
+				numdata = numdata + 1 ;
+	
+			});
+		
+		}
+
 	});
 	
 	
@@ -145,6 +235,105 @@ var tableSDImport = {};
 		}
 	
 		return str;
+	}
+	
+	
+	function createTableFromJSON( data ) {
+		
+		var tableData = null;
+		
+		if ( data ) {
+			
+			if ( data.hasOwnProperty( "query" ) ) {
+				
+				if ( data["query"].hasOwnProperty( "pages" ) ) {
+				
+					var pages = data["query"]["pages"];
+					
+					if ( pages.length > 0 ) {
+						
+						var page = pages[0]; // Let's get only first page
+						
+						if ( page && page.hasOwnProperty( "revisions" ) ) {
+							
+							var revisions = page.revisions;
+							
+							if ( revisions.length > 0 ) {
+								
+								var revision = revisions[0]; // Let's get only first rev
+								
+								if ( revision && revision.hasOwnProperty("content") && revision.hasOwnProperty("contentmodel") ) {
+									
+									var contentmodel = revision.contentmodel;
+									
+									if ( contentmodel === "json" ) { // Let's only take JSON contentmodel
+										
+										var content = revision.content;
+										
+										// Check if proper JSON
+										if ( isJSONString( content ) ) {
+											
+											var JSONcontent = JSON.parse( content );
+											
+											// Let's check if SDI JSON
+											tableData = processJSONcontent( JSONcontent );
+											
+											
+										}
+									}
+									
+								}
+							}
+							
+						}
+						
+					}
+					
+				}
+		
+			}
+			
+		}
+		
+		return tableData;
+		
+	}
+	
+	function isJSONString(str) {
+		try {
+			JSON.parse(str);
+		} catch (e) {
+			return false;
+		}
+		return true;
+	}
+	
+	function processJSONcontent( JSONcontent ) {
+		
+		var data = [];
+		
+		if ( JSONcontent.hasOwnProperty( "meta" ) ) {
+			
+			if ( JSONcontent["meta"].hasOwnProperty( "app" ) ) {
+				
+				if ( JSONcontent["meta"]["app"] === "SDI" ) {
+					
+					if ( JSONcontent.hasOwnProperty( "data" ) ) {
+						
+						if ( Array.isArray( JSONcontent["data"] ) ) {
+							
+							data = JSONcontent["data"];
+						}
+					}
+					
+				}
+				
+			}
+	
+		}
+											
+		return data;
+		
 	}
 
 }( jQuery, mediaWiki ) );

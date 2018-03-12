@@ -31,13 +31,11 @@ call_user_func( function () {
 
 	$GLOBALS['wgHooks']['ParserFirstCallInit'][] = 'SDImportParserFunction';
 	$GLOBALS['wgHooks']['PageContentSaveComplete'][] = 'SDImportData::saveJSONData';
-	
 
     $GLOBALS['wgAutoloadClasses']['SpecialSDImport'] = __DIR__ . '/includes/SDImport.special.php';
 
     # SpecialPage referencing
     $GLOBALS['wgSpecialPages']['SDImport'] = 'SpecialSDImport';
-
 
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),
@@ -51,6 +49,13 @@ call_user_func( function () {
 		),
 		'remoteExtPath' => 'SemanticDataImport'
 	);
+	
+	# Loading for domains to are JSON-based
+	$GLOBALS['wgHooks']['OutputPageBeforeHTML'][] = 'SDImportData::onOutputPageBeforeHTML';
+	
+	# Export Vars into JS
+	$GLOBALS['wgHooks']['ResourceLoaderGetConfigVars'][] = 'SDImportData::onResourceLoaderGetConfigVars';
+	
 	
 	# Example NS definition
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"] = array();

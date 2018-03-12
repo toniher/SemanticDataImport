@@ -644,5 +644,30 @@ class SDImportData {
 
 		return $status;
 	}
+	
+
+	/**
+	* @param $out OutputPage
+	* @param $text string
+	* @return $out OutputPage
+	*/
+	
+	public static function onOutputPageBeforeHTML( &$out, &$text ) {
+
+		// We add Modules
+		$out->addModules( 'ext.sdimport' );
+		
+		return $out;
+	}
+	
+	public static function onResourceLoaderGetConfigVars( &$vars ) {
+		
+		global $wgSDImportDataPage;
+
+
+		$vars['wgSDImportDataPage'] = $wgSDImportDataPage;
+
+		return true;	
+	}
 
 }
