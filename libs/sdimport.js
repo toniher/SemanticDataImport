@@ -35,6 +35,11 @@ var tableSDImport = {};
 					
 					SDIJSONpage = actualNS.json;
 				}
+				
+				if ( actualNS.hasOwnProperty( "edit" ) ) {
+					
+					readonly = ! actualNS.edit; // Opposite of edit
+				}
 			}
 			
 		}
@@ -84,10 +89,9 @@ var tableSDImport = {};
 					// Let's store in global variable
 					tableSDImport[ divval ] = table;
 				
-					// TODO: Handle edit
-					//if ( $(this).data('edit') ) {
-					//	$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
-					//}
+					if ( ! readonly ) {
+						$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+					}
 					
 					numdata = numdata + 1 ;
 				
@@ -217,6 +221,51 @@ var tableSDImport = {};
 		});
 	});
 	
+	$( document ).on( "click", ".smwdata-commit-json", function() {
+
+		var param = {};
+		var selector = $(this).attr('data-selector');
+
+		var instance = tableSDImport[ selector ];
+
+		var rows = instance.countRows();
+
+		var data = [];
+
+		// Push
+		for ( var r = 0; r < rows; r = r + 1 ) {
+			data.push( instance.getDataAtRow( r ) );
+		}
+		
+		// TODO: Handle headers
+		
+		var strJSON = prepareStructForJSON( data );
+		
+		if ( strJSON ) {
+		
+			param.title = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+		
+			param.action = "sdimport";
+			param.format = "json";
+			param.model = "json";
+			param.overwrite = true; // By default, let's overwrite content
+		
+			param.text = strJSON;
+			
+			var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
+			posting.done(function( data ) {
+				var newlocation = location.protocol + '//' + location.host + location.pathname;
+				// Go to page with no reloading (with no reload)
+				window.setTimeout( window.location.href = newlocation, 1500);
+			})
+			.fail( function( data ) {
+				alert("Error!");
+			});
+				
+		}
+		
+	
+	});
 	
 	/** @param Array
 	* return string
@@ -334,6 +383,28 @@ var tableSDImport = {};
 											
 		return data;
 		
+	}
+	
+	function prepareStructForJSON( data ) {
+		
+		var strJSON = null;
+		
+		if ( data ) {
+			
+			var obj = {};
+			
+			// TODO: this may change in future versions
+			obj.meta = {};
+			obj.meta.app = "SDI";
+			obj.meta.version = 0.1;
+			
+			obj.data = data;
+			
+			strJSON = JSON.stringify( obj );
+		}
+		
+		
+		return strJSON;
 	}
 
 }( jQuery, mediaWiki ) );

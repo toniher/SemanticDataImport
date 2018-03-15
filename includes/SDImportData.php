@@ -645,6 +645,29 @@ class SDImportData {
 		return $status;
 	}
 	
+	
+	/** Import of JSON into a page, let's say, at commit */
+	/**
+	* @text Bulk data text
+	* @pagetitle Title of the page
+	* @return status of update
+	*/
+	public static function importJSON( $text, $pagetitle, $overwrite=false ) {
+		
+		$title = Title::newFromText( $pagetitle );
+		$wikipage = WikiPage::factory( $title );
+		
+		// TODO: Check if exists
+		
+		// TODO: Check compatibility. Only if newer versions of MW
+		if ( method_exists ( $wikipage, "getContent" ) ) {
+
+			// TODO, put a content model, import, etc.
+		
+		} 
+		
+	}
+	
 
 	/**
 	* @param $out OutputPage

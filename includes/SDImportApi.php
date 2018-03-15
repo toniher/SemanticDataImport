@@ -5,8 +5,22 @@ class SDImportApi extends ApiBase {
 
 		$params = $this->extractRequestParams();
 
-		$status = SDImportData::importConf( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
-
+		$jsonmodel = false;
+		
+		if ( array_key_exists( "model", $params ) ) {
+		
+			if ( $params["mode"] === "json" ) {
+				$jsonmodel = true;
+			}
+					
+		}
+		
+		if ( $jsonmodel ) {
+			$status = SDImportData::importJSON( $params['text'], $params['title'], $params['overwrite'] );
+		} else {
+			$status = SDImportData::importConf( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
+		}
+		
 		$this->getResult()->addValue( null, $this->getModuleName(), array ( 'status' => $status ) );
 
 		return true;
@@ -32,6 +46,14 @@ class SDImportApi extends ApiBase {
 			),
 			'num' => array(
 				ApiBase::PARAM_TYPE => 'integer',
+				ApiBase::PARAM_REQUIRED => false
+			),
+			'model' => array(
+				ApiBase::PARAM_TYPE => 'string',
+				ApiBase::PARAM_REQUIRED => false
+			),
+			'overwrite' => array(
+				ApiBase::PARAM_TYPE => 'boolean',
 				ApiBase::PARAM_REQUIRED => false
 			)
 		);
