@@ -82,7 +82,9 @@ class SDImportData {
 							if ( isset( $post[ $fieldcount ] ) && !empty( $post[ $fieldcount ] ) ) {
 								$postxt = "@".$post[ $fieldcount ]; // @ for post
 							}
-							$struct[ $fields[ $fieldcount ] ] =  $pretxt.$field.$postxt;
+							if ( array_key_exists( $fieldcount, $fields ) ) {
+								$struct[ $fields[ $fieldcount ] ] =  $pretxt.$field.$postxt;
+							}
 						}
 						$fieldcount++;
 					}
@@ -200,7 +202,10 @@ class SDImportData {
 											if ( isset( $post[ $fieldcount ] ) && !empty( $post[ $fieldcount ] ) ) {
 												$postxt = "@".$post[ $fieldcount ]; // @ for post
 											}
-											$struct[ $fields[ $fieldcount ] ] =  $pretxt.$field.$postxt;
+											
+											if ( array_key_exists( $fieldcount, $fields ) ) {
+												$struct[ $fields[ $fieldcount ] ] =  $pretxt.$field.$postxt;
+											}
 										}
 										$fieldcount++;
 									}
