@@ -173,6 +173,7 @@ class SpecialSDImport extends SpecialPage {
 				$params["separator"] = $separator;
 				$params["delimiter"] = $delimiter;
 				$params["json"] = $jsonContent;
+				$params["namespace"] = $formData['namespace'];
 				
 				$reader = new SDImportReader( $params );
 				$status = $reader->loadFile( $pathtempfile );

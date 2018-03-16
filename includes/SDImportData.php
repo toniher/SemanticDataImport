@@ -598,6 +598,9 @@ class SDImportData {
 
 		// Retrievet text of page
 		// Back-compatibility, just in case
+		
+		// TODO: Handle if creation of page
+		
 		if ( method_exists ( $wikipage, "getContent" ) ) {
 			$mainContent = $wikipage->getContent();
 			$mainText = $mainContent->getNativeData();
