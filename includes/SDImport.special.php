@@ -170,7 +170,7 @@ class SpecialSDImport extends SpecialPage {
 
 				$params = array();
 				$params["format"] = "csv";
-				$params["separator"] = $delimiter;
+				$params["separator"] = $separator;
 				$params["delimiter"] = $delimiter;
 				$params["json"] = $jsonContent;
 				
