@@ -9,7 +9,7 @@ class SDImportApi extends ApiBase {
 		
 		if ( array_key_exists( "model", $params ) ) {
 		
-			if ( $params["mode"] === "json" ) {
+			if ( $params["model"] === "json" ) {
 				$jsonmodel = true;
 			}
 					

@@ -253,7 +253,7 @@ var tableSDImport = {};
 			param.text = strJSON;
 			
 			var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
-			posting.done(function( data ) {
+			posting.done(function( data ) {		
 				var newlocation = location.protocol + '//' + location.host + location.pathname;
 				// Go to page with no reloading (with no reload)
 				window.setTimeout( window.location.href = newlocation, 1500);

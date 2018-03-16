@@ -596,50 +596,65 @@ class SDImportData {
 		if ( method_exists ( $wikipage, "getContent" ) ) {
 			$mainContent = $wikipage->getContent();
 			$mainText = $mainContent->getNativeData();
+			$contentModel = $wikipage->getContentModel();
+			
+			if ( ! $contentModel ) {
+				$contentModel = "wikitext";
+			}
+			
 		} else {
 			$mainText = $wikipage->getText();
-		}
-
-		// Get matches
-		$page_parts = preg_split( "/(<smwdata.*?>)/", $mainText, -1, PREG_SPLIT_DELIM_CAPTURE );
-
-		$count = 0;
-		$outcome = array();
-
-		foreach ( $page_parts as $page_part ) {
-
-			if ( preg_match( "/<smwdata/", $page_part ) ) {
-				$count = $count + 1;
-			} else {
-				if ( $num == $count - 1 ) {
-					if ( preg_match( "/<\/smwdata/", $page_part ) ) {
-
-						$in_parts = preg_split( "/(<\/smwdata.*?>)/", $page_part, -1, PREG_SPLIT_DELIM_CAPTURE );
-						$in_parts[0] = "\n".$text."\n";
-						$page_part = implode( "", $in_parts );
-					}
-				}
-			}
-
-			array_push( $outcome, $page_part );
+			$contentModel = "wikitext";
 		}
 
 		$status = 0;
-
-		// If stuff
-		if ( count( $outcome ) > 0 ) {
-
-			$tableText = implode( "", $outcome );
-			
-			// Submit content
-			// Back-compatibility, just in case
-			if ( method_exists ( $wikipage, "doEditContent" ) ) {
-				$content = new WikiTextContent( $tableText );
-				$status = $wikipage->doEditContent( $content, "Updating content" );
-			} else {
-				$status = $wikipage->doEdit( $tableText, "Updating content" );
+		
+		# Allow only in wikitext context
+		if ( $contentModel === "wikitext" ) {
+		
+			// Get matches
+			$page_parts = preg_split( "/(<smwdata.*?>)/", $mainText, -1, PREG_SPLIT_DELIM_CAPTURE );
+	
+			$count = 0;
+			$outcome = array();
+	
+			foreach ( $page_parts as $page_part ) {
+	
+				if ( preg_match( "/<smwdata/", $page_part ) ) {
+					$count = $count + 1;
+				} else {
+					if ( $num == $count - 1 ) {
+						if ( preg_match( "/<\/smwdata/", $page_part ) ) {
+	
+							$in_parts = preg_split( "/(<\/smwdata.*?>)/", $page_part, -1, PREG_SPLIT_DELIM_CAPTURE );
+							$in_parts[0] = "\n".$text."\n";
+							$page_part = implode( "", $in_parts );
+						}
+					}
+				}
+	
+				array_push( $outcome, $page_part );
 			}
-
+	
+	
+			// If stuff
+			if ( count( $outcome ) > 0 ) {
+	
+				$tableText = implode( "", $outcome );
+				
+				// Submit content
+				// Back-compatibility, just in case
+				if ( method_exists ( $wikipage, "doEditContent" ) ) {
+					$content = new WikiTextContent( $tableText );
+					$status = $wikipage->doEditContent( $content, "Updating content" );
+				} else {
+					$status = $wikipage->doEdit( $tableText, "Updating content" );
+				}
+	
+			}
+			
+			// TODO: Handle status value if not normal one
+		
 		}
 
 		return $status;
@@ -657,14 +672,36 @@ class SDImportData {
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
 		
-		// TODO: Check if exists
+		$goahead = true;
 		
-		// TODO: Check compatibility. Only if newer versions of MW
-		if ( method_exists ( $wikipage, "getContent" ) ) {
+		$status = false;
+		
+		// Check if exists
+		if ( $wikipage->exists() &&  ! $overwrite ) {
+			$goahead = false;
+		}
+		
+		if ( $goahead ) {
+			
+			// Check compatibility. Only if newer versions of MW
+			if ( method_exists ( $wikipage, "getContent" ) ) {
+	
+				$contentModel = $wikipage->getContentModel();
+				
+				if ( $contentModel === "json" || ! $wikipage->exists() ) {
+					
+					$content = new JSONContent( $text );
 
-			// TODO, put a content model, import, etc.
+					$status = $wikipage->doEditContent( $content, "Updating content" );
+					
+					// TODO: Handle status value if not normal one
+
+				}
+			}
+			
+		}
 		
-		} 
+		return $status;
 		
 	}
 	
