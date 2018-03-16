@@ -33,6 +33,7 @@ call_user_func( function () {
 	$GLOBALS['wgHooks']['PageContentSaveComplete'][] = 'SDImportData::saveJSONData';
 
     $GLOBALS['wgAutoloadClasses']['SpecialSDImport'] = __DIR__ . '/includes/SDImport.special.php';
+	$GLOBALS['wgAutoloadClasses']['SDImportReader'] = __DIR__ . '/includes/SDImportReader.php';
 
     # SpecialPage referencing
     $GLOBALS['wgSpecialPages']['SDImport'] = 'SpecialSDImport';
@@ -56,6 +57,8 @@ call_user_func( function () {
 	# Export Vars into JS
 	$GLOBALS['wgHooks']['ResourceLoaderGetConfigVars'][] = 'SDImportData::onResourceLoaderGetConfigVars';
 	
+	
+	$GLOBALS['$wgSDImportDataPageFileLimitSize'] = '1073741824';
 	
 	# Example NS definition
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"] = array();

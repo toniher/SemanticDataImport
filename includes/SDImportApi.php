@@ -18,7 +18,7 @@ class SDImportApi extends ApiBase {
 		if ( $jsonmodel ) {
 			$status = SDImportData::importJSON( $params['text'], $params['title'], $params['overwrite'] );
 		} else {
-			$status = SDImportData::importConf( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
+			$status = SDImportData::importWikiText( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
 		}
 		
 		$this->getResult()->addValue( null, $this->getModuleName(), array ( 'status' => $status ) );

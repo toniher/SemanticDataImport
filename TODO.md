@@ -2,9 +2,6 @@
 
 Stuff to be implemented
 
-* Commit system via jQuery handsontable (if editable)
-    * Implementation in wikitext content model version
-    * Implementation in JSON content model version
 * Import data interfaces (Special Pages)
     * Selection from configuration
         * Allow change separator, delimiter and ignore first row
@@ -12,6 +9,6 @@ Stuff to be implemented
     * Check if CSV compatible with configurarion 
 	* Overwrite: yes, no, append
     * Job queue processing
+* Import data interfaces (Maintenance script)
 * Allow SD Import capabilites to be called from other extensions
     * Design classes so that this is allowed
-* Upgrade handsontable

@@ -561,7 +561,7 @@ class SDImportData {
 	}
 
 
-	/** Import of Configuration, let's say, at commit */
+	/** Import of Wikitext, let's say, at commit */
 	/**
 	* @text Bulk data text
 	* @pagetitle Title of the page
@@ -570,7 +570,7 @@ class SDImportData {
 	* @num Occurrence in page. If only one, then 0
 	* @return status of update
 	*/
-	public static function importConf( $text, $pagetitle, $separator=NULL, $delimiter=NULL, $num=0 ) {
+	public static function importWikiText( $text, $pagetitle, $separator=NULL, $delimiter=NULL, $num=0 ) {
 
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
@@ -666,7 +666,7 @@ class SDImportData {
 	}
 	
 	
-	/** Import of JSON into a page, let's say, at commit */
+	/** Import of JSON into a page, let's say, at commit **/
 	/**
 	* @text Bulk data text
 	* @pagetitle Title of the page
@@ -708,6 +708,29 @@ class SDImportData {
 		
 		return $status;
 		
+	}
+	
+	
+	public static function prepareStructForJSON( $data ) {
+		
+		$strJSON = "";
+		
+		if ( $data ) {
+			
+			$obj = array( );
+			
+			// TODO: this may change in future versions
+			$obj["meta"] = array();
+			$obj["meta"]["app"] = "SDI";
+			$obj["meta"]["version"] = 0.1;
+			
+			$obj["data"] = $data;
+			
+			$strJSON = json_encode( $obj );
+		}
+		
+		
+		return $strJSON;
 	}
 	
 
