@@ -575,6 +575,10 @@ class SDImportData {
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
 		
+		# Default cases
+		$newpage = false;
+		$contentModel = "wikitext";
+		
 		$extraInfo = "";
 
 		$ns = $title->getSubjectNsText();
@@ -600,55 +604,75 @@ class SDImportData {
 		// Back-compatibility, just in case
 		
 		// TODO: Handle if creation of page
+		if ( ! $wikipage->exists() ) {
+			$newpage = true;
+		}
 		
-		if ( method_exists ( $wikipage, "getContent" ) ) {
-			$mainContent = $wikipage->getContent();
-			$mainText = $mainContent->getNativeData();
-			$contentModel = $wikipage->getContentModel();
-			
-			if ( ! $contentModel ) {
+		if ( ! $newpage ) {
+		
+			if ( method_exists ( $wikipage, "getContent" ) ) {
+				$mainContent = $wikipage->getContent();
+				$mainText = $mainContent->getNativeData();
+				$contentModel = $wikipage->getContentModel();
+				
+				if ( ! $contentModel ) {
+					$contentModel = "wikitext";
+				}
+				
+			} else {
+				$mainText = $wikipage->getText();
 				$contentModel = "wikitext";
 			}
-			
-		} else {
-			$mainText = $wikipage->getText();
-			$contentModel = "wikitext";
+		
 		}
 
 		$status = 0;
+		$tableText = "";
 		
 		# Allow only in wikitext context
 		if ( $contentModel === "wikitext" ) {
 		
-			// Get matches
-			$page_parts = preg_split( "/(<smwdata.*?>)/", $mainText, -1, PREG_SPLIT_DELIM_CAPTURE );
-	
-			$count = 0;
-			$outcome = array();
-	
-			foreach ( $page_parts as $page_part ) {
-	
-				if ( preg_match( "/<smwdata/", $page_part ) ) {
-					$count = $count + 1;
-				} else {
-					if ( $num == $count - 1 ) {
-						if ( preg_match( "/<\/smwdata/", $page_part ) ) {
-	
-							$in_parts = preg_split( "/(<\/smwdata.*?>)/", $page_part, -1, PREG_SPLIT_DELIM_CAPTURE );
-							$in_parts[0] = "\n".$text."\n";
-							$page_part = implode( "", $in_parts );
+		
+			if ( ! $newpage ) {
+				
+				// Get matches
+				$page_parts = preg_split( "/(<smwdata.*?>)/", $mainText, -1, PREG_SPLIT_DELIM_CAPTURE );
+		
+				$count = 0;
+				$outcome = array();
+		
+				foreach ( $page_parts as $page_part ) {
+		
+					if ( preg_match( "/<smwdata/", $page_part ) ) {
+						$count = $count + 1;
+					} else {
+						if ( $num == $count - 1 ) {
+							if ( preg_match( "/<\/smwdata/", $page_part ) ) {
+		
+								$in_parts = preg_split( "/(<\/smwdata.*?>)/", $page_part, -1, PREG_SPLIT_DELIM_CAPTURE );
+								$in_parts[0] = "\n".$text."\n";
+								$page_part = implode( "", $in_parts );
+							}
 						}
 					}
+		
+					array_push( $outcome, $page_part );
 				}
+				
+				// If stuff
+				if ( count( $outcome ) > 0 ) {
 	
-				array_push( $outcome, $page_part );
+					$tableText = implode( "", $outcome );			
+				}
+			
+			} else {
+				
+				$tableText = "<smwdata>".$text."</smwdata>";
+				
 			}
 	
 	
-			// If stuff
-			if ( count( $outcome ) > 0 ) {
-	
-				$tableText = implode( "", $outcome );
+			if ( ! empty( $tableText ) ) {
 				
 				// Submit content
 				// Back-compatibility, just in case
