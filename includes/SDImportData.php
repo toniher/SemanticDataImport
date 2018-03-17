@@ -172,7 +172,7 @@ class SDImportData {
 							$refs = self::getSelector( $args, $nsRepo, "ref" ); // Hash
 							$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
 							$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
-							
+
 		
 							// TODO: Should we add props here if they don't exist?
 		
@@ -359,13 +359,17 @@ class SDImportData {
 	* @return variable (depending on case)
 	*/
 	private static function getSelector( $first, $second, $key ) {
-
+		
 		if ( key_exists( $key, $first ) ) {
 			// Here process
 			$array = array();
 
-			$keyvals = explode( ",", $first[ $key ] );
-
+			if ( is_array( $first[ $key ] ) ) {
+				$keyvals = $first[ $key ];
+			} else {
+				$keyvals = explode( ",", $first[ $key ] );
+			}
+			
 			if ( count( $keyvals ) < 2 ) {
 				// If => ergo hash
 				$keyhvals = explode( "#", $keyvals[0], 2 );
@@ -476,19 +480,16 @@ class SDImportData {
 			if ( array_key_exists( "meta", $jsonObj ) ) {
 				
 				$meta = $jsonObj["meta"];
-
+				
 				if ( array_key_exists( "app", $meta ) ) {
 					
 					if ( $meta["app"] === "SDI" ) {
 						$SDIJSON = true;
 					}
-				}
-				
-				if ( array_key_exists( "version", $meta ) ) {
-
-					$args["version"] = $meta["version"];
 					
 				}
+				
+				$args = $meta;
 				
 				# TODO: Addding more custom fields to args
 				
@@ -738,7 +739,7 @@ class SDImportData {
 	}
 	
 	
-	public static function prepareStructForJSON( $data ) {
+	public static function prepareStructForJSON( $meta, $data ) {
 		
 		$strJSON = "";
 		
@@ -750,6 +751,13 @@ class SDImportData {
 			$obj["meta"] = array();
 			$obj["meta"]["app"] = "SDI";
 			$obj["meta"]["version"] = 0.1;
+			
+			if ( $meta ) {
+				
+				if ( array_key_exists( "rowfields", $meta ) ) {
+					$obj["meta"]["rowfields"] = $meta["rowfields"];
+				}
+			}
 			
 			$obj["data"] = $data;
 			

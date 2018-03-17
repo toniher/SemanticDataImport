@@ -238,8 +238,9 @@ var tableSDImport = {};
 		}
 		
 		// TODO: Handle headers
+		var meta = null;
 		
-		var strJSON = prepareStructForJSON( data );
+		var strJSON = prepareStructForJSON( meta, data );
 		
 		if ( strJSON ) {
 		
@@ -385,7 +386,7 @@ var tableSDImport = {};
 		
 	}
 	
-	function prepareStructForJSON( data ) {
+	function prepareStructForJSON( meta, data ) {
 		
 		var strJSON = null;
 		
@@ -397,6 +398,13 @@ var tableSDImport = {};
 			obj.meta = {};
 			obj.meta.app = "SDI";
 			obj.meta.version = 0.1;
+
+			if ( meta ) {
+				
+				if ( meta.hasOwnProperty( "rowfields" ) ) {
+					obj.meta.rowfields = meta.rowfields;
+				}
+			}
 			
 			obj.data = data;
 			

@@ -2,7 +2,7 @@
 
 Stuff to be implemented
 
-* Ensure column mappings in meta information of JSON input
+* Create properties if they do not exist
 * Import data interfaces (Special Pages)
     * Selection from configuration
         * Allow change separator, delimiter and ignore first row

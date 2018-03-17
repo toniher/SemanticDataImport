@@ -36,6 +36,7 @@ class SDImportReader {
 	public function loadFile( $file ) {
 		
 		$status = false;
+		$meta = false;
 		
 		if ( $this->format === "csv" ) {
 			
@@ -64,7 +65,7 @@ class SDImportReader {
 				
 				if ( $this->json ) {
 					
-					$status = SDImportData::importJSON( SDImportData::prepareStructForJSON( $data ), $this->formatTitle( $title, $this->ns ) );
+					$status = SDImportData::importJSON( SDImportData::prepareStructForJSON( $meta, $data ), $this->formatTitle( $title, $this->ns ) );
 
 				} else {
 				
