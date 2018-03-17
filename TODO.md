@@ -2,6 +2,7 @@
 
 Stuff to be implemented
 
+* Ensure column mappings in meta information of JSON input
 * Import data interfaces (Special Pages)
     * Selection from configuration
         * Allow change separator, delimiter and ignore first row
