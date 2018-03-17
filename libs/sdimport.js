@@ -63,12 +63,17 @@ var tableSDImport = {};
 				// Create Handsontable from content
 				var celldata = createTableFromJSON( data );
 			
-				if ( celldata ) {
+				if ( celldata && celldata.hasOwnProperty( "data" ) ) {
 				
 					var divval = "SMWData-"+numdata;
 					
 					// Temp TODO: Columns handling
 					var cols = null;
+					if ( celldata.hasOwnProperty("meta") ) {
+						if ( celldata.meta.hasOwnProperty("rowfields") ) {
+							cols = celldata.meta.rowfields;
+						}
+					}
 					
 					// Endpoint where to add - Put as first child
 					$("#mw-content-text").prepend("<div id='"+divval+"'>");
@@ -78,7 +83,7 @@ var tableSDImport = {};
 					var container  = document.getElementById( divval );
 				
 					var table = new Handsontable( container, {
-						data: celldata,
+						data: celldata.data,
 						readOnly: readonly,
 						minSpareRows: extrarows,
 						colHeaders: cols,
@@ -237,8 +242,19 @@ var tableSDImport = {};
 			data.push( instance.getDataAtRow( r ) );
 		}
 		
+		var cols = instance.getColHeader();
+		
 		// TODO: Handle headers
 		var meta = null;
+		
+		if ( cols ) {
+			
+			if ( cols.length > 0 ) {
+				
+				meta = {};
+				meta.rowfields = cols;
+			}
+		}
 		
 		var strJSON = prepareStructForJSON( meta, data );
 		
@@ -360,7 +376,7 @@ var tableSDImport = {};
 	
 	function processJSONcontent( JSONcontent ) {
 		
-		var data = [];
+		var tableData = {};
 		
 		if ( JSONcontent.hasOwnProperty( "meta" ) ) {
 			
@@ -372,9 +388,11 @@ var tableSDImport = {};
 						
 						if ( Array.isArray( JSONcontent["data"] ) ) {
 							
-							data = JSONcontent["data"];
+							tableData.data = JSONcontent["data"];
 						}
 					}
+					
+					tableData.meta = JSONcontent["meta"];
 					
 				}
 				
@@ -382,7 +400,7 @@ var tableSDImport = {};
 	
 		}
 											
-		return data;
+		return tableData;
 		
 	}
 	
