@@ -66,3 +66,17 @@ Keys defined in JSON schema have precedence in front of what is defined in names
 		]
 	}
 ```
+
+## Useful extensions
+
+If we enable ```$GLOBALS["wgSDImportDataPage"]["SDImport"]["edit"] = true;``` in LocalSettings.php we allow content to be modified by a spreadsheet-like interface.
+
+However we might be interested to edit in another way. For this we recommend to install 2 extensions:
+
+* [WikiEditor](https://www.mediawiki.org/wiki/Extension:WikiEditor)
+* [CodeEditor](https://www.mediawiki.org/wiki/Extension:CodeEditor)
+
+
+```$wgDefaultUserOptions['usebetatoolbar'] = 1; // user option provided by WikiEditor extension```
+
+
