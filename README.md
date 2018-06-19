@@ -44,6 +44,8 @@ At the time of writing:
 
 ## JSON schema
 
+Keys defined in JSON schema have precedence in front of what is defined in namespace configuration.
+
 ```json
 	{
 		"meta": {
