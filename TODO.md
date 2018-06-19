@@ -8,6 +8,7 @@ Stuff to be implemented
         * Allow change separator, delimiter and ignore first row
     * Check if CSV compatible with configuration 
 	* Overwrite: yes, no, append
+* Check ref property and any other to be added by default
 * Import data interfaces (Maintenance script)
 * Job queue processing
 * Allow SD Import capabilites to be called from other extensions
