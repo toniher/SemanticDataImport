@@ -30,7 +30,7 @@ At the time of writting, mappings of CSV columns against Semantic MediaWiki prop
 	$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
 ```
 
-## SDImport interface
+## SDImport interface
 
 There is a preliminary SDImport Special Page (```Special:SDImport```) that simplifies uploading content (especially for JSON pages)
 
@@ -42,7 +42,7 @@ At the time of writing:
 * Rest of the columns, according to rowfields values...
 
 
-## JSON schema
+## JSON schema
 
 Keys defined in JSON schema have precedence in front of what is defined in namespace configuration.
 
