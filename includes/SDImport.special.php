@@ -94,6 +94,8 @@ class SpecialSDImport extends SpecialPage {
 		$htmlForm->show(); # Displaying the form
 		$wgOut->addHTML( "</div>" );
 		$wgOut->addHTML( "<div id='sdpreview' class='sdimport_section'></div>" );
+		$wgOut->addHTML( "<div id='example' class='hot handsontable htColumnHeaders'></div>");
+
 	
 	}
 	
