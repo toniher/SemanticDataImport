@@ -40,8 +40,8 @@ call_user_func( function () {
 
 	$GLOBALS['wgResourceModules']['ext.sdimport'] = array(
 		'localBasePath' => dirname( __FILE__ ),
-		'scripts' => array( 'libs/handsontable/handsontable.full.js', 'libs/sdimport.js' ),
-		'styles' => array( 'libs/handsontable/handsontable.full.css', 'libs/sdimport.less' ),
+		'scripts' => array( 'libs/handsontable/handsontable.full.js', 'libs/sdimport.js', 'libs/sdimport.special.js' , 'libs/jquery.csv.min.js'),
+		'styles' => array( 'libs/handsontable/handsontable.full.css', 'libs/sdimport.less', 'libs/sdimport.special.css' ),
 		'dependencies' => array(
 			'mediawiki.jqueryMsg',
 		),
