@@ -1,9 +1,31 @@
 //if click botton fileupload
-$( "input[name=wpfileupload]" ).change( function( event )
+$( "input[name=wpfileupload]").change( function( event )
 {
 	//save data botton upload file into input variable
 	let input = $( this ).get( 0 );
 	//console.log(input);
+	csvPreview(input);
+});
+
+$( "#mw-input-wpdelimiter" ).change( function( event ){
+	
+	let input = $( "input[name=wpfileupload]" ).get( 0 );
+	csvPreview( input );
+});
+$( "#mw-input-wpseparator" ).change( function( event ){
+	
+	let input = $( "input[name=wpfileupload]" ).get( 0 );
+	csvPreview( input );
+
+});
+$( "#mw-input-wpnamespace" ).change( function( event ){
+	
+	let input = $( "input[name=wpfileupload]" ).get( 0 );
+	csvPreview( input );
+});
+//csv preview table function
+function csvPreview(input)
+{
 	//Save filename with extension into variable
     var filePath = input.value;
  	//Initializate aviable extensions
@@ -14,7 +36,7 @@ $( "input[name=wpfileupload]" ).change( function( event )
     	//This alert informs user the extension error
         alert('Please upload file having extensions .txt/.csv/ only.');
         fileInput.value = '';
-        //returns alse
+        //returns false
         return false;
     }
     //If extension is aviable
@@ -36,7 +58,7 @@ $( "input[name=wpfileupload]" ).change( function( event )
 				{
 					//if this file is readable
 					if ( fev.target.readyState == FileReader.DONE ) 
-					{ // DONE == 2
+					{ 
 						//console.log( "LOADED!");
 						//onsole.log( fev.target.result );
 						//check if the file is empty
@@ -46,96 +68,61 @@ $( "input[name=wpfileupload]" ).change( function( event )
 						    let delimiter = document.getElementById("mw-input-wpdelimiter").value;
 						    //saves the reading of the file in a variable
 							let resu = fev.target.result ;
-							//$("#sdpreview").append(resu);
-							//Delimiter function
-							var normalize = (function() 
-							{
-							  	var to   = " ", mapping = {};
-							 
-							  	for(var i = 0, j = delimiter.length; i < j; i++ )
-							    mapping[ delimiter.charAt( i ) ] = to.charAt( i );
-							 
-							 	return function( str ) 
-							  	{
-							      	var ret = [];
-							      	for( var i = 0, j = str.length; i < j; i++ ) 
-							      	{
-							          	var c = str.charAt( i );
-							          	if( mapping.hasOwnProperty( str.charAt( i ) ) )
-							              	ret.push( mapping[ c ] );
-							          	else
-							              	ret.push( c );
-							      	}      
-							      return ret.join( '' );
-							  	}
-							})();
-							//save the result of the delimiter function in a variable
-							resu=normalize(resu);
 							//console.log(resu);
-							//
-							var allRows = resu.split(/\r?\n|\r/),container1 = document.getElementById('example1'),hot1;
-							console.log(allRows);
-							hot1 = new Handsontable(container1, {
-							    data: allRows,
-							    //startRows: allRows.length,
-							    //startCols: allRows.length,
-							    colHeaders: true,
-							    minSpareRows: 1
-							  });
-							/*var table = '<table id="table1">';
-							for (var singleRow = 0; singleRow < allRows.length; singleRow++) 
-							{
-							    if (singleRow === 0) 
-							    {
-							      	table += '<thead id="table1">';
-							      	table += '<tr id="table1">';
-							    } 
-							    else 
-							    {
-							      	table += '<tr>';
-							    }
-							    let separator = document.getElementById("mw-input-wpseparator").value;
-							    //console.log(separator);
-							    var rowCells = allRows[singleRow].split(separator);
-							    console.log(rowCells,"fd");
+							//saves the parameter selected in the form in the variable
+							let namespace = document.getElementById("mw-input-wpnamespace").value;
+							//saves the separator selected in the form in the variable
+							let separator = document.getElementById("mw-input-wpseparator").value;
 
-							    for (var rowCell = 0; rowCell < rowCells.length; rowCell++) 
-							    {
-							      	if (singleRow === 0) 
-							      	{
-							        	table += '<th id="table1">';
-							        	table += rowCells[rowCell];
-							        	table += '</th>';
-							      	}	 
-							      	else 
-							      	{
-							        	table += '<td id="table1">';
-							        	table += rowCells[rowCell];
-							        	table += '</td>';
-							      	}
-							    }
-							    if (singleRow === 0) 
-							    {
-							      	table += '</tr>';
-							      	table += '</thead>';
-							      	table += '<tbody>';
-							    } 
-							    else 
-							    {
-							      	table += '</tr>';
-							    }
-							} 
-						    table += '</tbody>';
-					   	    table += '</table>';
-					   	    $("#sdpreview").empty();
-							$("#sdpreview").append(table);
-							//console.log(rowCells[rowCell]);*/
+							if ( separator === "{TAB}" ) {
+								separator = "\t";
+							}
+							//converts the text into an array and separates it by delimiter and separator, finally saves it in a variable
+							var resultado = $.csv.toArrays( resu, { separator: separator, delimiter: delimiter } ),container1 = document.getElementById('sdpreview'),hot1;
+							//empty the div to add the new table
+							$("#sdpreview").empty();
+					    	//console.log(resultado);
+							//console.log(allRows);
+							if ( namespace === "SDImport" ) 
+							{
+								var parameters = mw.config.get( "wgSDImportDataPage" );
+								var parameter = parameters.SDImport.rowfields;
+								parameter.push(parameters.SDImport.rowobject);
+							}
+							if ( namespace === "JSONData" ) 
+							{
+								var parameters = mw.config.get( "wgSDImportDataPage" );
+								var parameter = parameters.JSONData.rowfields;
+								parameter.push(parameters.JSONData.rowobject);
+							}
+							if ( namespace === "" ) 
+							{
+								var parameter = true;
+							}
+							//parameter.push();
+							//console.log(parameter);
+							//generates a table with the added variable
+							hot1 = new Handsontable(container1, 
+							{
+								//data to fill the table
+							    data: resultado,
+							    //header of the table, automatic (a, b, c ..)
+							    colHeaders: parameter,
+							    //
+							    rowHeaders: true,
+							    // adds empty rows to the data source and also removes excessive rows
+							    minSpareRows: 0,
+							    readOnly: true
+							});
 						}
+						//If the file length is less than 0, the file is empty and shows an error message
 						else
 						{
+							//alert message error
 							alert("Error, empty file!");
 						}
 					}
+					//if the file is not read correctly, it shows an alert with a message of error
 					else
 					{
 						alert("Error");
@@ -145,4 +132,4 @@ $( "input[name=wpfileupload]" ).change( function( event )
 			}
 		}
 	}
-});
+}

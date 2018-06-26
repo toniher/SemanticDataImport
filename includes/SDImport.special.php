@@ -59,7 +59,7 @@ class SpecialSDImport extends SpecialPage {
 				'section' => 'upload',
 				'type' => 'select',
 				'label' => 'Separator',
-				'options' => array( "{TAB}" => "{TAB}", "," => ",", ";" => ";" )
+				'options' => array(  "," => ",","{TAB}" => "{TAB}", ";" => ";" )
 			),
 			'delimiter' => array(
 				'section' => 'upload',
@@ -93,10 +93,8 @@ class SpecialSDImport extends SpecialPage {
 		$wgOut->addHTML( "<div id='sdform' class='sdimport_section'>" );
 		$htmlForm->show(); # Displaying the form
 		$wgOut->addHTML( "</div>" );
-		$wgOut->addHTML( "<div id='sdpreview' class='sdimport_section'></div>" );
-		$wgOut->addHTML( "<div id='example1' class='hot handsontable htColumnHeaders'></div>");
-
-	
+		$wgOut->addHTML( "<div id='sdpreview' class='hot handsontable htColumnHeaders sdimport_section'></div>" );
+		//$wgOut->addHTML( "<div id='sdpreview' class='hot handsontable htColumnHeaders'></div>");
 	}
 	
 	
