@@ -72,6 +72,7 @@ call_user_func( function () {
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["prefields"] = array( "", "" );
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["postfields"] = array( "", "" );
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["json"] = false; # Whether content is stored directly in JSON
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["single"] = false; #Whether to store straight properties-values, but not Subobject (rowobject is ignored)
 	#define("NS_SDImport", 2000);
 	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
 	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
