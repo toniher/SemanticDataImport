@@ -244,13 +244,13 @@ var tableSDImport = {};
 		
 		var cols = instance.getColHeader();
 		
-		// TODO: Handle headers
+		// TODO: Handle at least rowobject and single mode as well
 		var meta = null;
 		
 		if ( cols ) {
 			
-			if ( cols.length > 0 ) {
-				
+			if ( cols.length > 0 && ! cols.every( el => el === null ) ) {
+
 				meta = {};
 				meta.rowfields = cols;
 			}
