@@ -215,7 +215,7 @@ class SDImportData {
 
 									if ( count( array_keys( $struct ) ) > 0 ) {
 										
-										if ( $single === true ) {
+										if ( $single ) {
 											self::insertObjectviaJSON( $wikiPage, $revision, $user, $struct );
 										} else {
 											self::insertInternalObjectviaJSON( $wikiPage, $revision, $user, $object, $struct );
@@ -292,7 +292,7 @@ class SDImportData {
      * 
      * Code adapted from: https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/2974
 	*/
-	public static function insertObjectviaJSON( $wikiPage, $revision, $user, $object, $struct ) {
+	public static function insertObjectviaJSON( $wikiPage, $revision, $user, $struct ) {
 	
 		$applicationFactory = \SMW\ApplicationFactory::getInstance();
 		
@@ -311,13 +311,13 @@ class SDImportData {
 	
 		$subject = $parserData->getSubject();
 
-		$diwikipage = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki() );
+		$subject = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki() );
 
 		// TODO: To finish
 		foreach ( $struct as $property => $value ) {
 			// Struct to iterate
 			
-			$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByText( $property, $value, false, $diwikipage );
+			$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByText( $property, $value, false, $subject );
 
 			$parserData->getSemanticData()->addDataValue( $dataValue );
 
@@ -362,10 +362,10 @@ class SDImportData {
 		// Identify the content as unique
 		$subobjectName = '_SDI' . md5( json_encode( $struct ) );
 
-		$diwikipage = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki(), $subobjectName );
+		$subject = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki(), $subobjectName );
 
 		// Build the subobject by using a separate container object
-		$containerSemanticData = new \SMWContainerSemanticData( $diwikipage );
+		$containerSemanticData = new \SMWContainerSemanticData( $subject );
 
 		// Iterate through here
 		
