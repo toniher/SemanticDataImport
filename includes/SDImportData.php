@@ -309,10 +309,22 @@ class SDImportData {
 		
 		$parserData = $applicationFactory->newParserData( $wikiPage->getTitle(), $parserOutput );
 	
+		$subject = $parserData->getSubject();
+
+		$diwikipage = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki() );
+
 		// TODO: To finish
 		foreach ( $struct as $property => $value ) {
 			// Struct to iterate
+			
+			$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByText( $property, $value, false, $diwikipage );
+
+			$parserData->getSemanticData()->addDataValue( $dataValue );
+
 		}
+	
+		// This part is used to add the subobject the the main subject
+		$parserData->pushSemanticDataToParserOutput();
 	
 		return true;
 	}	
@@ -350,10 +362,10 @@ class SDImportData {
 		// Identify the content as unique
 		$subobjectName = '_SDI' . md5( json_encode( $struct ) );
 
-		$subject = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki(), $subobjectName );
+		$diwikipage = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki(), $subobjectName );
 
 		// Build the subobject by using a separate container object
-		$containerSemanticData = new \SMWContainerSemanticData( $subject );
+		$containerSemanticData = new \SMWContainerSemanticData( $diwikipage );
 
 		// Iterate through here
 		
