@@ -37,6 +37,7 @@ $("#sdform form").on( "submit", function(event)
 	mainCsv( input );
 	console.log(resultado);console.log(parameter);console.log(delimiter);
 	console.log(namespace);console.log(separator);console.log(infile.name);
+	console.log(rowobj);
 
 	let formData = new FormData();
 	formData.append( "wpfileupload", input.files[0] );
@@ -46,7 +47,7 @@ $("#sdform form").on( "submit", function(event)
 
 
 	//let exec = document.URL;
-
+	// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
 	$.ajax
 	({
 		url : "/w/api.php",
@@ -102,10 +103,27 @@ function mainCsv(input)
 						$("#sdpreview").empty();
 						//saves the parameter selected in the form in the variable
 						let namespace = document.getElementById("mw-input-wpnamespace").value;
-						parameter=namespaceCsv(namespace);
+						parameter=rowfielParameter(namespace);
+						rowobj=rowobjParameter(namespace);
 						//generates a table with the added variable
-						hot1=handsontableTable(result,parameter,container1);
+						hot1=handsontableTable(result,parameter,container1,rowobj);
 						changeHeader(hot1);
+						//console.log(rowobj);
+						//console.log(document.getElementById("myInput").value = rowobj);
+						$("#sdpreview").append("<form><fieldset><legend>RowObject edit: </legend><input id='myInput' type='text' value='rowobj' >");
+						document.getElementById("myInput").value = rowobj;
+						$("#sdpreview").append("<button id='submitRow'>Edit</button></form></fieldset>");
+						//rowobj=rowobjEdit();
+						$("#submitRow").click(function()
+						{
+							let row = document.getElementById("myInput").value;
+							rowobj=row;
+							console.log(rowobj);
+							$("#sdpreview").empty();
+							hot1=handsontableTable(result,parameter,container1,rowobj);
+							changeHeader(hot1);
+						});
+
 					}
 					//If the file length is less than 0, the file is empty and shows an error message
 					else
@@ -145,16 +163,17 @@ function resultCsw(resu,delimiter,separator)
 /**
 *
 */
-function handsontableTable(result,parameter,container1)
+function handsontableTable(result,parameter,container1,rowobj)
 {
+	let page= "Page";
 	//handsontable table
 	hot1 = new Handsontable(container1,
 	{
 		//data to fill the table
 	    data: result,
 	    //header of the table, parameter with localsettings data
-		colHeaders: parameter,
-		rowHeaders: true,
+		colHeaders: [page,parameter[0],parameter[1]],
+		rowHeaders: rowobj,
 	    // adds empty rows to the data source and also removes excessive rows
 	    minSpareRows: 0,
 	    readOnly: true,
@@ -165,7 +184,7 @@ function handsontableTable(result,parameter,container1)
             {
                 return;
             }
-        }
+        },
     });
     return hot1;
 }
@@ -181,11 +200,14 @@ function changeHeader(hot1)
    		//console.log("click");
        	e.preventDefault();
        	var a = hot1.getSelected();
+       	//if(a[0]==='0'&&a[1]==='0'&&a[2]==='2'&&a[3]==='0')
       	// startrow, startcol, endrow, endcol
       	// 0, 1, 2, 3
      	var b  = hot1.getColHeader();
+     	//console.log(b);
         var headers = hot1.getColHeader();
        	var value;
+       	//console.log(headers);
       	if($("th").find("input[name='id']").val())
       	{
           	value  = $("th").find("input[name='id']").val();
@@ -201,12 +223,17 @@ function changeHeader(hot1)
         {
            	session = a[0][1];
             //console.log( session );
-            headers[session]="<input name='id' type='text' value="+b[session]+"\>";
-            hot1.updateSettings
-            ({
-                colHeaders: headers
-            });
-          	$(this).find("input[name='id']").focus(); 
+            if (session != 0)
+            {
+	            headers[session]="<input name='id' type='text' value="+b[session]+"\>";
+	            hot1.updateSettings
+	            ({
+	                colHeaders: headers
+	            });
+	          	$(this).find("input[name='id']").focus(); 
+          	}
+          	else
+          	{}
         }
     });
 
@@ -231,7 +258,7 @@ function changeHeader(hot1)
 /**
 *
 */
-function namespaceCsv(namespace)
+function rowfielParameter(namespace)
 {
 	var parameters = mw.config.get( "wgSDImportDataPage" );
 	var parameter = [];
@@ -239,18 +266,43 @@ function namespaceCsv(namespace)
 	if ( namespace === "SDImport" )
 	{
 		parameter = parameters.SDImport.rowfields;
-		parameter.push(parameters.SDImport.rowobject);
+		//parameter.push(parameters.SDImport.rowobject);
 	}
 	if ( namespace === "JSONData" )
-	{
+	{		
 		parameter = parameters.JSONData.rowfields;
-		parameter.push(parameters.JSONData.rowobject);
+
+		//parameter.push(parameters.JSONData.rowobject);
 	}
 	if ( namespace === "" )
 	{
 		parameter = true;
 	}
 	return parameter;
+	//return rowobj;
+}
+
+function rowobjParameter(namespace)
+{
+	var parameters = mw.config.get( "wgSDImportDataPage" );
+	let rowobj = "";
+
+	if ( namespace === "SDImport" )
+	{
+		rowobj = parameters.SDImport.rowobject;
+		//parameter.push(parameters.SDImport.rowobject);
+	}
+	if ( namespace === "JSONData" )
+	{		
+		rowobj = parameters.JSONData.rowobject;
+
+		//parameter.push(parameters.JSONData.rowobject);
+	}
+	if ( namespace === "" )
+	{
+		rowobj = "";
+	}
+	return rowobj;
 }
 
 //csv preview table function

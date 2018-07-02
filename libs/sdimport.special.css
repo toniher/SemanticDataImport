@@ -8,11 +8,6 @@
   display: none !important;
 }
 
-.handsontable col.rowHeader {
-  width: 50px;
-  background-color: red;
-  color: red;
-}
 
 .board {
 	position: relative;
