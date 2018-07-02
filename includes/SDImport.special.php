@@ -72,9 +72,12 @@ class SpecialSDImport extends SpecialPage {
 				'type' => 'select',
 				'label' => 'Namespace',
 				'options' => $list_namespaces
-			)
-			
-
+			),
+			'single' => [
+				'class' => 'HTMLCheckField',
+				'label' => 'Single row mode',
+				'default' => true,
+			]
 		);
 	
 		$htmlForm = new HTMLForm( $formDescriptor, 'sdimport-form' );

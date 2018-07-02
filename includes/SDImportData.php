@@ -42,7 +42,7 @@ class SDImportData {
 				$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
 				$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
 				$editable = self::getSelector( $args, $nsRepo, "edit" ); // Boolean
-				
+				// TODO: Add single option here maybe?
 
 				// TODO: Should we add props here if they don't exist?
 				
@@ -172,7 +172,7 @@ class SDImportData {
 							$refs = self::getSelector( $args, $nsRepo, "ref" ); // Hash
 							$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
 							$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
-
+							$single = self::getSelector( $args, $nsRepo, "single" ); // Boolean
 		
 							// TODO: Should we add props here if they don't exist?
 		
@@ -214,7 +214,12 @@ class SDImportData {
 									}
 
 									if ( count( array_keys( $struct ) ) > 0 ) {
-										self::insertInternalObjectviaJSON( $wikiPage, $revision, $user, $object, $struct );
+										
+										if ( $single ) {
+											self::insertObjectviaJSON( $wikiPage, $revision, $user, $struct );
+										} else {
+											self::insertInternalObjectviaJSON( $wikiPage, $revision, $user, $object, $struct );
+										}
 									}
 									
 								}
@@ -275,6 +280,54 @@ class SDImportData {
 		}
 		return;
 	}
+	
+	
+	/**
+	 * @param $wikiPage wikiPage
+     * @param $revision revision
+     * @param $user user
+	 * @param struct object
+	 * 
+	 * @return boolean
+     * 
+     * Code adapted from: https://github.com/SemanticMediaWiki/SemanticMediaWiki/issues/2974
+	*/
+	public static function insertObjectviaJSON( $wikiPage, $revision, $user, $struct ) {
+	
+		$applicationFactory = \SMW\ApplicationFactory::getInstance();
+		
+		$mwCollaboratorFactory = $applicationFactory->newMwCollaboratorFactory();
+		
+		/** * Initialize the ParserOuput object */
+		$editInfoProvider = $mwCollaboratorFactory->newEditInfoProvider( $wikiPage, $revision, $user );
+		
+		$parserOutput = $editInfoProvider->fetchEditInfo()->getOutput();
+
+		if ( !$parserOutput instanceof \ParserOutput ) {
+			return true;
+		}
+		
+		$parserData = $applicationFactory->newParserData( $wikiPage->getTitle(), $parserOutput );
+	
+		$subject = $parserData->getSubject();
+
+		$subject = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki() );
+
+		// TODO: To finish
+		foreach ( $struct as $property => $value ) {
+			// Struct to iterate
+			
+			$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByText( $property, $value, false, $subject );
+
+			$parserData->getSemanticData()->addDataValue( $dataValue );
+
+		}
+	
+		// This part is used to add the subobject the the main subject
+		$parserData->pushSemanticDataToParserOutput();
+	
+		return true;
+	}	
 	
 	/**
 	 * @param $wikiPage wikiPage
