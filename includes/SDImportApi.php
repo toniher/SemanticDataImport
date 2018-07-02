@@ -16,7 +16,8 @@ class SDImportApi extends ApiBase {
 		}
 		
 		if ( $jsonmodel ) {
-			$status = SDImportData::importJSON( $params['text'], $params['title'], $params['overwrite'] );
+			$status = SDImportData::importJSON( $params['file'], $params['title'], $params['overwrite'] ,$params['separator'], $params['namespace'], $params['delimiter']);
+			echo $status;
 		} else {
 			$status = SDImportData::importWikiText( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
 		}
