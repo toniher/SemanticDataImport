@@ -14,11 +14,16 @@ class SDImportApi extends ApiBase {
 			}
 					
 		}
+
+		// TODO: Create batch model
+		// $status = SDImportData::importBatchJSON( $params['text'], $params['overwrite'] );
 		
 		if ( $jsonmodel ) {
 			// $status = SDImportData::importJSON( $params['file'], $params['title'], $params['overwrite'] ,$params['separator'], $params['file'], $params['file']);
 			$status = SDImportData::importJSON( $params['text'], $params['title'], $params['overwrite'] );
-		} else {
+		} 
+		else 
+		{
 			$status = SDImportData::importWikiText( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
 		}
 		
@@ -54,6 +59,10 @@ class SDImportApi extends ApiBase {
 				ApiBase::PARAM_REQUIRED => false
 			),
 			'overwrite' => array(
+				ApiBase::PARAM_TYPE => 'boolean',
+				ApiBase::PARAM_REQUIRED => false
+			),
+			'batch' => array(
 				ApiBase::PARAM_TYPE => 'boolean',
 				ApiBase::PARAM_REQUIRED => false
 			)

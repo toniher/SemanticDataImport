@@ -1,3 +1,4 @@
+
 //if click botton fileupload
 $( "input[name=wpfileupload]").change( function( event )
 {
@@ -28,44 +29,75 @@ $( "#mw-input-wpnamespace" ).change( function( event )
 
 $("#sdform form").on( "submit", function(event)
 {
+	//document.getElementById("#sdform form").disabled = true;
 	event.preventDefault();
 	let input = $( "input[name=wpfileupload]" ).get( 0 );
 	let delimiter = document.getElementById("mw-input-wpdelimiter").value;
 	let separator = document.getElementById("mw-input-wpseparator").value;
 	let namespace = document.getElementById("mw-input-wpnamespace").value;
 	let infile = input.files[0];
-	mainCsv( input );
-	console.log(resultado);console.log(parameter);console.log(delimiter);
-	console.log(namespace);console.log(separator);console.log(infile.name);
-	console.log(rowobj);
+	//console.log(infile);
+	if(infile==null)
+	{
+		$("#sdpreview").empty();
+		$("#sdpreview").append("<b>Error file</b>");
+	}
+	else
+	{
+		mainCsv( input );
+		/*console.log(resultado);console.log(parameter);console.log(delimiter);
+		console.log(namespace);console.log(separator);console.log(infile.name);
+		console.log(rowobj);*/
 
-	let formData = new FormData();
-	formData.append( "wpfileupload", input.files[0] );
-	formData.append( "wpseparator", separator );
-	formData.append( "wpdelimiter", delimiter );
-	formData.append( "wpnamespace", namespace );
+		let formData = new FormData();
+		formData.append( "wpfileupload", input.files[0] );
+		formData.append( "wpseparator", separator );
+		formData.append( "wpdelimiter", delimiter );
+		formData.append( "wpnamespace", namespace );
+
+		var meta = { "app":"SDI", "version":0.1, "rowfields":parameter, "rowobject": rowobj};
+		console.log(meta);
+		var obj = { "meta":meta, "data":resultado};
+		console.log(obj);
 
 
-	//let exec = document.URL;
-	// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
-	$.ajax
-	({
-		url : "/w/api.php",
-		type: "POST",
-		data :'file='+input.files[0]+'&separator='+separator+'&delimiter='+delimiter+'&namespace='+namespace,
-		processData: true,
-		//contentType: false,
-			success:function(data, textStatus, jqXHR){
-				console.log( data );
-				console.log( textStatus );
+		let postObj = {};
+		postObj.action = "sdimport";
+		postObj.format = "json";
+		postObj.model = "json";
+		postObj.overwrite = "true";
+		postObj.text = JSON.stringify( obj )
+		postObj.title = namespace+":"+resultado[0][0];
 
-			},
-			error: function(jqXHR, textStatus, errorThrown){
-				//if fails
-				// TODO: To be handled
-				console.log( "error" );
-			}
-	});
+
+		// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
+
+		$.ajax
+		({
+			url : "/w/api.php",
+			type: "POST",
+			data : postObj,
+			processData: true,
+			//contentType: false,
+				success:function(data, textStatus, jqXHR){
+					//console.log( data );
+					//console.log( textStatus);
+					if(textStatus ==="success")
+					{
+						$("#sdform").empty();
+						$("#sdpreview").empty();
+				    	//This alert informs user succes
+				    	$("#sdpreview").append("<b>Success</b>");
+					}
+
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					//if fails
+					// TODO: To be handled
+					console.log( "error" );
+				}
+		});
+	}
 });
 
 function mainCsv(input)
@@ -276,7 +308,7 @@ function rowfielParameter(namespace)
 	}
 	if ( namespace === "" )
 	{
-		parameter = true;
+		parameter = "";
 	}
 	return parameter;
 	//return rowobj;
