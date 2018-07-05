@@ -124,6 +124,31 @@ class SDImportDataParser {
 	}
 
 
+
+	/**
+	* @param $input string
+	* @param $args array
+	* @param $parser Parser
+	* @param $frame Frame
+	* @return string
+	*/
+	public static function prepareLink( $input, $args, $parser, $frame ) {
+
+		global $wgSDImportDataPage;
+
+		$wgOut = $parser->getOutput();
+		$wgOut->addModules( 'ext.sdimport' );
+		
+		$model = "json"; // Let's use by default JSON model
+		
+		// TODO: Define HTML code to trigger
+		$output = "<!-- CODE TO BE DEFINED -->";
+		
+		
+		return array( $output, 'noparse' => true, 'isHTML' => true );
+		
+	}
+
 	private static function getCSVData( $text, $separator="\t", $delimiter='"' ) {
 
 		$table = array();
