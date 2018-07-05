@@ -141,6 +141,14 @@ class SDImportDataParser {
 		
 		$model = "json"; // Let's use by default JSON model
 		
+		
+		// TODO: Parse parameters from function
+		
+		// TODO: If pagetitle already exists fill handsontable from this table -> Use JSON data
+		
+		// Allow changes to be sent to other tables
+		
+		
 		// TODO: Define HTML code to trigger
 		$output = "<!-- CODE TO BE DEFINED -->";
 		

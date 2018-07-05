@@ -701,6 +701,8 @@ class SDImportData {
 		return $out;
 	}
 	
+	/** This allow PHP vars to be exposed to JavaScript **/
+	
 	public static function onResourceLoaderGetConfigVars( &$vars ) {
 		
 		global $wgSDImportDataPage;
