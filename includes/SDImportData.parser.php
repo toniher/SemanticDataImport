@@ -132,26 +132,35 @@ class SDImportDataParser {
 	* @param $frame Frame
 	* @return string
 	*/
-	public static function prepareLink( $input, $args, $parser, $frame ) {
+	public static function prepareLink( $parser, $frame, $args ) {
 
 		global $wgSDImportDataPage;
 
 		$wgOut = $parser->getOutput();
 		$wgOut->addModules( 'ext.sdimport' );
 		
+		$output = "";
 		$model = "json"; // Let's use by default JSON model
+		$pagetitle = null; // No page default. Do nothing
 		
+		// TODO: Parse more parameters from function
+		if ( array_key_exists( "title", $args ) ) {
+			$pagetitle = trim( $frame->expand( $args['title'] ) );
+		}
 		
-		// TODO: Parse parameters from function
+		if ( $pagetitle ) {
+			
+			$dataAttrsStr = "";
+			
+			if ( $pagetitle ) {
+				$dataAttrsStr.= "data-title='$pagetitle'";
+			}
+			$dataAttrsStr.= " data-model='$model'";
+
+			
+			$output = "<div class='smwdata-link' ".$dataAttrsStr."></div>";
 		
-		// TODO: If pagetitle already exists fill handsontable from this table -> Use JSON data
-		
-		// Allow changes to be sent to other tables
-		
-		
-		// TODO: Define HTML code to trigger
-		$output = "<!-- CODE TO BE DEFINED -->";
-		
+		}
 		
 		return array( $output, 'noparse' => true, 'isHTML' => true );
 		

@@ -85,7 +85,7 @@ call_user_func( function () {
 function SDImportParserFunction( $parser ) {
 
 	$parser->setHook( 'smwdata', 'SDImportDataParser::processData' );
-	$parser->setFunctionHook( 'smwdatalink', 'SDImportDataParser::prepareLink' );
+	$parser->setFunctionHook( 'smwdatalink', 'SDImportDataParser::prepareLink', SFH_OBJECT_ARGS );
 
 	return true;
 }
