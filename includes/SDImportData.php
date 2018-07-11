@@ -503,6 +503,7 @@ class SDImportData {
 					// Only act if JSON
 					
 					$json = $content->getNativeData();
+
 					
 					list( $args, $data ) = self::processJSON( $json );
 				}
@@ -518,7 +519,7 @@ class SDImportData {
 
 	
 	private static function processJSON( $json ) {
-		
+
 		$outcome = array( );
 		$args = null;
 		$data = null;
@@ -527,13 +528,13 @@ class SDImportData {
 		
 		// Check JSON is valid
 		$jsonObj = json_decode( $json, true );
-		
+
 		if ( $jsonObj ) {
 		
 			if ( array_key_exists( "meta", $jsonObj ) ) {
 				
 				$meta = $jsonObj["meta"];
-				
+
 				if ( array_key_exists( "app", $meta ) ) {
 					
 					if ( $meta["app"] === "SDI" ) {
@@ -557,6 +558,7 @@ class SDImportData {
 			}
 		
 		}
+
 		
 		array_push( $outcome, $args );
 		array_push( $outcome, $data );
@@ -589,9 +591,9 @@ class SDImportData {
 				
 			}
 		}
-		
+
+			
 		return $data;
-		
 	}
 
 	private static function getCSVData( $text, $separator="\t", $delimiter='"' ) {
@@ -747,50 +749,87 @@ class SDImportData {
 	}
 	
 	
+
 	/** Import of JSON into a page, let's say, at commit **/
 	/**
 	* @text Bulk data text
 	* @pagetitle Title of the page
 	* @return status of update
 	*/
-	public static function importJSON( $text, $pagetitle, $overwrite=false ) {
-		
+	public static function importJSONBatch( $text, $pagetitle, $overwrite=false) {
+		$title=$pagetitle;
+		$jsonObj = json_decode( $text, true );
+		$dataNew= $jsonObj["data"];
+		sort($dataNew);
+		$data = array();
+		array_push($data, $dataNew[0][0]);
+		for ($x=0;$x<count($dataNew); $x++) 
+		{
+			if (in_array($dataNew[$x][0], $data)) 
+			{
+				array_push($data, $dataNew[$x]);
+	   			$tit = $title . ':' . $dataNew[$x][0];
+				$pagetitle=$tit;
+			}
+			else
+			{
+				$data = array();
+				array_push($data, $dataNew[$x][0]);
+				array_push($data, $dataNew[$x]);
+	   			$tit = $title . ':' . $dataNew[$x][0];
+				$pagetitle=$tit;
+			}
+			$jsonObjNew=array();
+			$jsonObjNew["meta"]=$jsonObj["meta"];
+			$test=$data;
+			$row=0;
+			array_splice($test, 0, 1);
+			for ($j=0;$j<count($test); $j++) 
+			{
+				array_splice($test[$j], 0, 1);
+			}
+			$jsonObjNew["data"]=$test;
+			ob_start();
+			var_dump($test);
+			$res = ob_get_clean();
+			wfDebugLog( "sdimport", "Sort: ".$res);
+			//final test
+			$text = json_encode( $jsonObjNew);
+
+			self::importJSON($text,$pagetitle,$overwrite);
+		}
+	}
+
+	/** Import of JSON into a page, let's say, at commit **/
+	/**
+	* @text Bulk data text
+	* @pagetitle Title of the page
+	* @return status of update
+	*/
+	public static function importJSON( $text, $pagetitle, $overwrite=false) {
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
-		
 		$goahead = true;
-		
 		$status = false;
-		
 		// Check if exists
 		if ( $wikipage->exists() &&  ! $overwrite ) {
 			$goahead = false;
 		}
-		
-		if ( $goahead ) {
-			
-			// Check compatibility. Only if newer versions of MW
-			if ( method_exists ( $wikipage, "getContent" ) ) {
-	
-				$contentModel = $wikipage->getContentModel();
-				
-				if ( $contentModel === "json" || ! $wikipage->exists() ) {
-					
-					$content = new JSONContent( $text );
-
-					$status = $wikipage->doEditContent( $content, "Updating content" );
-					
-					// TODO: Handle status value if not normal one
-
+			if ( $goahead ) 
+			{
+				// Check compatibility. Only if newer versions of MW
+				if ( method_exists ( $wikipage, "getContent" ) ) 
+				{
+					$contentModel = $wikipage->getContentModel();
+					if ( $contentModel === "json" || ! $wikipage->exists() ) 
+					{
+						$content = new JSONContent($text);
+						$status = $wikipage->doEditContent( $content, "Updating content" );
+					}
 				}
 			}
-			
-		}
-		
 		return $status;
-		
 	}
-	
 	
 	public static function prepareStructForJSON( $meta, $data ) {
 		
@@ -816,8 +855,7 @@ class SDImportData {
 			
 			$strJSON = json_encode( $obj );
 		}
-		
-		
+
 		return $strJSON;
 	}
 	
@@ -843,7 +881,6 @@ class SDImportData {
 
 		$vars['wgSDImportDataPage'] = $wgSDImportDataPage;
 
-		return true;	
+		return true;
 	}
-
 }

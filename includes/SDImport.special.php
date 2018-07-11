@@ -76,6 +76,7 @@ class SpecialSDImport extends SpecialPage {
 			
 
 		);
+
 	
 		$htmlForm = new HTMLForm( $formDescriptor, 'sdimport-form' );
 	

@@ -56,22 +56,43 @@ $("#sdform form").on( "submit", function(event)
 		formData.append( "wpnamespace", namespace );
 
 		var meta = { "app":"SDI", "version":0.1, "rowfields":parameter, "rowobject": rowobj};
-		console.log(meta);
+		//console.log(meta);
 		var obj = { "meta":meta, "data":resultado};
-		console.log(obj);
+		//console.log(obj);
+		console.log(resultado);
+		var myNewArray3 = [];
+		for (var i = 0; i < resultado.length; ++i) 
+		{
+		  for (var j = 0; j < resultado[i].length; ++j)
+		    myNewArray3.push(resultado[i][0]);
+		}
+		console.log(myNewArray3);
+		//console.log(myNewArray3);
+		var valid=false;
+		for (var i = 0; i < myNewArray3.length; i++) 
+		{
+		  	if (resultado[0][0] == myNewArray3[i]) 
+		  	{	
+		  		valid=false;
+		  	}
+		  	else
+		  	{
+		  		valid=true;
+		  		break;	
+		  	}
+		}
 
-
+		console.log(valid);
 		let postObj = {};
 		postObj.action = "sdimport";
 		postObj.format = "json";
 		postObj.model = "json";
 		postObj.overwrite = "true";
+		postObj.batch=valid;
 		postObj.text = JSON.stringify( obj )
-		postObj.title = namespace+":"+resultado[0][0];
-
+		postObj.title = namespace;
 
 		// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
-
 		$.ajax
 		({
 			url : "/w/api.php",
@@ -79,23 +100,25 @@ $("#sdform form").on( "submit", function(event)
 			data : postObj,
 			processData: true,
 			//contentType: false,
-				success:function(data, textStatus, jqXHR){
-					//console.log( data );
-					//console.log( textStatus);
-					if(textStatus ==="success")
-					{
-						$("#sdform").empty();
-						$("#sdpreview").empty();
-				    	//This alert informs user succes
-				    	$("#sdpreview").append("<b>Success</b>");
-					}
-
-				},
-				error: function(jqXHR, textStatus, errorThrown){
-					//if fails
-					// TODO: To be handled
-					console.log( "error" );
+			success:function(data, textStatus, jqXHR)
+			{
+				//console.log( data );
+				//console.log( textStatus);
+				if(textStatus ==="success")
+				{
+					$("#sdform").empty();
+					$("#sdpreview").empty();
+			    	//This alert informs user succes
+			    	$("#sdpreview").append("<form><fieldset><b>"+mw.message( 'sdimport-form-submit-success' ).text()+"</b>");
+			    	$("#sdpreview").append("<input type='button' value='"+mw.message( 'sdimport-form-back' ).text()+"' onclick='window.location.reload(true)' style='font-family: Arial; font-size: 10 pt'></form></fieldset>");
 				}
+			},
+			error: function(jqXHR, textStatus, errorThrown)
+			{
+				//if fails
+				//TODO: To be handled
+				console.log( "error" );
+			}
 		});
 	}
 });
@@ -301,9 +324,8 @@ function rowfielParameter(namespace)
 		//parameter.push(parameters.SDImport.rowobject);
 	}
 	if ( namespace === "JSONData" )
-	{		
+	{
 		parameter = parameters.JSONData.rowfields;
-
 		//parameter.push(parameters.JSONData.rowobject);
 	}
 	if ( namespace === "" )
@@ -325,7 +347,7 @@ function rowobjParameter(namespace)
 		//parameter.push(parameters.SDImport.rowobject);
 	}
 	if ( namespace === "JSONData" )
-	{		
+	{
 		rowobj = parameters.JSONData.rowobject;
 
 		//parameter.push(parameters.JSONData.rowobject);
@@ -345,7 +367,7 @@ function extensionValidation(input)
  	//Initializate aviable extensions
     var allowedExtensions = /(.txt|.csv)$/i;
     //If file extension is different to file extension prints alert with error message
-    if(!allowedExtensions.exec(filePath)) 
+    if(!allowedExtensions.exec(filePath))
     {
     	$("#sdpreview").empty();
     	//This alert informs user the extension error
