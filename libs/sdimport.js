@@ -266,7 +266,6 @@ var tableSDImport = {};
 			param.format = "json";
 			param.model = "json";
 			param.overwrite = true; // By default, let's overwrite content
-		
 			param.text = strJSON;
 			
 			var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );

@@ -46,7 +46,9 @@ call_user_func( function () {
 			'mediawiki.jqueryMsg',
 		),
 		'messages' => array(
-			'sdimport-commit'
+			'sdimport-commit',
+			'sdimport-form-submit-success',
+			'sdimport-form-back'
 		),
 		'remoteExtPath' => 'SemanticDataImport'
 	);

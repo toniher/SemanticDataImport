@@ -14,10 +14,20 @@ class SDImportApi extends ApiBase {
 			}
 					
 		}
-		
+
+		//wfDebugLog( "sdimport", json_encode( $params ) );
+
 		if ( $jsonmodel ) {
-			$status = SDImportData::importJSON( $params['text'], $params['title'], $params['overwrite'] );
-		} else {
+			//wfDebugLog( "sdimport", "Batch: ".$params['model'] );
+			if ( $params["batch"] === true ) {
+				$status = SDImportData::importJSONBatch( $params['text'], $params['title'], $params['overwrite']);
+			}
+			else {
+				// wfDebugLog( "sdimport", "Hereeeee" );
+				$status = SDImportData::importJSON( $params['text'], $params['title'], $params['overwrite'] );
+			}
+		}
+		else {
 			$status = SDImportData::importWikiText( $params['text'], $params['title'], $params['separator'], $params['delimiter'], $params['num'] );
 		}
 		
@@ -34,7 +44,7 @@ class SDImportApi extends ApiBase {
 			),
 			'title' => array(
 				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
+				ApiBase::PARAM_REQUIRED => false
 			),
 			'separator' => array(
 				ApiBase::PARAM_TYPE => 'string',
@@ -53,6 +63,10 @@ class SDImportApi extends ApiBase {
 				ApiBase::PARAM_REQUIRED => false
 			),
 			'overwrite' => array(
+				ApiBase::PARAM_TYPE => 'boolean',
+				ApiBase::PARAM_REQUIRED => false
+			),
+			'batch' => array(
 				ApiBase::PARAM_TYPE => 'boolean',
 				ApiBase::PARAM_REQUIRED => false
 			)
