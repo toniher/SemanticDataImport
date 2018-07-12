@@ -79,6 +79,3 @@ However we might be interested to edit in another way. For this we recommend to 
 
 
 ```$wgDefaultUserOptions['usebetatoolbar'] = 1; // user option provided by WikiEditor extension```
-
-
-z

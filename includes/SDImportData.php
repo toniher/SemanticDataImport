@@ -750,12 +750,12 @@ class SDImportData {
 	
 	
 
-	/** Import of JSON into a page, let's say, at commit **/
 	/**
 	* @text Bulk data text
 	* @pagetitle Title of the page
 	* @return status of update
 	*/
+
 	public static function importJSONBatch( $text, $pagetitle, $overwrite=false) {
 		$title=$pagetitle;
 		$jsonObj = json_decode( $text, true );
@@ -815,14 +815,11 @@ class SDImportData {
 		if ( $wikipage->exists() &&  ! $overwrite ) {
 			$goahead = false;
 		}
-			if ( $goahead ) 
-			{
+			if ( $goahead ) {
 				// Check compatibility. Only if newer versions of MW
-				if ( method_exists ( $wikipage, "getContent" ) ) 
-				{
+				if ( method_exists ( $wikipage, "getContent" ) ) {
 					$contentModel = $wikipage->getContentModel();
-					if ( $contentModel === "json" || ! $wikipage->exists() ) 
-					{
+					if ( $contentModel === "json" || ! $wikipage->exists() ) {
 						$content = new JSONContent($text);
 						$status = $wikipage->doEditContent( $content, "Updating content" );
 					}
