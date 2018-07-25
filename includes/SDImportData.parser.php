@@ -139,13 +139,33 @@ class SDImportDataParser {
 		$wgOut = $parser->getOutput();
 		$wgOut->addModules( 'ext.sdimport' );
 		
+		$attrs_allowed = array( "title", "model" );
+		
+		$attrs = array();
 		$output = "";
 		$model = "json"; // Let's use by default JSON model
 		$pagetitle = null; // No page default. Do nothing
 		
+		foreach ( $args as $arg ) {
+			$arg_clean = trim( $frame->expand( $arg ) );
+			$arg_proc = explode( "=", $arg_clean, 2 );
+			
+			if ( count( $arg_proc ) == 1 ){
+				$pagetitle = trim( $arg_proc[0] );
+			} else {
+			
+				if ( in_array( trim( $arg_proc[0] ), $attrs_allowed ) ) {
+					$attrs[ trim( $arg_proc[0] ) ] = trim( $arg_proc[1] );
+				}
+			}
+		}
+		
 		// TODO: Parse more parameters from function
-		if ( array_key_exists( "title", $args ) ) {
-			$pagetitle = trim( $frame->expand( $args['title'] ) );
+		if ( array_key_exists( "title", $attrs ) ) {
+			$pagetitle = $attrs['title'];
+		}
+		if ( array_key_exists( "model", $attrs ) ) {
+			$model = $attrs['model'];
 		}
 		
 		if ( $pagetitle ) {
