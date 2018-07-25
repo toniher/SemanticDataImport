@@ -8,6 +8,7 @@ var tableSDImport = {};
 (function($, mw) {
 
 	$(document).ready( function() {
+
 		
 		var readonly = true;
 		var extrarows = 0;
@@ -109,7 +110,64 @@ var tableSDImport = {};
 				
 			
 		} else {
+			
+			// Handle smwdata-link
+			$('.smwdata-link').each( function() {
 	
+				var divval = "SMWData-"+numdata;
+				$(this).after("<div id='"+divval+"'></div>");
+				
+				var container  = document.getElementById( divval );
+				
+				// Let's make readOnly false
+				readonly = false;
+
+				var pagetitle = null;
+				var model = "json";
+				
+				// Let's check if content in title
+				if ( $(this).data('title') ) {
+					pagetitle = $(this).data('title');
+				}
+		
+				if ( $(this).data('model') ) {
+					model = $(this).data('model');
+				}
+
+				// TODO: Retrieve data for here
+				var celldata = [ [ 1, 2, 3 ] ];
+				var cols = [ "A", "B", "C" ];
+				
+				
+				
+				var table = new Handsontable( container, {
+					data: celldata,
+					readOnly: readonly,
+					minSpareRows: extrarows,
+					colHeaders: cols,
+					contextMenu: true,
+					columnSorting: true
+				});
+		
+				// Let's store in global variable
+				tableSDImport[ divval ] = table;
+				
+				if ( model === "json" ) {
+					
+					var pagetitleStr = "";
+					if ( pagetitle ) {
+						pagetitleStr = "data-title='"+pagetitle+"'";
+					}
+					$( container ).append("<p class='smwdata-commit-json' " + pagetitleStr + " data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+
+				}
+				
+				numdata = numdata + 1 ;
+				
+			});
+			
+			
+			// Handle smwdata function
 			$('.smwdata').each( function() {
 		
 				var celldata = [];
@@ -141,7 +199,7 @@ var tableSDImport = {};
 				var cols = strcols.split(",");
 		
 				var divval = "SMWData-"+numdata;
-				$(this).after("<div id='"+divval+"'>");
+				$(this).after("<div id='"+divval+"'></div>");
 		
 				$(this).hide();
 	
@@ -230,6 +288,9 @@ var tableSDImport = {};
 
 		var param = {};
 		var selector = $(this).attr('data-selector');
+		
+		var pagetitle = $(this).attr('data-title');
+
 
 		var instance = tableSDImport[ selector ];
 
@@ -260,7 +321,11 @@ var tableSDImport = {};
 		
 		if ( strJSON ) {
 		
-			param.title = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+			if ( pagetitle ) {
+				param.title = pagetitle;
+			} else {
+				param.title = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+			}
 		
 			param.action = "sdimport";
 			param.format = "json";
