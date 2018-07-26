@@ -14,4 +14,5 @@ Stuff to be implemented
 * Allow SD Import capabilites to be called from other extensions
     * Design classes so that this is allowed
 * Allow without subobjects if only 1 row
+* In 1 row (no subobject) interface allow also basic form interface
 
