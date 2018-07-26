@@ -139,7 +139,7 @@ class SDImportDataParser {
 		$wgOut = $parser->getOutput();
 		$wgOut->addModules( 'ext.sdimport' );
 		
-		$attrs_allowed = array( "title", "model" );
+		$attrs_allowed = array( "title", "model", "readonly" );
 		
 		$attrs = array();
 		$output = "";
@@ -177,6 +177,9 @@ class SDImportDataParser {
 			}
 			$dataAttrsStr.= " data-model='$model'";
 
+			if ( array_key_exists( "readonly", $attrs ) ) {
+				$dataAttrsStr.= " data-readonly='true'";
+			}
 			
 			$output = "<div class='smwdata-link' ".$dataAttrsStr."></div>";
 		
