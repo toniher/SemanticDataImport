@@ -76,7 +76,7 @@ class SpecialSDImport extends SpecialPage {
 			'single' => [
 				'class' => 'HTMLCheckField',
 				'label' => 'Single row mode',
-				'default' => true,
+				'default' => false,
 			]		
 
 		);

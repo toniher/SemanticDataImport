@@ -36,6 +36,11 @@ $("#sdform form").on( "submit", function(event)
 	let separator = document.getElementById("mw-input-wpseparator").value;
 	let namespace = document.getElementById("mw-input-wpnamespace").value;
 
+	let single = false;
+	if ( $( "#mw-input-wpsingle").is(':checked') ) {
+		single = true;
+	}
+	
 	let infile = input.files[0];
 	//console.log(infile);
 	if(infile==null) {
@@ -52,7 +57,18 @@ $("#sdform form").on( "submit", function(event)
 		formData.append( "wpdelimiter", delimiter );
 		formData.append( "wpnamespace", namespace );
 
-		var meta = { "app":"SDI", "version":0.1, "rowfields":parameter, "rowobject": rowobj};
+		var meta = { "app":"SDI", "version":0.1 };
+		
+		// TODO: Add if value is different from default one
+		meta.rowfields = parameter;
+		
+		// TODO: Add if value is different from default one 
+		meta.rowobject = rowobj;
+		
+		if ( single ) {
+			meta.single = single;
+		}
+		
 		//console.log(meta);
 		var obj = { "meta":meta, "data":resultado};
 		//console.log(obj);
@@ -151,6 +167,7 @@ function mainCsv(input)
 						let namespace = document.getElementById("mw-input-wpnamespace").value;
 						parameter=rowfielParameter(namespace);
 						rowobj=rowobjParameter(namespace);
+						
 						//generates a table with the added variable
 						hot1=handsontableTable(result,parameter,container1,rowobj);
 						changeHeader(hot1);
