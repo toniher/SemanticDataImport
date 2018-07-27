@@ -621,48 +621,50 @@ class SDImportData {
 	* @return status of update
 	*/
 
-	public static function importJSONBatch( $text, $pagetitle, $overwrite=false) {
-		$title=$pagetitle;
-		$jsonObj = json_decode( $text, true );
-		$dataNew= $jsonObj["data"];
-		sort($dataNew);
-		$data = array();
-		array_push($data, $dataNew[0][0]);
-		for ($x=0;$x<count($dataNew); $x++) 
-		{
-			if (in_array($dataNew[$x][0], $data)) 
-			{
-				array_push($data, $dataNew[$x]);
-	   			$tit = $title . ':' . $dataNew[$x][0];
-				$pagetitle=$tit;
-			}
-			else
-			{
-				$data = array();
-				array_push($data, $dataNew[$x][0]);
-				array_push($data, $dataNew[$x]);
-	   			$tit = $title . ':' . $dataNew[$x][0];
-				$pagetitle=$tit;
-			}
-			$jsonObjNew=array();
-			$jsonObjNew["meta"]=$jsonObj["meta"];
-			$test=$data;
-			$row=0;
-			array_splice($test, 0, 1);
-			for ($j=0;$j<count($test); $j++) 
-			{
-				array_splice($test[$j], 0, 1);
-			}
-			$jsonObjNew["data"]=$test;
-			ob_start();
-			var_dump($test);
-			$res = ob_get_clean();
-			wfDebugLog( "sdimport", "Sort: ".$res);
-			//final test
-			$text = json_encode( $jsonObjNew);
+	public static function importJSONBatch( $text, $namespace="", $overwrite=false) {
 
-			self::importJSON($text,$pagetitle,$overwrite);
+		$jsonObj = json_decode( $text, true );
+		$dataObj = $jsonObj["data"];
+		$dataHash = array();
+				
+		for ( $x=0; $x <count($dataObj); $x++ ) {
+
+			if ( count( $dataObj[$x] ) > 1 ) {
+				
+				$pageCell = array_shift(  $dataObj[$x] );
+				
+				if ( $pageCell !== "" ) {
+					
+					if ( $namespace === "" ) {
+						$pagetitle =  $pageCell;
+					} else {
+						$pagetitle = $namespace . ':' . $pageCell;
+					}	
+					
+				}
+				
+				if ( ! $dataHash[ $pagetitle ] ) {
+					$dataHash[ $pagetitle ] = array();
+				}
+				
+				array_push( $dataHash[ $pagetitle ], $dataObj[$x] );
+				
+			}
+			
 		}
+		
+		foreach ( $dataHash as $pagetitle => $dataArray ) {
+			
+			$jsonSubObj = array();
+			$jsonSubObj["data"] = $dataArray;
+			$jsonSubObj["meta"] = $jsonObj["meta"];
+
+			self::importJSON( json_encode( $jsonSubObj ), $pagetitle, $overwrite );
+			
+		}
+		
+		return true;
+
 	}
 
 	/** Import of JSON into a page, let's say, at commit **/
@@ -672,6 +674,7 @@ class SDImportData {
 	* @return status of update
 	*/
 	public static function importJSON( $text, $pagetitle, $overwrite=false) {
+
 		$title = Title::newFromText( $pagetitle );
 		$wikipage = WikiPage::factory( $title );
 		$goahead = true;

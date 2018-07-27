@@ -35,19 +35,16 @@ $("#sdform form").on( "submit", function(event)
 	let delimiter = document.getElementById("mw-input-wpdelimiter").value;
 	let separator = document.getElementById("mw-input-wpseparator").value;
 	let namespace = document.getElementById("mw-input-wpnamespace").value;
+
 	let infile = input.files[0];
 	//console.log(infile);
-	if(infile==null)
-	{
+	if(infile==null) {
 		$("#sdpreview").empty();
 		$("#sdpreview").append("<b>Error file</b>");
 	}
-	else
-	{
+	else {
+		// TODO: Make more explicit resultado
 		mainCsv( input );
-		/*console.log(resultado);console.log(parameter);console.log(delimiter);
-		console.log(namespace);console.log(separator);console.log(infile.name);
-		console.log(rowobj);*/
 
 		let formData = new FormData();
 		formData.append( "wpfileupload", input.files[0] );
@@ -60,51 +57,46 @@ $("#sdform form").on( "submit", function(event)
 		var obj = { "meta":meta, "data":resultado};
 		//console.log(obj);
 		console.log(resultado);
-		var myNewArray3 = [];
-		for (var i = 0; i < resultado.length; ++i) 
-		{
-		  for (var j = 0; j < resultado[i].length; ++j)
-		    myNewArray3.push(resultado[i][0]);
-		}
-		console.log(myNewArray3);
-		//console.log(myNewArray3);
-		var valid=false;
-		for (var i = 0; i < myNewArray3.length; i++) 
-		{
-		  	if (resultado[0][0] == myNewArray3[i]) 
-		  	{	
-		  		valid=false;
-		  	}
-		  	else
-		  	{
-		  		valid=true;
-		  		break;	
-		  	}
+		
+		var pageList = [];
+		for (var i = 0; i < resultado.length; ++i) {
+			
+			if ( resultado[i].length > 0 ) {
+				
+				pageList.push( resultado[i][0] );
+			}
+
 		}
 
-		console.log(valid);
+		var batch = false;
+		console.log( $.unique( pageList  ) );
+		if ( $.unique( pageList ).length > 1 ){
+			batch = true;
+		}
+			
+
 		let postObj = {};
 		postObj.action = "sdimport";
 		postObj.format = "json";
 		postObj.model = "json";
-		postObj.overwrite = "true";
-		postObj.batch=valid;
-		postObj.text = JSON.stringify( obj )
+		postObj.overwrite = true;
+		postObj.batch= batch ;
+		postObj.text = JSON.stringify( obj );
 		postObj.title = namespace;
 
+		console.log( postObj );
+
 		// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
-		$.ajax
-		({
+		$.ajax({
 			url : "/w/api.php",
 			type: "POST",
 			data : postObj,
 			processData: true,
 			//contentType: false,
-			success:function(data, textStatus, jqXHR)
-			{
-				//console.log( data );
+			success:function(data, textStatus, jqXHR){
+				console.log( data );
 				//console.log( textStatus);
-				if(textStatus ==="success")
+				if(textStatus === "success")
 				{
 					$("#sdform").empty();
 					$("#sdpreview").empty();
@@ -113,8 +105,7 @@ $("#sdform form").on( "submit", function(event)
 			    	$("#sdpreview").append("<input type='button' value='"+mw.message( 'sdimport-form-back' ).text()+"' onclick='window.location.reload(true)' style='font-family: Arial; font-size: 10 pt'></form></fieldset>");
 				}
 			},
-			error: function(jqXHR, textStatus, errorThrown)
-			{
+			error: function(jqXHR, textStatus, errorThrown){
 				//if fails
 				//TODO: To be handled
 				console.log( "error" );

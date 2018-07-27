@@ -20,7 +20,7 @@ class SDImportApi extends ApiBase {
 		if ( $jsonmodel ) {
 			//wfDebugLog( "sdimport", "Batch: ".$params['model'] );
 			if ( $params["batch"] === true ) {
-				$status = SDImportData::importJSONBatch( $params['text'], $params['title'], $params['overwrite']);
+				$status = SDImportData::importJSONBatch( $params['text'], $params['title'], $params['overwrite'] );
 			}
 			else {
 				// wfDebugLog( "sdimport", "Hereeeee" );
