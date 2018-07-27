@@ -59,11 +59,13 @@ $("#sdform form").on( "submit", function(event)
 
 		var meta = { "app":"SDI", "version":0.1 };
 		
-		// TODO: Add if value is different from default one
-		meta.rowfields = parameter;
+		if ( JSON.stringify( parameter ) != JSON.stringify( rowfielParameter( namespace ) ) ) {
+			meta.rowfields = parameter;
+		}
 		
-		// TODO: Add if value is different from default one 
-		meta.rowobject = rowobj;
+		if ( rowobj !== rowobjParameter( namespace ) ) {
+			meta.rowobject = rowobj;
+		}
 		
 		if ( single ) {
 			meta.single = single;
@@ -318,52 +320,38 @@ function changeHeader(hot1)
 	return parameter;
 }
 
-/**
-*
-*/
-function rowfielParameter(namespace)
-{
+
+function rowfielParameter(namespace) {
+	
 	var parameters = mw.config.get( "wgSDImportDataPage" );
 	var parameter = [];
 
-	if ( namespace === "SDImport" )
-	{
-		parameter = parameters.SDImport.rowfields;
-		//parameter.push(parameters.SDImport.rowobject);
+	if ( parameters.hasOwnProperty( namespace ) ) {
+		
+		if ( parameters[namespace].hasOwnProperty("rowfields") ) {
+			parameter = parameters[namespace].rowfields;
+		}
+
 	}
-	if ( namespace === "JSONData" )
-	{
-		parameter = parameters.JSONData.rowfields;
-		//parameter.push(parameters.JSONData.rowobject);
-	}
-	if ( namespace === "" )
-	{
-		parameter = "";
-	}
+
 	return parameter;
-	//return rowobj;
 }
 
-function rowobjParameter(namespace)
-{
+function rowobjParameter( namespace ) {
+	
 	var parameters = mw.config.get( "wgSDImportDataPage" );
 	let rowobj = "";
+	
+	if ( parameters.hasOwnProperty( namespace ) ) {
+		
+		if ( parameters[namespace].hasOwnProperty("rowobject") ) {
 
-	if ( namespace === "SDImport" )
-	{
-		rowobj = parameters.SDImport.rowobject;
-		//parameter.push(parameters.SDImport.rowobject);
-	}
-	if ( namespace === "JSONData" )
-	{
-		rowobj = parameters.JSONData.rowobject;
+			rowobj = parameters[namespace].rowobject;
+		
+		}
 
-		//parameter.push(parameters.JSONData.rowobject);
 	}
-	if ( namespace === "" )
-	{
-		rowobj = "";
-	}
+
 	return rowobj;
 }
 
