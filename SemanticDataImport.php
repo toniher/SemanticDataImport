@@ -24,7 +24,9 @@ call_user_func( function () {
 	
 	$GLOBALS['wgMessagesDirs']['SemanticDataImport'] = __DIR__ . '/i18n';
 	$GLOBALS['wgExtensionMessagesFiles']['SemanticDataImport'] = __DIR__ . '/SemanticDataImport.i18n.php';
+	$GLOBALS['wgExtensionMessagesFiles']['SemanticDataImportMagic'] = __DIR__ . '/SemanticDataImport.i18n.magic.php';
 	$GLOBALS['wgAutoloadClasses']['SDImportData'] = __DIR__ . '/includes/SDImportData.php';
+	$GLOBALS['wgAutoloadClasses']['SDImportDataParser'] = __DIR__ . '/includes/SDImportData.parser.php';
 	$GLOBALS['wgAutoloadClasses']['SDImportApi'] = __DIR__ . '/includes/SDImportApi.php';
 
 	$GLOBALS['wgAPIModules']['sdimport'] = 'SDImportApi';
@@ -85,7 +87,8 @@ call_user_func( function () {
 // Hook our callback function into the parser
 function SDImportParserFunction( $parser ) {
 
-	$parser->setHook( 'smwdata', 'SDImportData::processData' );
+	$parser->setHook( 'smwdata', 'SDImportDataParser::processData' );
+	$parser->setFunctionHook( 'smwdatalink', 'SDImportDataParser::prepareLink', SFH_OBJECT_ARGS );
 
 	return true;
 }
