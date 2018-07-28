@@ -1,4 +1,6 @@
 
+var changedRowFields = false;
+
 //if click botton fileupload
 $( "input[name=wpfileupload]").change( function( event ) {
 	//save data botton upload file into input variable
@@ -57,8 +59,8 @@ $("#sdform form").on( "submit", function(event) {
 		
 		console.log( rowfields );
 		
-		if ( rowfields && JSON.stringify( rowfields ) != JSON.stringify( getRowParameter( namespace, 'rowfields' ) ) ) {
-			meta.rowfields = rowfields;
+		if ( rowfields && JSON.stringify( ifChangedRowfields( rowfields, changedRowFields ) ) != JSON.stringify( getRowParameter( namespace, 'rowfields' ) ) ) {
+			meta.rowfields = ifChangedRowfields( rowfields );
 		}
 		
 		if ( rowobj && rowobj !== getRowParameter( namespace, 'rowobj' ) ) {
@@ -165,19 +167,22 @@ function mainCsv(input)
 						
 						//generates a table with the added variable
 						hot1 = handsontableTable( result,rowfields,container1,rowobj );
-						rowfields = changeHeader(hot1);
-						//console.log(rowobj);
-						//console.log(document.getElementById("myInput").value = rowobj);
+						
+						changeHeader(hot1);
+
 						$("#sdpreview").append("<form><fieldset><legend>RowObject edit: </legend><input id='myInput' type='text' value='rowobj' >");
 						document.getElementById("myInput").value = rowobj;
 						$("#sdpreview").append("<button id='submitRow'>Edit</button></form></fieldset>");
 						//rowobj=rowobjEdit();
 						$("#submitRow").click(function() {
+							
 							let row = document.getElementById("myInput").value;
 							rowobj=row;
 							console.log(rowobj);
 							$("#sdpreview").empty();
 							hot1=handsontableTable(result,rowfields,container1,rowobj);
+							changeHeader(hot1);
+
 						});
 
 					}
@@ -218,13 +223,17 @@ function resultCsw(resu,delimiter,separator) {
 */
 function handsontableTable(result,rowfields,container1,rowobj) {
 
-	let page= [ "Page" ];
+	let cols = [ "Page" ];
+	if ( rowfields ) {
+		cols = cols.concat( rowfields );
+	}
+	
 	//handsontable table
 	hot1 = new Handsontable(container1, {
 		//data to fill the table
 	    data: result,
 	    //header of the table, parameter with localsettings data
-		colHeaders: page.concat( rowfields ),
+		colHeaders: cols,
 		rowHeaders: rowobj,
 	    // adds empty rows to the data source and also removes excessive rows
 	    minSpareRows: 0,
@@ -295,12 +304,13 @@ function changeHeader(hot1) {
        	headers[session] = value;
 		
        	rowfields = headers;
+		changedRowFields = true;
 
         hot1.updateSettings({
             colHeaders: headers
         });
 	});
-	return rowfields;
+	
 }
 
 function getRowParameter( namespace, param ) {
@@ -318,6 +328,16 @@ function getRowParameter( namespace, param ) {
 
 	return paramValue;	
 }
+
+function ifChangedRowfields( rowfields, changedRowFields ) {
+	
+	if ( changedRowFields ) {
+		rowfields.shift();
+	}
+	
+	return rowfields;
+}
+
 
 //csv preview table function
 function extensionValidation(input) {
