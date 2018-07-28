@@ -1,34 +1,30 @@
 
 //if click botton fileupload
-$( "input[name=wpfileupload]").change( function( event )
-{
+$( "input[name=wpfileupload]").change( function( event ) {
 	//save data botton upload file into input variable
 	let input = $( this ).get( 0 );
 	//console.log(input);
 	extensionValidation(input);
 });
 
-$( "#mw-input-wpdelimiter" ).change( function( event )
-{
+$( "#mw-input-wpdelimiter" ).change( function( event ) {
 	let input = $( "input[name=wpfileupload]" ).get( 0 );
 	mainCsv( input );
 });
 
-$( "#mw-input-wpseparator" ).change( function( event )
-{
+$( "#mw-input-wpseparator" ).change( function( event ) {
 	let input = $( "input[name=wpfileupload]" ).get( 0 );
 	mainCsv( input );
 
 });
 
-$( "#mw-input-wpnamespace" ).change( function( event )
-{
+$( "#mw-input-wpnamespace" ).change( function( event ) {
 	let input = $( "input[name=wpfileupload]" ).get( 0 );
 	mainCsv( input );
 });
 
-$("#sdform form").on( "submit", function(event)
-{
+$("#sdform form").on( "submit", function(event) {
+
 	//document.getElementById("#sdform form").disabled = true;
 	event.preventDefault();
 	let input = $( "input[name=wpfileupload]" ).get( 0 );
@@ -59,11 +55,13 @@ $("#sdform form").on( "submit", function(event)
 
 		var meta = { "app":"SDI", "version":0.1 };
 		
-		if ( JSON.stringify( parameter ) != JSON.stringify( rowfielParameter( namespace ) ) ) {
-			meta.rowfields = parameter;
+		console.log( rowfields );
+		
+		if ( rowfields && JSON.stringify( rowfields ) != JSON.stringify( getRowParameter( namespace, 'rowfields' ) ) ) {
+			meta.rowfields = rowfields;
 		}
 		
-		if ( rowobj !== rowobjParameter( namespace ) ) {
+		if ( rowobj && rowobj !== getRowParameter( namespace, 'rowobj' ) ) {
 			meta.rowobject = rowobj;
 		}
 		
@@ -71,10 +69,7 @@ $("#sdform form").on( "submit", function(event)
 			meta.single = single;
 		}
 		
-		//console.log(meta);
-		var obj = { "meta":meta, "data":resultado};
-		//console.log(obj);
-		console.log(resultado);
+		var obj = { "meta" : meta, "data" : resultado };
 		
 		var pageList = [];
 		for (var i = 0; i < resultado.length; ++i) {
@@ -101,8 +96,6 @@ $("#sdform form").on( "submit", function(event)
 		postObj.batch= batch ;
 		postObj.text = JSON.stringify( obj );
 		postObj.title = namespace;
-
-		console.log( postObj );
 
 		// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
 		$.ajax({
@@ -161,38 +154,35 @@ function mainCsv(input)
 						//console.log(resu);
 						//saves the separator selected in the form in the variable
 						let separator = document.getElementById("mw-input-wpseparator").value;
-						resultado=resultCsw(resu,delimiter,separator);
+						resultado = resultCsw( resu, delimiter, separator );
 						var result = resultado,container1 = document.getElementById('sdpreview'),hot1;
 						//empty the div to add the new table
 						$("#sdpreview").empty();
 						//saves the parameter selected in the form in the variable
 						let namespace = document.getElementById("mw-input-wpnamespace").value;
-						parameter=rowfielParameter(namespace);
-						rowobj=rowobjParameter(namespace);
+						rowfields = getRowParameter( namespace, 'rowfields' );
+						rowobj = getRowParameter( namespace, 'rowobject' );
 						
 						//generates a table with the added variable
-						hot1=handsontableTable(result,parameter,container1,rowobj);
-						changeHeader(hot1);
+						hot1 = handsontableTable( result,rowfields,container1,rowobj );
+						rowfields = changeHeader(hot1);
 						//console.log(rowobj);
 						//console.log(document.getElementById("myInput").value = rowobj);
 						$("#sdpreview").append("<form><fieldset><legend>RowObject edit: </legend><input id='myInput' type='text' value='rowobj' >");
 						document.getElementById("myInput").value = rowobj;
 						$("#sdpreview").append("<button id='submitRow'>Edit</button></form></fieldset>");
 						//rowobj=rowobjEdit();
-						$("#submitRow").click(function()
-						{
+						$("#submitRow").click(function() {
 							let row = document.getElementById("myInput").value;
 							rowobj=row;
 							console.log(rowobj);
 							$("#sdpreview").empty();
-							hot1=handsontableTable(result,parameter,container1,rowobj);
-							changeHeader(hot1);
+							hot1=handsontableTable(result,rowfields,container1,rowobj);
 						});
 
 					}
 					//If the file length is less than 0, the file is empty and shows an error message
-					else
-					{
+					else {
 						$("#sdpreview").empty();
 						//alert message error
 						$("#sdpreview").append("<b>Error, empty file!</b>");
@@ -200,8 +190,7 @@ function mainCsv(input)
 					}
 				}
 				//if the file is not read correctly, it shows an alert with a message of error
-				else
-				{
+				else {
 					$("#sdpreview").empty();
 					//alert("Error");
 					$("#sdpreview").append("<b>Error</b>");
@@ -214,10 +203,9 @@ function mainCsv(input)
 /**
 *
 */
-function resultCsw(resu,delimiter,separator)
-{
-	if ( separator === "{TAB}" )
-	{
+function resultCsw(resu,delimiter,separator) {
+
+	if ( separator === "{TAB}" ){
 		separator = "\t";
 	}
 	//converts the text into an array and separates it by delimiter and separator, finally saves it in a variable
@@ -228,22 +216,20 @@ function resultCsw(resu,delimiter,separator)
 /**
 *
 */
-function handsontableTable(result,parameter,container1,rowobj)
-{
-	let page= "Page";
+function handsontableTable(result,rowfields,container1,rowobj) {
+
+	let page= [ "Page" ];
 	//handsontable table
-	hot1 = new Handsontable(container1,
-	{
+	hot1 = new Handsontable(container1, {
 		//data to fill the table
 	    data: result,
 	    //header of the table, parameter with localsettings data
-		colHeaders: [page,parameter[0],parameter[1]],
+		colHeaders: page.concat( rowfields ),
 		rowHeaders: rowobj,
 	    // adds empty rows to the data source and also removes excessive rows
 	    minSpareRows: 0,
 	    readOnly: true,
-	    afterGetColHeader: function (col, TH) 
-	    {
+	    afterGetColHeader: function (col, TH) {
             // nothing for first column
             if (col == -1)
             {
@@ -288,8 +274,7 @@ function changeHeader(hot1)
         {
            	session = a[0][1];
             //console.log( session );
-            if (session != 0)
-            {
+            if (session != 0) {
 	            headers[session]="<input name='id' type='text' value="+b[session]+"\>";
 	            hot1.updateSettings
 	            ({
@@ -302,69 +287,47 @@ function changeHeader(hot1)
         }
     });
 
-   	$("th").change(function (e)
-   	{
+   	$("th").change(function (e) {
       	e.preventDefault();
       	var a = hot1.getSelected();
       	var b  = hot1.getColHeader();
         var headers = hot1.getColHeader();
       	var value  = $(this).find("input[name='id']").val();
        	headers[session] = value;
-       	parameter=headers;
-       	//console.log(parameter);
-        hot1.updateSettings(
-        {
-            colHeaders: parameter
+		
+       	rowfields = headers;
+
+        hot1.updateSettings({
+            colHeaders: headers
         });
 	});
-	return parameter;
+	return rowfields;
 }
 
-
-function rowfielParameter(namespace) {
+function getRowParameter( namespace, param ) {
 	
 	var parameters = mw.config.get( "wgSDImportDataPage" );
-	var parameter = [];
+	var paramValue = null;
 
 	if ( parameters.hasOwnProperty( namespace ) ) {
 		
-		if ( parameters[namespace].hasOwnProperty("rowfields") ) {
-			parameter = parameters[namespace].rowfields;
+		if ( parameters[namespace].hasOwnProperty( param ) ) {
+			paramValue = parameters[namespace][param];
 		}
 
 	}
 
-	return parameter;
-}
-
-function rowobjParameter( namespace ) {
-	
-	var parameters = mw.config.get( "wgSDImportDataPage" );
-	let rowobj = "";
-	
-	if ( parameters.hasOwnProperty( namespace ) ) {
-		
-		if ( parameters[namespace].hasOwnProperty("rowobject") ) {
-
-			rowobj = parameters[namespace].rowobject;
-		
-		}
-
-	}
-
-	return rowobj;
+	return paramValue;	
 }
 
 //csv preview table function
-function extensionValidation(input)
-{
+function extensionValidation(input) {
 	//Save filename with extension into variable
     var filePath = input.value;
  	//Initializate aviable extensions
     var allowedExtensions = /(.txt|.csv)$/i;
     //If file extension is different to file extension prints alert with error message
-    if(!allowedExtensions.exec(filePath))
-    {
+    if(!allowedExtensions.exec(filePath)) {
     	$("#sdpreview").empty();
     	//This alert informs user the extension error
     	$("#sdpreview").append("<b>Please upload file having extensions .txt/.csv/ only.</b>");
@@ -374,8 +337,7 @@ function extensionValidation(input)
         return false;
     }
     //If extension is aviable
-    else
-    {
+    else {
     	mainCsv(input);
 	}
 }

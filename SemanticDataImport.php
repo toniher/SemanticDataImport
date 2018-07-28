@@ -17,7 +17,7 @@ call_user_func( function () {
 			'path' => __FILE__,
 			'name' => 'Semantic Data Import',
 			'author' => array('Toni Hermoso'),
-			'version' => '0.2.1',
+			'version' => '0.3.0',
 			'url' => 'https://github.com/toniher/SemanticDataImport',
 			'descriptionmsg' => 'sdimport-desc'
 	);
