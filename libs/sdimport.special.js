@@ -105,7 +105,7 @@ $("#sdform form").on( "submit", function(event) {
 			processData: true,
 			//contentType: false,
 			success:function(data, textStatus, jqXHR){
-				console.log( data );
+
 				//console.log( textStatus);
 				if(textStatus === "success")
 				{
@@ -243,11 +243,10 @@ function handsontableTable(result,rowfields,container1,rowobj) {
 /**
 *
 */
-function changeHeader(hot1)
-{
+function changeHeader(hot1) {
+	
 	var session;
-    $("th").dblclick(function (e) 
-    {
+    $("th").dblclick(function (e) {
    		//console.log("click");
        	e.preventDefault();
        	var a = hot1.getSelected();
