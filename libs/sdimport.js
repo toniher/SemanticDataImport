@@ -71,18 +71,31 @@ var tableSDImport = {};
 				
 					var divval = "SMWData-"+numdata;
 					
+					var singleStr = "";
 
 					var cols = null;
+					var rowobj = null;
+					
 					cols = getRowParameter( detectTableNS, "rowfields" );
+					rowobj = getRowParameter( detectTableNS, "rowobject" );
 					
 					if ( celldata.hasOwnProperty("meta") ) {
+
 						if ( celldata.meta.hasOwnProperty("rowfields") ) {
 							cols = celldata.meta.rowfields;
+						}
+						
+						if ( celldata.meta.hasOwnProperty("single") ) {
+							singleStr = " data-single='" + celldata.meta.single + "'";
+						}
+						
+						if ( celldata.meta.hasOwnProperty("rowobject") ) {
+							rowobj = celldata.meta.rowobject;
 						}
 					}
 					
 					// Endpoint where to add - Put as first child
-					$("#mw-content-text").prepend("<div id='"+divval+"'>");
+					$("#mw-content-text").prepend("<div id='"+divval+"'"+singleStr+">");
 				
 					// TODO: Handle edit mode
 				
@@ -93,6 +106,7 @@ var tableSDImport = {};
 						readOnly: readonly,
 						minSpareRows: extrarows,
 						colHeaders: cols,
+						rowHeaders: rowobj,
 						contextMenu: true,
 						columnSorting: true
 					});
@@ -120,9 +134,11 @@ var tableSDImport = {};
 			$('.smwdata-link').each( function() {
 	
 				var divval = "SMWData-"+numdata;
-				$(this).after("<div id='"+divval+"'></div>");
 				
-				var container  = document.getElementById( divval );
+				var linkcontainer = this;
+			
+				$(linkcontainer).after("<div id='"+divval+"'></div>");
+				container = document.getElementById( divval );
 				
 				// Let's make readOnly false
 				readonly = false;
@@ -131,15 +147,15 @@ var tableSDImport = {};
 				var model = "json";
 				
 				// Let's check if content in title
-				if ( $(this).data('title') ) {
-					pagetitle = $(this).data('title');
+				if ( $(linkcontainer).data('title') ) {
+					pagetitle = $(linkcontainer).data('title');
 				}
 		
-				if ( $(this).data('model') ) {
-					model = $(this).data('model');
+				if ( $(linkcontainer).data('model') ) {
+					model = $(linkcontainer).data('model');
 				}
-				
-				if ( $(this).data('readonly') ) {
+								
+				if ( $(linkcontainer).data('readonly') ) {
 					readonly = true;
 				}			
 
@@ -164,10 +180,26 @@ var tableSDImport = {};
 						
 						// TODO: Replace with getRowParemeter			
 						cols = getDefaultCols( pagetitle );
+						var rowobj = null;
+						var singleStr = "";
+
 						if ( celldata.hasOwnProperty("meta") ) {
 							if ( celldata.meta.hasOwnProperty("rowfields") ) {
 								cols = celldata.meta.rowfields;
 							}
+						
+							if ( celldata.meta.hasOwnProperty("single") ) {
+								singleStr = " data-single='" + celldata.meta.single + "'";
+							}
+						
+							if ( celldata.meta.hasOwnProperty("rowobject") ) {
+								rowobj = celldata.meta.rowobject;
+							}
+
+						}
+
+						if ( singleStr !== "" ) {
+							$( container ).attr("data-single", celldata.meta.single );
 						}
 				
 						// Create Handsontable from content
@@ -176,19 +208,21 @@ var tableSDImport = {};
 							readOnly: readonly,
 							minSpareRows: extrarows,
 							colHeaders: cols,
+							rowHeaders: rowobj,
 							contextMenu: true,
 							columnSorting: true
 						});
 		
 						// Let's store in global variable
 						tableSDImport[ divval ] = table;
+
 					} else {
 						
 						// TODO: Replace with getRowParemeter			
 						cols = getDefaultCols( pagetitle );
 						celldata = [ [ "", "", "" ] ];
 						extrarows = 3;
-						
+
 						fillEmptyTable( container, divval, celldata, cols, extrarows, readonly );
 					}
 					})
@@ -209,7 +243,7 @@ var tableSDImport = {};
 
 				
 				if ( model === "json" ) {
-					
+
 					var pagetitleStr = "";
 					if ( pagetitle ) {
 						pagetitleStr = "data-title='"+pagetitle+"'";
@@ -365,6 +399,9 @@ var tableSDImport = {};
 			pagetitle = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
 		}
 
+		// Get if single
+		var single = $( "#" + selector ).data( "single" );
+		
 		var instance = tableSDImport[ selector ];
 
 		var rows = instance.countRows();
@@ -377,11 +414,12 @@ var tableSDImport = {};
 		}
 		
 		var cols = instance.getColHeader();
+		var rowobj = instance.getRowHeader( 0 ); // We assume all rows are the same, so only one
 		
 		// TODO: Handle at least rowobject and single mode as well
 		var meta = {};
 		var rowfields = null;
-
+		
 		if ( cols ) {
 			
 			if ( cols.length > 0 && ! cols.every( el => el === null ) ) {
@@ -390,11 +428,20 @@ var tableSDImport = {};
 			}
 		}
 		
+		// Putting single options
+		if ( single ) {
+			meta.single = true;
+		}
+		
 		// TODO: Replace getDefaultCols
 		if ( rowfields && JSON.stringify( rowfields ) != JSON.stringify( getDefaultCols( pagetitle ) ) ) {
 			meta.rowfields = rowfields;
 		}
 		
+		if ( rowobj && rowobj !== getDefaultCols( pagetitle, "rowobject" ) ) {
+			meta.rowobject = rowobj;
+		}
+
 		var strJSON = prepareStructForJSON( meta, data );
 		
 		if ( strJSON ) {
@@ -597,9 +644,9 @@ var tableSDImport = {};
 	}
 
 	/** Get default columns from pageTitle **/	
-	function getDefaultCols( pageTitle ) {
+	function getDefaultCols( pageTitle, param="rowfields" ) {
 		
-		var cols = null;
+		var paramValue = null;
 		
 		if ( pageTitle ) {
 			
@@ -622,9 +669,9 @@ var tableSDImport = {};
 						
 						var actualNS = pageConfig[ detectTableNS ];
 						
-						if ( actualNS.hasOwnProperty( "rowfields" ) ) {
+						if ( actualNS.hasOwnProperty( param ) ) {
 							
-							cols = actualNS.rowfields;
+							paramValue = actualNS[ param ];
 						}
 						
 					}
@@ -635,7 +682,7 @@ var tableSDImport = {};
 
 		}
 		
-		return cols;
+		return paramValue;
 		
 		
 	}
