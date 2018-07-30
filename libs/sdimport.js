@@ -19,10 +19,13 @@ var tableSDImport = {};
 		// Detect namespace
 		// If JSON namespace
 		
-		// TODO: Handle main page namespace, alias, etc.
-		var pageTitle = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
-
+		// TODO: Handle alias, etc.
 		var detectTableNS = mw.config.get( "wgCanonicalNamespace" );
+		var pageTitle = mw.config.get("wgTitle");
+		
+		if ( detectTableNS !== "" ) {
+			pageTitle = detectTableNS + ":" + pageTitle;
+		}
 		
 		var pageConfig = mw.config.get( "wgSDImportDataPage" );
 		
@@ -68,8 +71,10 @@ var tableSDImport = {};
 				
 					var divval = "SMWData-"+numdata;
 					
-					// Temp TODO: Columns handling
+
 					var cols = null;
+					cols = getRowParameter( detectTableNS, "rowfields" );
+					
 					if ( celldata.hasOwnProperty("meta") ) {
 						if ( celldata.meta.hasOwnProperty("rowfields") ) {
 							cols = celldata.meta.rowfields;
@@ -156,7 +161,8 @@ var tableSDImport = {};
 					var celldata = createTableFromJSON( data );
 					
 					if ( celldata && celldata.hasOwnProperty( "data" ) ) {
-									
+						
+						// TODO: Replace with getRowParemeter			
 						cols = getDefaultCols( pagetitle );
 						if ( celldata.hasOwnProperty("meta") ) {
 							if ( celldata.meta.hasOwnProperty("rowfields") ) {
@@ -178,6 +184,7 @@ var tableSDImport = {};
 						tableSDImport[ divval ] = table;
 					} else {
 						
+						// TODO: Replace with getRowParemeter			
 						cols = getDefaultCols( pagetitle );
 						celldata = [ [ "", "", "" ] ];
 						extrarows = 3;
@@ -191,6 +198,7 @@ var tableSDImport = {};
 				
 				} else {
 
+					// TODO: Replace with getRowParemeter			
 					cols = getDefaultCols( pagetitle );
 					celldata = [ [ "", "", "" ] ];
 					extrarows = 3;
@@ -243,8 +251,13 @@ var tableSDImport = {};
 		
 				}
 		
+				var cols;
+				cols = getRowParameter( detectTableNS, "rowfields" );
+
 				var strcols = $(this).attr("data-cols");
-				var cols = strcols.split(",");
+				if ( strcols ) {
+					cols = strcols.split(",");
+				}
 		
 				var divval = "SMWData-"+numdata;
 				$(this).after("<div id='"+divval+"'></div>");
@@ -302,7 +315,15 @@ var tableSDImport = {};
 
 		param.num = parseInt( selector.replace( "#SMWData-", "" ), 10 );
 	
-		param.title = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+		var namespace = mw.config.get( "wgCanonicalNamespace" );
+		
+		var pagetitle = mw.config.get("wgTitle");
+		
+		if ( namespace !== "" ) {
+			pagetitle = namespace + ":" + pagetitle;
+		}
+	
+		param.title = pagetitle;
 	
 		param.action = "sdimport";
 		param.format = "json";
@@ -320,7 +341,8 @@ var tableSDImport = {};
 
 		//Let's get data from selector
 		param.text = convertData2str( data, param.separator, param.delimiter );
-
+		// TODO: Handle cols here -> it should reflect in data-cols in the end
+		
 		var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
 		posting.done(function( data ) {
 			var newlocation = location.protocol + '//' + location.host + location.pathname;
@@ -339,6 +361,9 @@ var tableSDImport = {};
 		
 		var pagetitle = $(this).attr('data-title');
 
+		if ( ! pagetitle ) {
+			pagetitle = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+		}
 
 		var instance = tableSDImport[ selector ];
 
@@ -354,26 +379,27 @@ var tableSDImport = {};
 		var cols = instance.getColHeader();
 		
 		// TODO: Handle at least rowobject and single mode as well
-		var meta = null;
-		
+		var meta = {};
+		var rowfields = null;
+
 		if ( cols ) {
 			
 			if ( cols.length > 0 && ! cols.every( el => el === null ) ) {
 
-				meta = {};
-				meta.rowfields = cols;
+				rowfields = cols;
 			}
+		}
+		
+		// TODO: Replace getDefaultCols
+		if ( rowfields && JSON.stringify( rowfields ) != JSON.stringify( getDefaultCols( pagetitle ) ) ) {
+			meta.rowfields = rowfields;
 		}
 		
 		var strJSON = prepareStructForJSON( meta, data );
 		
 		if ( strJSON ) {
 		
-			if ( pagetitle ) {
-				param.title = pagetitle;
-			} else {
-				param.title = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
-			}
+			param.title = pagetitle;
 		
 			param.action = "sdimport";
 			param.format = "json";
@@ -529,10 +555,19 @@ var tableSDImport = {};
 			obj.meta.app = "SDI";
 			obj.meta.version = 0.1;
 
+			// For now we force only certain properties to be transferred
 			if ( meta ) {
 				
 				if ( meta.hasOwnProperty( "rowfields" ) ) {
 					obj.meta.rowfields = meta.rowfields;
+				}
+				
+				if ( meta.hasOwnProperty( "rowobject") ) {
+					obj.meta.rowobject = meta.rowobject;
+				}
+				
+				if ( meta.hasOwnProperty( "single") ) {
+					obj.meta.single = meta.single;
 				}
 			}
 			
@@ -603,6 +638,33 @@ var tableSDImport = {};
 		return cols;
 		
 		
+	}
+	
+	/** TODO: Redundant, in another file **/
+	function getRowParameter( namespace, param ) {
+	
+		var parameters = mw.config.get( "wgSDImportDataPage" );
+		var paramValue = null;
+	
+		if ( parameters.hasOwnProperty( namespace ) ) {
+			
+			if ( parameters[namespace].hasOwnProperty( param ) ) {
+				paramValue = parameters[namespace][param];
+			}
+	
+		}
+	
+		return paramValue;	
+	}
+
+	/** TODO: Redundant, in another file **/
+	function ifChangedRowfields( rowfields, changedRowFields ) {
+		
+		if ( changedRowFields ) {
+			rowfields.shift();
+		}
+		
+		return rowfields;
 	}
 	
 

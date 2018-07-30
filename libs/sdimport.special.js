@@ -57,8 +57,6 @@ $("#sdform form").on( "submit", function(event) {
 
 		var meta = { "app":"SDI", "version":0.1 };
 		
-		console.log( rowfields );
-		
 		if ( rowfields && JSON.stringify( ifChangedRowfields( rowfields, changedRowFields ) ) != JSON.stringify( getRowParameter( namespace, 'rowfields' ) ) ) {
 			meta.rowfields = ifChangedRowfields( rowfields );
 		}
