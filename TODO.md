@@ -2,7 +2,6 @@
 
 Stuff to be implemented
 
-* Add rowfields and rowobject in spreadsheet in page view 
 * Create properties if they do not exist
 * Import data interfaces (Special Pages)
     * Selection from configuration
