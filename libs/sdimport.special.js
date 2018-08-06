@@ -166,7 +166,7 @@ function mainCsv(input)
 						//generates a table with the added variable
 						hot1 = handsontableTable( result,rowfields,container1,rowobj );
 						
-						changeHeader(hot1);
+						changeTableHeader( "sdpreview", hot1, 0 );
 
 						$( "#sdpreview" ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button id='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
 						document.getElementById("rowInput").value = rowobj;
@@ -204,7 +204,7 @@ $( document ).on( "click", "#submitRow", function() {
 	document.getElementById("rowInput").value = rowobj;
 
 	hot1 = handsontableTable( result, rowfields, container1, rowobj );
-	changeHeader( hot1 );
+	changeTableHeader( "sdpreview", hot1, 0 );
 
 });
 
@@ -252,66 +252,66 @@ function handsontableTable(result,rowfields,container1,rowobj) {
     return hot1;
 }
 
-/**
-*
-*/
-function changeHeader(hot1) {
+
+/** TODO: This is copy pasted from version in sdimport **/
+
+function changeTableHeader( divval, instance, start ) {
 	
 	var session;
-    $("#sdpreview th").dblclick(function (e) {
-   		//console.log("click");
-       	e.preventDefault();
-       	var a = hot1.getSelected();
-       	//if(a[0]==='0'&&a[1]==='0'&&a[2]==='2'&&a[3]==='0')
-      	// startrow, startcol, endrow, endcol
-      	// 0, 1, 2, 3
-     	var b  = hot1.getColHeader();
-     	//console.log(b);
-        var headers = hot1.getColHeader();
-       	var value;
-       	//console.log(headers);
-      	if($("#sdpreview th").find("input[name='id']").val()) {
-          	value  = $("#sdpreview th").find("input[name='id']").val();
-          	headers[session] = value;
-         	session = a[1];
-         	headers[a[1]]="<input name='id' type='text' value="+b+"\>";
-        	hot1.updateSettings(
-        	{
-                colHeaders: headers
-            });
-    	}
-        else {
-           	session = a[0][1];
-            //console.log( session );
-            if (session != 0) {
-	            headers[session]="<input name='id' type='text' value="+b[session]+"\>";
-	            hot1.updateSettings
-	            ({
-	                colHeaders: headers
-	            });
-	          	$(this).find("input[name='id']").focus(); 
-          	}
-          	else
-          	{}
-        }
-    });
+	var colstart = -1;
+	
+	if ( start !== undefined ) {
+		colstart = start;
+	}
+	
+	var selectorchange = "#"+divval+" th";
+	
+	$( selectorchange ).dblclick(function (e) {
 
-   	$("#sdpreview th").change(function (e) {
-      	e.preventDefault();
-      	var a = hot1.getSelected();
-      	var b  = hot1.getColHeader();
-        var headers = hot1.getColHeader();
-      	var value  = $(this).find("input[name='id']").val();
-       	headers[session] = value;
+		e.preventDefault();
+		var a = instance.getSelected();
+		var b  = instance.getColHeader();
+		var headers = instance.getColHeader();
+		var value;
+
+		if($(selectorchange).find("input[name='id']").val()) {
+			value  = $("#sdpreview th").find("input[name='id']").val();
+			headers[session] = value;
+			session = a[1];
+			headers[a[1]]="<input name='id' type='text' value="+b+"\>";
+			instance.updateSettings({
+				colHeaders: headers
+			});
+		} else {
+			session = a[0][1];
+
+			if (session > colstart) {
+				headers[session]="<input name='id' type='text' value="+b[session]+"\>";
+				instance.updateSettings({
+					colHeaders: headers
+				});
+				$(this).find("input[name='id']").focus(); 
+			}
+		}
+	});
+
+	$( selectorchange ).change(function (e) {
 		
-       	rowfields = headers;
+		e.preventDefault();
+		
+		var a = instance.getSelected();
+		var b  = instance.getColHeader();
+		var headers = instance.getColHeader();
+		var value  = $(this).find("input[name='id']").val();
+		headers[session] = value;
+		
+		rowfields = headers;
 		changedRowFields = true;
 
-        hot1.updateSettings({
-            colHeaders: headers
-        });
+		instance.updateSettings({
+			colHeaders: headers
+		});
 	});
-	
 }
 
 function getRowParameter( namespace, param ) {

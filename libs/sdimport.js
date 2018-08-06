@@ -478,7 +478,7 @@ var tableSDImport = {};
 		var session;
 		var colstart = -1;
 		
-		if ( start ) {
+		if ( start !== undefined ) {
 			colstart = start;
 		}
 		
