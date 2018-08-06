@@ -258,7 +258,7 @@ function handsontableTable(result,rowfields,container1,rowobj) {
 function changeHeader(hot1) {
 	
 	var session;
-    $("th").dblclick(function (e) {
+    $("#sdpreview th").dblclick(function (e) {
    		//console.log("click");
        	e.preventDefault();
        	var a = hot1.getSelected();
@@ -270,9 +270,8 @@ function changeHeader(hot1) {
         var headers = hot1.getColHeader();
        	var value;
        	//console.log(headers);
-      	if($("th").find("input[name='id']").val())
-      	{
-          	value  = $("th").find("input[name='id']").val();
+      	if($("#sdpreview th").find("input[name='id']").val()) {
+          	value  = $("#sdpreview th").find("input[name='id']").val();
           	headers[session] = value;
          	session = a[1];
          	headers[a[1]]="<input name='id' type='text' value="+b+"\>";
@@ -281,8 +280,7 @@ function changeHeader(hot1) {
                 colHeaders: headers
             });
     	}
-        else
-        {
+        else {
            	session = a[0][1];
             //console.log( session );
             if (session != 0) {
@@ -298,7 +296,7 @@ function changeHeader(hot1) {
         }
     });
 
-   	$("th").change(function (e) {
+   	$("#sdpreview th").change(function (e) {
       	e.preventDefault();
       	var a = hot1.getSelected();
       	var b  = hot1.getColHeader();

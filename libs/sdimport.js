@@ -113,6 +113,8 @@ var tableSDImport = {};
 				
 					// Let's store in global variable
 					tableSDImport[ divval ] = table;
+					
+					changeTableHeader( divval, table );
 				
 					if ( ! readonly ) {
 						$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
@@ -215,6 +217,7 @@ var tableSDImport = {};
 		
 						// Let's store in global variable
 						tableSDImport[ divval ] = table;
+						changeTableHeader( divval, table );
 
 					} else {
 						
@@ -315,6 +318,7 @@ var tableSDImport = {};
 		
 				// Let's store in global variable
 				tableSDImport[ divval ] = table;
+				changeTableHeader( divval, table );
 		
 				if ( $(this).data('edit') ) {
 					$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
@@ -468,6 +472,65 @@ var tableSDImport = {};
 		
 	
 	});
+	
+	function changeTableHeader( divval, instance, start ) {
+		
+		var session;
+		var colstart = -1;
+		
+		if ( start ) {
+			colstart = start;
+		}
+		
+		var selectorchange = "#"+divval+" th";
+		
+		$( selectorchange ).dblclick(function (e) {
+
+			e.preventDefault();
+			var a = instance.getSelected();
+			var b  = instance.getColHeader();
+			var headers = instance.getColHeader();
+			var value;
+
+			if($(selectorchange).find("input[name='id']").val()) {
+				value  = $("#sdpreview th").find("input[name='id']").val();
+				headers[session] = value;
+				session = a[1];
+				headers[a[1]]="<input name='id' type='text' value="+b+"\>";
+				instance.updateSettings({
+					colHeaders: headers
+				});
+			} else {
+				session = a[0][1];
+
+				if (session > colstart) {
+					headers[session]="<input name='id' type='text' value="+b[session]+"\>";
+					instance.updateSettings({
+						colHeaders: headers
+					});
+					$(this).find("input[name='id']").focus(); 
+				}
+			}
+		});
+	
+		$( selectorchange ).change(function (e) {
+			
+			e.preventDefault();
+			
+			var a = instance.getSelected();
+			var b  = instance.getColHeader();
+			var headers = instance.getColHeader();
+			var value  = $(this).find("input[name='id']").val();
+			headers[session] = value;
+			
+			rowfields = headers;
+			changedRowFields = true;
+	
+			instance.updateSettings({
+				colHeaders: headers
+			});
+		});
+	}
 	
 	/** @param Array
 	* return string
