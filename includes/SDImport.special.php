@@ -74,6 +74,7 @@ class SpecialSDImport extends SpecialPage {
 				'options' => $list_namespaces
 			),
 			'single' => [
+				'section' => 'upload',
 				'class' => 'HTMLCheckField',
 				'label' => 'Single row mode',
 				'default' => false,

@@ -7,5 +7,10 @@
     "sdimport-form-intro": "You can upload data from the form below...",
     "sdimport-form-submit-button": "Submit",
     "sdimport-form-submit-success": "It has been successfully uploaded",
-    "sdimport-form-back": "Back"
+    "sdimport-form-back": "Back",
+    "sdimport-form-edit-rowobject-label": "Row Property: ",
+    "sdimport-form-edit-rowobject-button": "Edit",
+    "sdimport-form-empty-file": "Error, empty file!",
+    "sdimport-form-error": "Error",
+    "sdimport-form-restrict-extensions": "Please upload files with the following extensions: .txt .csv"
 }

@@ -50,7 +50,12 @@ call_user_func( function () {
 		'messages' => array(
 			'sdimport-commit',
 			'sdimport-form-submit-success',
-			'sdimport-form-back'
+			'sdimport-form-back',
+			'sdimport-form-edit-rowobject-label',
+			'sdimport-form-edit-rowobject-button',
+			'sdimport-form-empty-file',
+			'sdimport-form-error',
+			'sdimport-form-restrict-extensions'
 		),
 		'remoteExtPath' => 'SemanticDataImport'
 	);

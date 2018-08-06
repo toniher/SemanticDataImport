@@ -168,27 +168,15 @@ function mainCsv(input)
 						
 						changeHeader(hot1);
 
-						$("#sdpreview").append("<form><fieldset><legend>RowObject edit: </legend><input id='myInput' type='text' value='rowobj' >");
-						document.getElementById("myInput").value = rowobj;
-						$("#sdpreview").append("<button id='submitRow'>Edit</button></form></fieldset>");
-						//rowobj=rowobjEdit();
-						$("#submitRow").click(function() {
-							
-							let row = document.getElementById("myInput").value;
-							rowobj=row;
-							console.log(rowobj);
-							$("#sdpreview").empty();
-							hot1=handsontableTable(result,rowfields,container1,rowobj);
-							changeHeader(hot1);
-
-						});
-
+						$( "#sdpreview" ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button id='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
+						document.getElementById("rowInput").value = rowobj;
+						
 					}
 					//If the file length is less than 0, the file is empty and shows an error message
 					else {
 						$("#sdpreview").empty();
 						//alert message error
-						$("#sdpreview").append("<b>Error, empty file!</b>");
+						$("#sdpreview").append("<strong>"+mw.message("sdimport-form-empty-file")+"</strong>");
 						//alert("Error, empty file!");
 					}
 				}
@@ -196,13 +184,30 @@ function mainCsv(input)
 				else {
 					$("#sdpreview").empty();
 					//alert("Error");
-					$("#sdpreview").append("<b>Error</b>");
+					$("#sdpreview").append("<strong>"+mw.message("sdimport-form-error")+"</strong>");
 				}
 			};
 			reader.readAsText(infile);
 		}
 	}
 }
+
+
+$( document ).on( "click", "#submitRow", function() {
+	
+	var result = resultado,container1 = document.getElementById('sdpreview'),hot1;
+
+	let rowobj = document.getElementById("rowInput").value;
+	
+	$( "#sdpreview" ).empty();
+	$( "#sdpreview" ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button id='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
+	document.getElementById("rowInput").value = rowobj;
+
+	hot1 = handsontableTable( result, rowfields, container1, rowobj );
+	changeHeader( hot1 );
+
+});
+
 /**
 *
 */
@@ -347,8 +352,8 @@ function extensionValidation(input) {
     if(!allowedExtensions.exec(filePath)) {
     	$("#sdpreview").empty();
     	//This alert informs user the extension error
-    	$("#sdpreview").append("<b>Please upload file having extensions .txt/.csv/ only.</b>");
-        //alert('Please upload file having extensions .txt/.csv/ only.');
+    	$("#sdpreview").append("<strong>"+mw.message("sdimport-form-restrict-extensions")+"</strong>");
+
         fileInput.value = '';
         //returns false
         return false;
