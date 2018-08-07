@@ -61,7 +61,7 @@ $("#sdform form").on( "submit", function(event) {
 			meta.rowfields = ifChangedRowfields( rowfields );
 		}
 		
-		if ( rowobj && rowobj !== getRowParameter( namespace, 'rowobj' ) ) {
+		if ( rowobj && rowobj !== getRowParameter( namespace, 'rowobject' ) ) {
 			meta.rowobject = rowobj;
 		}
 		
@@ -197,7 +197,8 @@ $( document ).on( "click", ".submitRow", function() {
 	
 	var result = resultado,container1 = document.getElementById('sdpreview'),hot1;
 
-	let rowobj = document.getElementById("rowInput").value;
+	// Global rowobj here... TODO: Handling it better
+	rowobj = document.getElementById("rowInput").value;
 	
 	$( "#sdpreview" ).empty();
 	addEditRowInput( rowobj, "sdpreview" );

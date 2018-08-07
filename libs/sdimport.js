@@ -125,7 +125,7 @@ var tableSDImport = {};
 					
 						if ( editfields ) {
 							changeTableHeader( divval, table );
-							addEditRowInput( rowobj, divval );
+							// addEditRowInput( rowobj, divval );
 						}
 					}
 					
@@ -253,7 +253,7 @@ var tableSDImport = {};
 							if ( editfields ) {
 								console.log( divval );
 								changeTableHeader( divval, table );
-								addEditRowInput( rowobj, divval );
+								// addEditRowInput( rowobj, divval );
 							}
 			
 						}		
@@ -285,7 +285,7 @@ var tableSDImport = {};
 						if ( editfields ) {
 							console.log( divval );
 							changeTableHeader( divval, table );
-							addEditRowInput( rowobj, divval );
+							// addEditRowInput( rowobj, divval );
 						}
 		
 					}
@@ -515,16 +515,7 @@ var tableSDImport = {};
 	
 	$( document ).on( "click", ".submitRow", function() {
 	
-		// TODO -> Detect ID wherre and so on...
-		//var result = resultado,container1 = document.getElementById('sdpreview'),hot1;
-		//
-		//let rowobj = document.getElementById("rowInput").value;
-		//
-		//$( "#sdpreview" ).empty();
-		//addEditRowInput( rowobj, "sdpreview" );
-		//
-		//hot1 = handsontableTable( result, rowfields, container1, rowobj );
-		//changeTableHeader( "sdpreview", hot1, 0 );
+		console.log( "To be handled" );
 
 	});
 	
@@ -589,7 +580,7 @@ var tableSDImport = {};
 	
 	function addEditRowInput( rowobj, divval ) {
 	
-		$( "#"+divval ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button class='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
+		$( "#"+divval ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='' ><button class='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
 		if ( rowobj ) {
 			document.getElementById("rowInput").value = rowobj;
 		}
