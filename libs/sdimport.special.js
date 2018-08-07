@@ -168,7 +168,7 @@ function mainCsv(input)
 						
 						changeTableHeader( "sdpreview", hot1, 0 );
 
-						$( "#sdpreview" ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button id='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
+						$( "#sdpreview" ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button class='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
 						document.getElementById("rowInput").value = rowobj;
 						
 					}
@@ -193,20 +193,29 @@ function mainCsv(input)
 }
 
 
-$( document ).on( "click", "#submitRow", function() {
+$( document ).on( "click", ".submitRow", function() {
 	
 	var result = resultado,container1 = document.getElementById('sdpreview'),hot1;
 
 	let rowobj = document.getElementById("rowInput").value;
 	
 	$( "#sdpreview" ).empty();
-	$( "#sdpreview" ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button id='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
-	document.getElementById("rowInput").value = rowobj;
+	addEditRowInput( rowobj, "sdpreview" );
 
 	hot1 = handsontableTable( result, rowfields, container1, rowobj );
 	changeTableHeader( "sdpreview", hot1, 0 );
 
 });
+
+/** TODO: This is copy pasted from version in sdimport **/
+
+function addEditRowInput( rowobj, divval ) {
+	
+	$( "#"+divval ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='' ><button class='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
+	if ( rowobj ) {
+		document.getElementById("rowInput").value = rowobj;
+	}
+}
 
 /**
 *

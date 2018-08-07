@@ -11,6 +11,7 @@ var tableSDImport = {};
 
 		
 		var readonly = true;
+		var editfields = false; // Do not allow editing fields by default
 		var extrarows = 0;
 		var numdata = 0;
 		
@@ -44,6 +45,11 @@ var tableSDImport = {};
 					
 					readonly = ! actualNS.edit; // Opposite of edit
 				}
+				
+				if ( actualNS.hasOwnProperty("editfields") ) {
+					
+					editfields = actualNS.editfields;
+				}
 			}
 			
 		}
@@ -63,6 +69,9 @@ var tableSDImport = {};
 			
 			var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
 			posting.done(function( data ) {
+				
+				var cols = null;
+				var rowobj = null;
 
 				// Create Handsontable from content
 				var celldata = createTableFromJSON( data );
@@ -72,9 +81,6 @@ var tableSDImport = {};
 					var divval = "SMWData-"+numdata;
 					
 					var singleStr = "";
-
-					var cols = null;
-					var rowobj = null;
 					
 					cols = getRowParameter( detectTableNS, "rowfields" );
 					rowobj = getRowParameter( detectTableNS, "rowobject" );
@@ -113,11 +119,14 @@ var tableSDImport = {};
 				
 					// Let's store in global variable
 					tableSDImport[ divval ] = table;
-					
-					changeTableHeader( divval, table );
 				
 					if ( ! readonly ) {
 						$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+					
+						if ( editfields ) {
+							changeTableHeader( divval, table );
+							addEditRowInput( rowobj, divval );
+						}
 					}
 					
 					numdata = numdata + 1 ;
@@ -148,6 +157,9 @@ var tableSDImport = {};
 				var pagetitle = null;
 				var model = "json";
 				
+				var rowobj = null;
+				var table;
+				
 				// Let's check if content in title
 				if ( $(linkcontainer).data('title') ) {
 					pagetitle = $(linkcontainer).data('title');
@@ -172,62 +184,80 @@ var tableSDImport = {};
 					param.formatversion = 2;
 					param.titles = pagetitle;
 
+					rowobj = getDefaultCols( pagetitle, "rowobject" );
 
 					var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
 					posting.done(function( data ) {
 
-					var celldata = createTableFromJSON( data );
+						var celldata = createTableFromJSON( data );
+						
+						if ( celldata && celldata.hasOwnProperty( "data" ) ) {
+							
+							// TODO: Replace with getRowParemeter			
+							cols = getDefaultCols( pagetitle );
+							var singleStr = "";
+	
+							if ( celldata.hasOwnProperty("meta") ) {
+								if ( celldata.meta.hasOwnProperty("rowfields") ) {
+									cols = celldata.meta.rowfields;
+								}
+							
+								if ( celldata.meta.hasOwnProperty("single") ) {
+									singleStr = " data-single='" + celldata.meta.single + "'";
+								}
+							
+								if ( celldata.meta.hasOwnProperty("rowobject") ) {
+									rowobj = celldata.meta.rowobject;
+								}
+	
+							}
+	
+							if ( singleStr !== "" ) {
+								$( container ).attr("data-single", celldata.meta.single );
+							}
 					
-					if ( celldata && celldata.hasOwnProperty( "data" ) ) {
-						
-						// TODO: Replace with getRowParemeter			
-						cols = getDefaultCols( pagetitle );
-						var rowobj = null;
-						var singleStr = "";
-
-						if ( celldata.hasOwnProperty("meta") ) {
-							if ( celldata.meta.hasOwnProperty("rowfields") ) {
-								cols = celldata.meta.rowfields;
-							}
-						
-							if ( celldata.meta.hasOwnProperty("single") ) {
-								singleStr = " data-single='" + celldata.meta.single + "'";
-							}
-						
-							if ( celldata.meta.hasOwnProperty("rowobject") ) {
-								rowobj = celldata.meta.rowobject;
-							}
-
+							// Create Handsontable from content
+							table = new Handsontable( container, {
+								data: celldata.data,
+								readOnly: readonly,
+								minSpareRows: extrarows,
+								colHeaders: cols,
+								rowHeaders: rowobj,
+								contextMenu: true,
+								columnSorting: true
+							});
+			
+							// Let's store in global variable
+							tableSDImport[ divval ] = table;
+	
+						} else {
+							
+							// TODO: Replace with getRowParemeter			
+							cols = getDefaultCols( pagetitle );
+							celldata = [ [ "", "", "" ] ];
+							extrarows = 3;
+	
+							table = fillEmptyTable( container, divval, celldata, cols, extrarows, readonly );
 						}
+						
+						if ( model === "json" ) {
 
-						if ( singleStr !== "" ) {
-							$( container ).attr("data-single", celldata.meta.single );
-						}
-				
-						// Create Handsontable from content
-						var table = new Handsontable( container, {
-							data: celldata.data,
-							readOnly: readonly,
-							minSpareRows: extrarows,
-							colHeaders: cols,
-							rowHeaders: rowobj,
-							contextMenu: true,
-							columnSorting: true
-						});
+							var pagetitleStr = "";
+							if ( pagetitle ) {
+								pagetitleStr = "data-title='"+pagetitle+"'";
+							}
+							$( container ).append("<p class='smwdata-commit-json' " + pagetitleStr + " data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 		
-						// Let's store in global variable
-						tableSDImport[ divval ] = table;
-						changeTableHeader( divval, table );
-
-					} else {
+							editfields = getDefaultCols( pagetitle, "editfields" );
+							
+							if ( editfields ) {
+								console.log( divval );
+								changeTableHeader( divval, table );
+								addEditRowInput( rowobj, divval );
+							}
+			
+						}		
 						
-						// TODO: Replace with getRowParemeter			
-						cols = getDefaultCols( pagetitle );
-						celldata = [ [ "", "", "" ] ];
-						extrarows = 3;
-
-						fillEmptyTable( container, divval, celldata, cols, extrarows, readonly );
-					}
 					})
 					.fail( function( data ) {
 						alert("Error!");
@@ -240,19 +270,26 @@ var tableSDImport = {};
 					celldata = [ [ "", "", "" ] ];
 					extrarows = 3;
 				
-					fillEmptyTable( container, divval, celldata, cols, extrarows, readonly );
-					
-				}
-
+					table = fillEmptyTable( container, divval, celldata, cols, extrarows, readonly );
 				
-				if ( model === "json" ) {
+					if ( model === "json" ) {
 
-					var pagetitleStr = "";
-					if ( pagetitle ) {
-						pagetitleStr = "data-title='"+pagetitle+"'";
+						var pagetitleStr = "";
+						if ( pagetitle ) {
+							pagetitleStr = "data-title='"+pagetitle+"'";
+						}
+						$( container ).append("<p class='smwdata-commit-json' " + pagetitleStr + " data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+	
+						editfields = getDefaultCols( pagetitle, "editfields" );
+						
+						if ( editfields ) {
+							console.log( divval );
+							changeTableHeader( divval, table );
+							addEditRowInput( rowobj, divval );
+						}
+		
 					}
-					$( container ).append("<p class='smwdata-commit-json' " + pagetitleStr + " data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
-
+					
 				}
 				
 				numdata = numdata + 1 ;
@@ -318,10 +355,13 @@ var tableSDImport = {};
 		
 				// Let's store in global variable
 				tableSDImport[ divval ] = table;
-				changeTableHeader( divval, table );
 		
 				if ( $(this).data('edit') ) {
 					$( container ).append("<p class='smwdata-commit' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+				
+					// if ( editfields ) {
+					//	changeTableHeader( divval, table );
+					// }
 				}
 				
 				numdata = numdata + 1 ;
@@ -473,6 +513,21 @@ var tableSDImport = {};
 	
 	});
 	
+	$( document ).on( "click", ".submitRow", function() {
+	
+		// TODO -> Detect ID wherre and so on...
+		//var result = resultado,container1 = document.getElementById('sdpreview'),hot1;
+		//
+		//let rowobj = document.getElementById("rowInput").value;
+		//
+		//$( "#sdpreview" ).empty();
+		//addEditRowInput( rowobj, "sdpreview" );
+		//
+		//hot1 = handsontableTable( result, rowfields, container1, rowobj );
+		//changeTableHeader( "sdpreview", hot1, 0 );
+
+	});
+	
 	function changeTableHeader( divval, instance, start ) {
 		
 		var session;
@@ -530,6 +585,14 @@ var tableSDImport = {};
 				colHeaders: headers
 			});
 		});
+	}
+	
+	function addEditRowInput( rowobj, divval ) {
+	
+		$( "#"+divval ).append("<fieldset><legend>" + mw.message( 'sdimport-form-edit-rowobject-label' ).text() + "</legend><input id='rowInput' type='text' value='rowobj' ><button class='submitRow'>" + mw.message( 'sdimport-form-edit-rowobject-button' ).text() + "</button></fieldset>");
+		if ( rowobj ) {
+			document.getElementById("rowInput").value = rowobj;
+		}
 	}
 	
 	/** @param Array
@@ -704,6 +767,8 @@ var tableSDImport = {};
 
 		// Let's store in global variable
 		tableSDImport[ divval ] = table;
+		
+		return table;
 	}
 
 	/** Get default columns from pageTitle **/	
