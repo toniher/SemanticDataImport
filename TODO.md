@@ -16,3 +16,5 @@ Stuff to be implemented
     * Design classes so that this is allowed
 * In 1 row (no subobject) interface allow also basic form interface
 	* Try using https://surveyjs.io/
+* For link version, add property reference to page where it is from
+* Add preset values for cols-rows
