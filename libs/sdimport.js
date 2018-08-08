@@ -81,6 +81,7 @@ var tableSDImport = {};
 					var divval = "SMWData-"+numdata;
 					
 					var singleStr = "";
+					var refStr = "";
 					
 					cols = getRowParameter( detectTableNS, "rowfields" );
 					rowobj = getRowParameter( detectTableNS, "rowobject" );
@@ -94,6 +95,10 @@ var tableSDImport = {};
 						if ( celldata.meta.hasOwnProperty("single") ) {
 							singleStr = " data-single='" + celldata.meta.single + "'";
 						}
+
+						if ( celldata.meta.hasOwnProperty("ref") ) {
+							refStr = " data-ref='" + JSON.stringify( celldata.meta.ref ) + "'";
+						}
 						
 						if ( celldata.meta.hasOwnProperty("rowobject") ) {
 							rowobj = celldata.meta.rowobject;
@@ -101,7 +106,7 @@ var tableSDImport = {};
 					}
 					
 					// Endpoint where to add - Put as first child
-					$("#mw-content-text").prepend("<div id='"+divval+"'"+singleStr+">");
+					$("#mw-content-text").prepend("<div id='"+divval+"'"+singleStr+refStr+">");
 				
 					// TODO: Handle edit mode
 				
@@ -156,8 +161,9 @@ var tableSDImport = {};
 
 				var pagetitle = null;
 				var model = "json";
-				
 				var rowobj = null;
+				var reflink = null;
+				
 				var table;
 				
 				// Let's check if content in title
@@ -171,7 +177,12 @@ var tableSDImport = {};
 								
 				if ( $(linkcontainer).data('readonly') ) {
 					readonly = true;
-				}			
+				}
+				
+				if ( $(linkcontainer).data('ref') ) {
+					reflink = $(linkcontainer).data('ref');
+				}
+							
 
 				// TODO: Refactor with SDIJSONpage part
 				if ( pagetitle ) {
@@ -196,6 +207,7 @@ var tableSDImport = {};
 							// TODO: Replace with getRowParemeter			
 							cols = getDefaultCols( pagetitle );
 							var singleStr = "";
+							var refStr = "";
 	
 							if ( celldata.hasOwnProperty("meta") ) {
 								if ( celldata.meta.hasOwnProperty("rowfields") ) {
@@ -204,6 +216,10 @@ var tableSDImport = {};
 							
 								if ( celldata.meta.hasOwnProperty("single") ) {
 									singleStr = " data-single='" + celldata.meta.single + "'";
+								}
+								
+								if ( celldata.meta.hasOwnProperty("ref") ) {
+									refStr = " data-ref='" + celldata.meta.ref + "'";
 								}
 							
 								if ( celldata.meta.hasOwnProperty("rowobject") ) {
@@ -214,6 +230,14 @@ var tableSDImport = {};
 	
 							if ( singleStr !== "" ) {
 								$( container ).attr("data-single", celldata.meta.single );
+							}
+							
+							if ( refStr !== "" ) {
+								$( container ).attr("data-ref", JSON.stringify( celldata.meta.ref ) );
+							}
+	
+							if ( reflink && reflink !== "" ) {
+								$( container ).attr("data-ref", JSON.stringify( reflink ) );
 							}
 					
 							// Create Handsontable from content
@@ -445,7 +469,9 @@ var tableSDImport = {};
 
 		// Get if single
 		var single = $( "#" + selector ).data( "single" );
-		
+		// Get ref - stored in JSON format
+		var ref = $( "#" + selector ).data( "ref" );
+
 		var instance = tableSDImport[ selector ];
 
 		var rows = instance.countRows();
@@ -475,6 +501,10 @@ var tableSDImport = {};
 		// Putting single options
 		if ( single ) {
 			meta.single = true;
+		}
+		
+		if ( ref ) {
+			meta.ref = ref;
 		}
 		
 		// TODO: Replace getDefaultCols
@@ -732,6 +762,10 @@ var tableSDImport = {};
 				
 				if ( meta.hasOwnProperty( "single") ) {
 					obj.meta.single = meta.single;
+				}
+				
+				if ( meta.hasOwnProperty( "ref") ) {
+					obj.meta.ref = meta.ref;
 				}
 			}
 			

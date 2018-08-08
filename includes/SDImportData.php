@@ -62,7 +62,7 @@ class SDImportData {
 							// TODO: Should we add props here if they don't exist?
 		
 							$dprops = array();
-		
+
 							if ( $refs ) {
 								foreach ( $refs as $key => $val ) {
 									$dprops[ $key ] = self::processWikiText( $val, $pageTitle );
@@ -300,6 +300,7 @@ class SDImportData {
 		
 		if ( key_exists( $key, $first ) ) {
 			// Here process
+			
 			$array = array();
 
 			if ( is_array( $first[ $key ] ) ) {
@@ -308,33 +309,43 @@ class SDImportData {
 				$keyvals = explode( ",", $first[ $key ] );
 			}
 			
-			if ( count( $keyvals ) < 2 ) {
-				// If => ergo hash
-				$keyhvals = explode( "#", $keyvals[0], 2 );
-
-				if ( count( $keyhvals ) > 1 ) {
-					$array[ trim( $keyhvals[0] ) ] = trim( $keyhvals[1] );
-					return $array;
-				} else {
-					return trim( $keyhvals[0] );
-				}
-			} else { 
-
-				foreach ( $keyvals as $keyval ) {
-					$keyval = trim( $keyval );
-					
+			
+			if ( self::isAssocArray( $keyvals ) ) {
+				
+				return $keyvals;
+			
+			} else {
+			
+				if ( count( $keyvals ) < 2 ) {
 					// If => ergo hash
-					$keyhvals = explode( "#", $keyval, 2 );
+					
+					$keyhvals = explode( "#", $keyvals[0], 2 );
 	
 					if ( count( $keyhvals ) > 1 ) {
 						$array[ trim( $keyhvals[0] ) ] = trim( $keyhvals[1] );
+						return $array;
+					} else {
+						return trim( $keyhvals[0] );
 					}
-					else {
-						array_push( $array, trim( $keyhvals[0] ) );
+				} else { 
+	
+					foreach ( $keyvals as $keyval ) {
+						$keyval = trim( $keyval );
+						
+						// If => ergo hash
+						$keyhvals = explode( "#", $keyval, 2 );
+		
+						if ( count( $keyhvals ) > 1 ) {
+							$array[ trim( $keyhvals[0] ) ] = trim( $keyhvals[1] );
+						}
+						else {
+							array_push( $array, trim( $keyhvals[0] ) );
+						}
 					}
+	
+					return $array;
 				}
-
-				return $array;
+			
 			}
 
 		} else {
@@ -347,6 +358,19 @@ class SDImportData {
 		}
 		
 	}
+	
+
+	/**
+	 * Whether associative array or not
+	 * $arr Array
+	 * @return boolean
+	*/
+	
+	public static function isAssocArray( array $arr ) {
+	    if (array() === $arr) return false;
+	    return array_keys($arr) !== range(0, count($arr) - 1);
+	}
+
 
 
 	/**
@@ -696,6 +720,7 @@ class SDImportData {
 		return $status;
 	}
 	
+	/** TODO: TO BE UPDATED **/
 	public static function prepareStructForJSON( $meta, $data ) {
 		
 		$strJSON = "";
