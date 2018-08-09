@@ -60,7 +60,17 @@ call_user_func( function () {
 		'remoteExtPath' => 'SemanticDataImport'
 	);
 	
-	# Loading for domains to are JSON-based
+	$GLOBALS['wgResourceModules']['ext.sdimport.form'] = array(
+		'localBasePath' => dirname( __FILE__ ),
+		'scripts' => array( 'libs/survey-jquery/survey.jquery.js', 'libs/sdimport.form.js' ),
+		'styles' => array( 'libs/survey-jquery/survey.css' ),
+		'dependencies' => array(
+			'mediawiki.jqueryMsg',
+		),
+		'remoteExtPath' => 'SemanticDataImport'
+	);
+	
+	# Loading for domains which are JSON-based
 	$GLOBALS['wgHooks']['OutputPageBeforeHTML'][] = 'SDImportData::onOutputPageBeforeHTML';
 	
 	# Export Vars into JS
@@ -82,7 +92,8 @@ call_user_func( function () {
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["prefields"] = array( "", "" );
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["postfields"] = array( "", "" );
 	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["json"] = false; # Whether content is stored directly in JSON
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["single"] = false; #Whether to store straight properties-values, but not Subobject (rowobject is ignored)
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["single"] = false; # Whether to store straight properties-values, but not Subobject (rowobject is ignored)
+	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["form"] = false; # Whether to use form instead of spreadsheet (only when single)
 	#define("NS_SDImport", 2000);
 	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
 	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;

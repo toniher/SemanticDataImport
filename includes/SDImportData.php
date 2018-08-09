@@ -761,6 +761,34 @@ class SDImportData {
 		// We add Modules
 		$out->addModules( 'ext.sdimport' );
 		
+		global $wgSDImportDataPage;
+		
+		// Get Namespace
+		
+		$context = RequestContext::getMain();
+		if ( $context ) {
+			$title = $context->getTitle();
+			if ( $title ) {
+				
+				// TODO: Handle Main namespace as well
+				$ns = $title->getSubjectNsText();
+				
+				if ( array_key_exists( $ns, $wgSDImportDataPage ) ) {
+					
+					if ( array_key_exists( "form", $wgSDImportDataPage[$ns] )  ) {
+						
+						if ( $wgSDImportDataPage[$ns]["form"] === true ) {
+							
+							// Adding form libraries only if needed
+							$out->addModules( 'ext.sdimport.form' );
+							
+						}
+					}
+				}
+				
+			}
+		}
+		
 		return $out;
 	}
 	
