@@ -147,6 +147,7 @@ var formSDImport = {};
 						// Only when form and single modes
 						console.log( "Handle form mode!" );
 
+						// TODO: Mapping rowfields and values below. Trying to get the types from Namespace configuration
 						var json = {
 							questions: [
 								{
@@ -187,7 +188,7 @@ var formSDImport = {};
 						formSDImport[divval]
 							.onComplete
 							.add(function (result) {
-								console.log( result );
+								// TODO: Handle API query here
 								document
 									.querySelector('#'+divval)
 									.innerHTML = "result: " + JSON.stringify(result.data);
