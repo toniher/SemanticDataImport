@@ -62,7 +62,7 @@ call_user_func( function () {
 	
 	$GLOBALS['wgResourceModules']['ext.sdimport.form'] = array(
 		'localBasePath' => dirname( __FILE__ ),
-		'scripts' => array( 'libs/survey-jquery/survey.jquery.js', 'libs/sdimport.form.js' ),
+		'scripts' => array( 'libs/survey-jquery/survey.jquery.js' ),
 		'styles' => array( 'libs/survey-jquery/survey.css' ),
 		'dependencies' => array(
 			'mediawiki.jqueryMsg',

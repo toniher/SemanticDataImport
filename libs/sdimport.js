@@ -1,6 +1,7 @@
 /*global $ document jQuery console mw window wgScriptPath alert location */
 
 var tableSDImport = {};
+var formSDImport = {};
 
 // TODO: Handle delimiter
 
@@ -12,6 +13,7 @@ var tableSDImport = {};
 		
 		var readonly = true;
 		var editfields = false; // Do not allow editing fields by default
+		var formmode = false; // Detect if form mode
 		var extrarows = 0;
 		var numdata = 0;
 		
@@ -49,6 +51,11 @@ var tableSDImport = {};
 				if ( actualNS.hasOwnProperty("editfields") ) {
 					
 					editfields = actualNS.editfields;
+				}
+				
+				if ( actualNS.hasOwnProperty("form") ) {
+					
+					formmode = actualNS.form;
 				}
 			}
 			
@@ -111,27 +118,84 @@ var tableSDImport = {};
 					// TODO: Handle edit mode
 				
 					var container  = document.getElementById( divval );
+
+					if ( ! formmode || singleStr === "" ) {
 				
-					var table = new Handsontable( container, {
-						data: celldata.data,
-						readOnly: readonly,
-						minSpareRows: extrarows,
-						colHeaders: cols,
-						rowHeaders: rowobj,
-						contextMenu: true,
-						columnSorting: true
-					});
-				
-					// Let's store in global variable
-					tableSDImport[ divval ] = table;
-				
-					if ( ! readonly ) {
-						$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+						var table = new Handsontable( container, {
+							data: celldata.data,
+							readOnly: readonly,
+							minSpareRows: extrarows,
+							colHeaders: cols,
+							rowHeaders: rowobj,
+							contextMenu: true,
+							columnSorting: true
+						});
 					
-						if ( editfields ) {
-							changeTableHeader( divval, table );
-							// addEditRowInput( rowobj, divval );
+						// Let's store in global variable
+						tableSDImport[ divval ] = table;
+					
+						if ( ! readonly ) {
+							$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+						
+							if ( editfields ) {
+								changeTableHeader( divval, table );
+								// addEditRowInput( rowobj, divval );
+							}
 						}
+					
+					} else {
+						// Only when form and single modes
+						console.log( "Handle form mode!" );
+
+						var json = {
+							questions: [
+								{
+									name: "name",
+									type: "text",
+									title: "Please enter your name:",
+									placeHolder: "Jon Snow",
+									isRequired: true
+								}, {
+									name: "birthdate",
+									type: "text",
+									inputType: "date",
+									title: "Your birthdate:",
+									isRequired: true
+								}, {
+									name: "color",
+									type: "text",
+									inputType: "color",
+									title: "Your favorite color:"
+								}, {
+									name: "email",
+									type: "text",
+									inputType: "email",
+									title: "Your e-mail:",
+									placeHolder: "jon.snow@nightwatch.org",
+									isRequired: true,
+									validators: [
+										{
+											type: "email"
+										}
+									]
+								}
+							]
+						};
+						
+						formSDImport[divval] = new Survey.Model(json);
+						
+						formSDImport[divval]
+							.onComplete
+							.add(function (result) {
+								console.log( result );
+								document
+									.querySelector('#'+divval)
+									.innerHTML = "result: " + JSON.stringify(result.data);
+							});
+						
+						$("#"+divval).Survey({model: formSDImport[divval]});
+
+
 					}
 					
 					numdata = numdata + 1 ;
