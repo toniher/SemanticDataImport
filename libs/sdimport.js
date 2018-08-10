@@ -16,6 +16,7 @@ var formSDImport = {};
 		var formmode = false; // Detect if form mode
 		var extrarows = 0;
 		var numdata = 0;
+		var typefields = null;
 		
 		var SDIJSONpage = false;
 		
@@ -51,6 +52,11 @@ var formSDImport = {};
 				if ( actualNS.hasOwnProperty("editfields") ) {
 					
 					editfields = actualNS.editfields;
+				}
+				
+				if ( actualNS.hasOwnProperty("typefields") ) {
+					
+					typefields = actualNS.typefields;
 				}
 				
 				if ( actualNS.hasOwnProperty("form") ) {
@@ -116,11 +122,11 @@ var formSDImport = {};
 					$("#mw-content-text").prepend("<div id='"+divval+"'"+singleStr+refStr+">");
 				
 					// TODO: Handle edit mode
-				
-					var container  = document.getElementById( divval );
 
 					if ( ! formmode || singleStr === "" ) {
 				
+						var container  = document.getElementById( divval );
+
 						var table = new Handsontable( container, {
 							data: celldata.data,
 							readOnly: readonly,
@@ -146,44 +152,10 @@ var formSDImport = {};
 					} else {
 						// Only when form and single modes
 						console.log( "Handle form mode!" );
-
-						// TODO: Mapping rowfields and values below. Trying to get the types from Namespace configuration
-						var json = {
-							questions: [
-								{
-									name: "name",
-									type: "text",
-									title: "Please enter your name:",
-									placeHolder: "Jon Snow",
-									isRequired: true
-								}, {
-									name: "birthdate",
-									type: "text",
-									inputType: "date",
-									title: "Your birthdate:",
-									isRequired: true
-								}, {
-									name: "color",
-									type: "text",
-									inputType: "color",
-									title: "Your favorite color:"
-								}, {
-									name: "email",
-									type: "text",
-									inputType: "email",
-									title: "Your e-mail:",
-									placeHolder: "jon.snow@nightwatch.org",
-									isRequired: true,
-									validators: [
-										{
-											type: "email"
-										}
-									]
-								}
-							]
-						};
 						
-						formSDImport[divval] = new Survey.Model(json);
+						var jsonForm = createFormFromData( celldata.data, cols, typefields );
+						
+						formSDImport[divval] = new Survey.Model( jsonForm );
 						
 						formSDImport[divval]
 							.onComplete
@@ -902,6 +874,44 @@ var formSDImport = {};
 		
 		return paramValue;
 		
+		
+	}
+	
+	/** Create from from data info. Only for single cases **/
+	
+	function createFormFromData( data, cols, typefields ) {
+		
+		// TODO: Handling separator config maybe for multiple values
+		var separator = "; ";
+
+		var json = { "questions": [ ] };
+		
+		for ( var c = 0; c < cols.length; c++ ) {
+			
+			var question = {};
+			
+			question.name = cols[c];
+			question.type = "text"; // TODO: This to be changed with typefields
+			question.title = cols[c];
+			
+			var vals = [];
+			for ( var d = 0; d < data.length; d ++ ) {
+				
+				
+				if ( data[d][c] ) {
+				
+					vals.push( data[d][c] );
+				
+				}
+			}
+			
+			question.defaultValue = vals.join( separator );
+
+			json.questions.push( question );
+			
+		}
+		
+		return json;
 		
 	}
 	
