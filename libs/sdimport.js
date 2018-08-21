@@ -160,11 +160,11 @@ var formSDImport = {};
 						formSDImport[divval]
 							.onComplete
 							.add(function (result) {
-								// TODO: Handle API query here
+
 								submitSDIimportJSON( '#'+divval, result.data );
 								document
 									.querySelector('#'+divval )
-									.innerHTML = "result: " + JSON.stringify(result.data);
+									.innerHTML = "";
 							});
 						
 						$("#"+divval).Survey({model: formSDImport[divval]});
