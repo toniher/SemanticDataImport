@@ -2,7 +2,7 @@
 
 Stuff to be implemented
 
-* Handle main namespace potential conf key problems
+* Consider changing namespace key to int NS_XXX
 * Create properties if they do not exist
 * Import data interfaces (Special Pages)
     * Selection from configuration
