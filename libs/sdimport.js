@@ -1,6 +1,7 @@
 /*global $ document jQuery console mw window wgScriptPath alert location */
 
 var tableSDImport = {};
+var formSDImport = {};
 
 // TODO: Handle delimiter
 
@@ -12,8 +13,10 @@ var tableSDImport = {};
 		
 		var readonly = true;
 		var editfields = false; // Do not allow editing fields by default
+		var formmode = false; // Detect if form mode
 		var extrarows = 0;
 		var numdata = 0;
+		var typefields = null;
 		
 		var SDIJSONpage = false;
 		
@@ -49,6 +52,16 @@ var tableSDImport = {};
 				if ( actualNS.hasOwnProperty("editfields") ) {
 					
 					editfields = actualNS.editfields;
+				}
+				
+				if ( actualNS.hasOwnProperty("typefields") ) {
+					
+					typefields = actualNS.typefields;
+				}
+				
+				if ( actualNS.hasOwnProperty("form") ) {
+					
+					formmode = actualNS.form;
 				}
 			}
 			
@@ -109,29 +122,54 @@ var tableSDImport = {};
 					$("#mw-content-text").prepend("<div id='"+divval+"'"+singleStr+refStr+">");
 				
 					// TODO: Handle edit mode
+
+					if ( ! formmode || singleStr === "" ) {
 				
-					var container  = document.getElementById( divval );
-				
-					var table = new Handsontable( container, {
-						data: celldata.data,
-						readOnly: readonly,
-						minSpareRows: extrarows,
-						colHeaders: cols,
-						rowHeaders: rowobj,
-						contextMenu: true,
-						columnSorting: true
-					});
-				
-					// Let's store in global variable
-					tableSDImport[ divval ] = table;
-				
-					if ( ! readonly ) {
-						$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+						var container  = document.getElementById( divval );
+
+						var table = new Handsontable( container, {
+							data: celldata.data,
+							readOnly: readonly,
+							minSpareRows: extrarows,
+							colHeaders: cols,
+							rowHeaders: rowobj,
+							contextMenu: true,
+							columnSorting: true
+						});
 					
-						if ( editfields ) {
-							changeTableHeader( divval, table );
-							// addEditRowInput( rowobj, divval );
+						// Let's store in global variable
+						tableSDImport[ divval ] = table;
+					
+						if ( ! readonly ) {
+							$( container ).append("<p class='smwdata-commit-json' data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
+						
+							if ( editfields ) {
+								changeTableHeader( divval, table );
+								// addEditRowInput( rowobj, divval );
+							}
 						}
+					
+					} else {
+						// Only when form and single modes
+						console.log( "Handle form mode!" );
+						
+						var jsonForm = createFormFromData( celldata.data, cols, typefields );
+						
+						formSDImport[divval] = new Survey.Model( jsonForm );
+						
+						formSDImport[divval]
+							.onComplete
+							.add(function (result) {
+
+								submitSDIimportJSON( '#'+divval, result.data );
+								document
+									.querySelector('#'+divval )
+									.innerHTML = "";
+							});
+						
+						$("#"+divval).Survey({model: formSDImport[divval]});
+
+
 					}
 					
 					numdata = numdata + 1 ;
@@ -458,35 +496,103 @@ var tableSDImport = {};
 	
 	$( document ).on( "click", ".smwdata-commit-json", function() {
 
-		var param = {};
-		var selector = $(this).attr('data-selector');
+		submitSDIimportJSON( this );
+	
+	});
+	
+	$( document ).on( "click", ".submitRow", function() {
+	
+		console.log( "To be handled" );
+
+	});
+	
+	
+	function submitSDIimportJSON( div, result ){
 		
-		var pagetitle = $(this).attr('data-title');
+		var param = {};
+		var selector = $(div).attr('data-selector');
+		var pagetitle = $(div).attr('data-title');
 
 		if ( ! pagetitle ) {
+			// TODO: Handle main namespace here
 			pagetitle = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
 		}
 
-		// Get if single
-		var single = $( "#" + selector ).data( "single" );
-		// Get ref - stored in JSON format
-		var ref = $( "#" + selector ).data( "ref" );
-
-		var instance = tableSDImport[ selector ];
-
-		var rows = instance.countRows();
-
-		var data = [];
-
-		// Push
-		for ( var r = 0; r < rows; r = r + 1 ) {
-			data.push( instance.getDataAtRow( r ) );
+		// Get if form
+		var container = div;
+		
+		if ( selector ) {
+			container = "#" + selector;
 		}
 		
-		var cols = instance.getColHeader();
-		var rowobj = instance.getRowHeader( 0 ); // We assume all rows are the same, so only one
+		var single = $( container ).data( "single" );
+		// Get ref - stored in JSON format
+		var ref = $( container ).data( "ref" );
+
+		var data = [];
+		var cols = null;
+		var rowobj = null;
+		var numrows = 0;
+
+		if ( result ) {
+			
+			var separator = ";"; // TO BE HANDLED
+			
+			// Surveyjs -> single mode
+			cols = Object.keys( result );
+			colsVals = {};
+			
+			for ( var c = 0; c < cols.length; c = c + 1 ) {
+				
+				var vals = result[ cols[c] ].split( separator );
+				vals.map(Function.prototype.call, String.prototype.trim);
+				
+				if ( vals.length > numrows ) {
+					numrows = vals.length;
+				}
+				
+				colsVals[ cols[c] ] = vals;
+			}
+			
+			for ( var n = 0; n < numrows; n = n + 1 ) {
+				
+				var row = [];
+				
+				for ( var l = 0; l < cols.length; l = l + 1 ) {
+
+					if ( colsVals[cols[l]][n] ) {
+						
+						row.push( colsVals[cols[l]][n].trim() );
+						
+					} else {
+						
+						row.push( undefined );
+					}
+				}
+				
+				data.push( row );
+				
+			}
+			
+			
+		} else {
+			
+			// Handsontable
+			var instance = tableSDImport[ selector ];
+			numrows = instance.countRows();
+	
+			// Push
+			for ( var r = 0; r < numrows; r = r + 1 ) {
+				data.push( instance.getDataAtRow( r ) );
+			}
+			
+			cols = instance.getColHeader();
+			rowobj = instance.getRowHeader( 0 ); // We assume all rows are the same, so only one			
+		} 
+
 		
-		// TODO: Handle at least rowobject and single mode as well
+
+		// Building JSON to submit
 		var meta = {};
 		var rowfields = null;
 		
@@ -540,14 +646,7 @@ var tableSDImport = {};
 				
 		}
 		
-	
-	});
-	
-	$( document ).on( "click", ".submitRow", function() {
-	
-		console.log( "To be handled" );
-
-	});
+	}
 	
 	function changeTableHeader( divval, instance, start ) {
 		
@@ -837,6 +936,44 @@ var tableSDImport = {};
 		
 		return paramValue;
 		
+		
+	}
+	
+	/** Create from from data info. Only for single cases **/
+	
+	function createFormFromData( data, cols, typefields ) {
+		
+		// TODO: Handling separator config maybe for multiple values
+		var separator = ";";
+
+		var json = { "questions": [ ] };
+		
+		for ( var c = 0; c < cols.length; c++ ) {
+			
+			var question = {};
+			
+			question.name = cols[c];
+			question.type = "text"; // TODO: This to be changed with typefields
+			question.title = cols[c];
+			
+			var vals = [];
+			for ( var d = 0; d < data.length; d ++ ) {
+				
+				
+				if ( data[d][c] ) {
+				
+					vals.push( data[d][c] );
+				
+				}
+			}
+			
+			question.defaultValue = vals.join( separator );
+
+			json.questions.push( question );
+			
+		}
+		
+		return json;
 		
 	}
 	

@@ -2,6 +2,7 @@
 
 Stuff to be implemented
 
+* Handle main namespace potential conf key problems
 * Create properties if they do not exist
 * Import data interfaces (Special Pages)
     * Selection from configuration
@@ -14,7 +15,5 @@ Stuff to be implemented
 * Job queue processing
 * Allow SD Import capabilites to be called from other extensions
     * Design classes so that this is allowed
-* In 1 row (no subobject) interface allow also basic form interface
-	* Try using https://surveyjs.io/
 * Allow ref input also from Special Page (key, value)
 
