@@ -93,6 +93,9 @@ $("#sdform form").on( "submit", function(event) {
 			batch = true;
 		}
 			
+		if ( namespace === "_" ) {
+			namespace = "";
+		}
 
 		let postObj = {};
 		postObj.action = "sdimport";

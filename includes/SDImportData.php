@@ -40,6 +40,11 @@ class SDImportData {
 			if ( is_object( $pageTitle ) ) {
 
 				$ns = $pageTitle->getNsText();
+				
+				if ( $ns === "" ) {
+					
+					$ns = "_"; // Handle main namespace
+				}
 
 				if ( key_exists( $ns, $wgSDImportDataPage ) ) {
 
