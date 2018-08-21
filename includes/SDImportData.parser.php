@@ -28,6 +28,11 @@ class SDImportDataParser {
 		if ( is_object( $pageTitle ) ) {
 
 			$ns = $pageTitle->getNsText();
+			
+			# Handle main namespace with _
+			if ( $ns == "" ) {
+				$ns = "_";
+			}
 
 			if ( key_exists( $ns, $wgSDImportDataPage ) ) {
 

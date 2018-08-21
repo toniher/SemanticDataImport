@@ -527,6 +527,12 @@ class SDImportData {
 		$extraInfo = "";
 
 		$ns = $title->getSubjectNsText();
+		
+		# Handle main namespace with _
+		if ( $ns == "" ) {
+			$ns = "_";
+		}
+
 		if ( $GLOBALS["wgSDImportDataPage"] && array_key_exists( $ns, $GLOBALS["wgSDImportDataPage"] ) ) {
 
 			if ( $separator !== NULL ) {
@@ -770,8 +776,12 @@ class SDImportData {
 			$title = $context->getTitle();
 			if ( $title ) {
 				
-				// TODO: Handle Main namespace as well
 				$ns = $title->getSubjectNsText();
+				
+				# Handle main namespace with _
+				if ( $ns == "" ) {
+					$ns = "_";
+				}
 				
 				if ( array_key_exists( $ns, $wgSDImportDataPage ) ) {
 					

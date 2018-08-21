@@ -29,6 +29,8 @@ var formSDImport = {};
 		
 		if ( detectTableNS !== "" ) {
 			pageTitle = detectTableNS + ":" + pageTitle;
+		} else {
+			detectTableNS = "_"; // Chosen for main namespace
 		}
 		
 		var pageConfig = mw.config.get( "wgSDImportDataPage" );
@@ -909,6 +911,8 @@ var formSDImport = {};
 			if ( parts.length > 1 ) {
 				
 				detectTableNS = parts[0];
+			} else {
+				detectTableNS = "_";
 			}
 			
 			if ( detectTableNS ) {

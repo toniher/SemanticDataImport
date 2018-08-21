@@ -34,6 +34,12 @@ $("#sdform form").on( "submit", function(event) {
 	let separator = document.getElementById("mw-input-wpseparator").value;
 	let namespace = document.getElementById("mw-input-wpnamespace").value;
 
+	// Handle main namespace
+	let checkNS = namespace;
+	if ( ! checkNS || checkNS == "" ) {
+		checkNS = "_";
+	}
+	
 	let single = false;
 	if ( $( "#mw-input-wpsingle").is(':checked') ) {
 		single = true;
@@ -57,11 +63,11 @@ $("#sdform form").on( "submit", function(event) {
 
 		var meta = { "app":"SDI", "version":0.1 };
 		
-		if ( rowfields && JSON.stringify( ifChangedRowfields( rowfields, changedRowFields ) ) != JSON.stringify( getRowParameter( namespace, 'rowfields' ) ) ) {
+		if ( rowfields && JSON.stringify( ifChangedRowfields( rowfields, changedRowFields ) ) != JSON.stringify( getRowParameter( checkNS, 'rowfields' ) ) ) {
 			meta.rowfields = ifChangedRowfields( rowfields );
 		}
 		
-		if ( rowobj && rowobj !== getRowParameter( namespace, 'rowobject' ) ) {
+		if ( rowobj && rowobj !== getRowParameter( checkNS, 'rowobject' ) ) {
 			meta.rowobject = rowobj;
 		}
 		
@@ -160,8 +166,13 @@ function mainCsv(input)
 						$("#sdpreview").empty();
 						//saves the parameter selected in the form in the variable
 						let namespace = document.getElementById("mw-input-wpnamespace").value;
-						rowfields = getRowParameter( namespace, 'rowfields' );
-						rowobj = getRowParameter( namespace, 'rowobject' );
+						
+						let checkNS = namespace;
+						if ( ! checkNS || checkNS == "" ) {
+							checkNS = "_";
+						}
+						rowfields = getRowParameter( checkNS, 'rowfields' );
+						rowobj = getRowParameter( checkNS, 'rowobject' );
 						
 						//generates a table with the added variable
 						hot1 = handsontableTable( result,rowfields,container1,rowobj );
