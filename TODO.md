@@ -16,4 +16,7 @@ Stuff to be implemented
 * Allow SD Import capabilites to be called from other extensions
     * Design classes so that this is allowed
 * Allow ref input also from Special Page (key, value)
+* Adding validators to cell table and form input content
+* Adding default values if rows are defined
+
 
