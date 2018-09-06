@@ -1,7 +1,7 @@
 <?php
 
     $options = array( 'help');
-    $optionsWithArgs = array('delimiter','separator','namespace');
+    $optionsWithArgs = array('delimiter','separator','namespace','rowobject');
 
     $basePath = getenv( 'MW_INSTALL_PATH' ) !== false ? getenv( 'MW_INSTALL_PATH' ) : __DIR__ . '/../../..';
     require_once $basePath . '/maintenance/commandLine.inc';
@@ -23,10 +23,27 @@
             $separator = User::newFromName( $separator );
             $namespace = isset( $options['namespace'] ) ? $options['namespace'] : 'SDImport';
             $namespace = User::newFromName( $namespace );
-            //echo $namespace;
+            $rowobject = isset( $options['rowobject'] ) ? $options['rowobject'] : 'Demographic';
+            //$rowobject = User::newFromName( $rowobject );
             $data=csv_to_array($filename,trim( $separator ),trim( $delimiter ));
-            sort($data);
-            print_r($data);
+            $dataObj=arraySort($data);
+            //print_r($dataObj);
+            //echo $rowobject;
+            for($i=0;$i<count($dataObj);$i++)
+            {
+                for($j=0;$j<count($dataObj[$i]);$j++)
+                {
+                    unset($dataObj[$i][$j][0]);
+                }
+                //print_r($dataObj[$i]);
+                $obj=array('data' => $dataObj[$i],'meta' => array ('app' => 'SDI','version' => 0.1,'rowobject' => $rowobject));
+                //print_r($obj);
+                $jsonStr = json_encode( $obj );
+                print_r($jsonStr);
+                echo "\n";
+                            // $status = SDImportData::importJSONBatch( $jsonStr, "", true );
+
+            }
         }
         else
         {
@@ -71,3 +88,27 @@ EOF;
           }
           return $data;
     }
+
+    function arraySort($input)
+    {
+        foreach ($input as $key=>$val) $output[$val[0]][]=$val;
+        $output = removeKeys( $output );
+        return $output;
+    }
+
+    function removeKeys( array $array )
+    {
+        $array = array_values( $array );
+        foreach ( $array as &$value )
+        {
+            if ( is_array( $value ) )
+            {
+                $value = removeKeys( $value );
+            }
+        }
+        return $array;
+    }
+
+
+
+
