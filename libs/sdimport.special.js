@@ -1,4 +1,3 @@
-
 var changedRowFields = false;
 
 //if click botton fileupload
