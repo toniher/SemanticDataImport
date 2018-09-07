@@ -22,6 +22,8 @@
 		"mediawiki/semantic-media-wiki": "~2.3"
 	},
 	"autoload": {
-		"files": ["SemanticDataImport.php"]
+		"files" : [
+			"SemanticDataImport.php"
+		]
 	}
 }
