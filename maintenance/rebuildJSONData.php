@@ -112,24 +112,28 @@ class RebuildJSONData extends Maintenance {
 
 
 				$token = $user->getEditToken();
-				  $api = new ApiMain(
-			            new DerivativeRequest(
-                			$wgRequest, // Fallback upon $wgRequest if you can't access context
-                			array(
-						'action' => 'sdimport',
-						'title' => $wikipage->getTitle()->getPrefixedText(),
-						'format' => 'json',
-						'model' => 'json',
-						'token' => $token,
-						'overwrite' => true,
-						'text' => $wikipage->getContent()->getNativeData()
-                			),
-                			true // treat this as a POST
-            				),
-            				true // Enable write.
-        				);
+				$apiParams = [
+                                                'action' => 'sdimport',
+                                                'title' => $wikipage->getTitle()->getPrefixedText(),
+                                                'format' => 'json',
+                                                'model' => 'json',
+                                                'token' => $token,
+                                                'overwrite' => true,
+                                                'text' => $wikipage->getContent()->getNativeData()
+				];
 
-        			$api->execute();
+
+				$apiRequest = new FauxRequest( $apiParams, true, $wgRequest->getSessionArray() );
+
+
+				$context = new DerivativeContext( new RequestContext() );
+				$context->setUser( $user );
+				
+				$context->setRequest( $apiRequest );
+				$api = new ApiMain( $context, true );
+				$result = $api->execute();
+
+				// var_dump( $result );
 
 /**
 action	sdimport
