@@ -55,8 +55,8 @@ class RebuildJSONData extends Maintenance {
 		// Default, no user
 		$user = null;
 		if ( $u ) {
-			$user = User::newSystemUser("SDImport");
-			// $user = User::newFromName( $u );
+			// $user = User::newSystemUser("SDImport");
+			$user = User::newFromName( $u );
 		}
 		
 
@@ -106,9 +106,44 @@ class RebuildJSONData extends Maintenance {
 				$statusValue->setOK(true);
 				$status = new Status();
 				$status->wrap( $statusValue );
-			
+		
+				global $wgRequest;
+				// var_dump( $wgRequest );
+
+
+				$token = $user->getEditToken();
+				  $api = new ApiMain(
+			            new DerivativeRequest(
+                			$wgRequest, // Fallback upon $wgRequest if you can't access context
+                			array(
+						'action' => 'sdimport',
+						'title' => $wikipage->getTitle()->getPrefixedText(),
+						'format' => 'json',
+						'model' => 'json',
+						'token' => $token,
+						'overwrite' => true,
+						'text' => $wikipage->getContent()->getNativeData()
+                			),
+                			true // treat this as a POST
+            				),
+            				true // Enable write.
+        				);
+
+        			$api->execute();
+
+/**
+action	sdimport
+format	json
+model	json
+overwrite	true
+text	{"meta":{"app":"SDI","version":0.1,"rowfields":["source","type","phase","location","start","end","strand","genome_id","id","ref_id","plain_id","plain_ref_id"],"single":true},"data":[["AUGUSTUS","gene",".","scaffold_34","66623","71635","-","clogmia6","scaffold_34.g18@Genome:clogmia6","Item:Annotation:scaffold_34@Genome:clogmia6","scaffold_34.g18","scaffold_34"]]}
+title	Item:Annotation:scaffold+34.g18@Genome:clogmia6
+
+**/
+
+	
                 // TODO: To be fixed	
-				SDImportData::saveJSONData( $wikipage, $user, $wikipage->getContent(), "Rebuild", 0, null, null, 2, $wikipage->getRevision(), $status, false );
+				// SDImportData::saveJSONData( $wikipage, $user, $wikipage->getContent(), "Rebuild", 0, null, null, 2, $wikipage->getRevision(), $status, false );
 				// $status = $wikipage->doEditContent( $wikipage, "Rebuild", EDIT_FORCE_BOT, false, $user );
 				// var_dump( $status );
 				// SDImportData::importJSON( $wikipage->getContent()->getNativeData(), $wikipage->getTitle()->getPrefixedText(), true );
