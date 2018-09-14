@@ -106,37 +106,37 @@ class RebuildJSONData extends Maintenance {
 				$statusValue->setOK(true);
 				$status = new Status();
 				$status->wrap( $statusValue );
-		
-				global $wgRequest;
-				// var_dump( $wgRequest );
-
-
-				$token = $user->getEditToken( '', $wgRequest );
-                $json = $wikipage->getContent()->getNativeData();
-                #$jsonObj = json_decode( $json, true );
-                #$jsonObj["meta"]["xxx"] = "tal";
-                #$json = json_encode( $jsonObj );
-				$apiParams = [
-                                                'action' => 'sdimport',
-                                                'title' => $wikipage->getTitle()->getPrefixedText(),
-                                                'format' => 'json',
-                                                'model' => 'json',
-                                                'overwrite' => true,
-                                                'text' => $json
-				];
-				// var_dump( $wgRequest->getSessionArray() );
-
-				// $apiRequest = new FauxRequest( $apiParams, true, $wgRequest->getSessionArray() );
-				$apiRequest = new DerivativeRequest( $wgRequest, $apiParams, /* $wasPosted = */ true );
-				$apiRequest->setIP( '127.0.0.1' );
-				$context = RequestContext::getMain();
-				$context->setUser( $user );
-				
-				$context->setRequest( $apiRequest );
-				$api = new ApiMain( $context, true );
-				wfRunHooks( 'ApiBeforeMain', array( &$api ) );
-				//var_dump( $api );
-				$api->execute();
+//		
+//				global $wgRequest;
+//				// var_dump( $wgRequest );
+//
+//
+//				$token = $user->getEditToken( '', $wgRequest );
+//                $json = $wikipage->getContent()->getNativeData();
+//                #$jsonObj = json_decode( $json, true );
+//                #$jsonObj["meta"]["xxx"] = "tal";
+//                #$json = json_encode( $jsonObj );
+//				$apiParams = [
+//                                                'action' => 'sdimport',
+//                                                'title' => $wikipage->getTitle()->getPrefixedText(),
+//                                                'format' => 'json',
+//                                                'model' => 'json',
+//                                                'overwrite' => true,
+//                                                'text' => $json
+//				];
+//				// var_dump( $wgRequest->getSessionArray() );
+//
+//				// $apiRequest = new FauxRequest( $apiParams, true, $wgRequest->getSessionArray() );
+//				$apiRequest = new DerivativeRequest( $wgRequest, $apiParams, /* $wasPosted = */ true );
+//				$apiRequest->setIP( '127.0.0.1' );
+//				$context = RequestContext::getMain();
+//				$context->setUser( $user );
+//				
+//				$context->setRequest( $apiRequest );
+//				$api = new ApiMain( $context, true );
+//				wfRunHooks( 'ApiBeforeMain', array( &$api ) );
+//				//var_dump( $api );
+//				$api->execute();
 
 				// var_dump( $api->getResult()->getResultData() );
 
@@ -152,7 +152,7 @@ title	Item:Annotation:scaffold+34.g18@Genome:clogmia6
 
 	
                 // TODO: To be fixed	
-				// SDImportData::saveJSONData( $wikipage, $user, $wikipage->getContent(), "Rebuild", 0, null, null, 2, $wikipage->getRevision(), $status, false );
+				SDImportData::saveJSONData( $wikipage, $user, $wikipage->getContent(), "Rebuild", 0, null, null, 2, $wikipage->getRevision(), $status, false );
 				// $status = $wikipage->doEditContent( $wikipage, "Rebuild", EDIT_FORCE_BOT, false, $user );
 				// var_dump( $status );
 				// SDImportData::importJSON( $wikipage->getContent()->getNativeData(), $wikipage->getTitle()->getPrefixedText(), true );

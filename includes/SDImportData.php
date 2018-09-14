@@ -202,7 +202,7 @@ class SDImportData {
 		$subject = $parserData->getSubject();
 
 		$subject = new \SMW\DIWikiPage( $subject->getDBkey(), $subject->getNamespace(), $subject->getInterwiki() );
-
+		
 		// TODO: To finish
 		foreach ( $struct as $property => $value ) {
 			// Struct to iterate
@@ -215,7 +215,11 @@ class SDImportData {
 	
 		// This part is used to add the subobject the the main subject
 		$parserData->pushSemanticDataToParserOutput();
-	
+		$parserData->updateStore();
+		// Below it works event with maintenance function
+		// $store = \SMW\StoreFactory::getStore();
+		// $store->updateData( $parserData->getSemanticData() );
+		
 		return true;
 	}	
 	
@@ -288,7 +292,11 @@ class SDImportData {
 		// This part is used to add the subobject the the main subject
 		$parserData->getSemanticData()->addPropertyObjectValue( new \SMW\DIProperty( \SMW\DIProperty::TYPE_SUBOBJECT ), new \SMWDIContainer( $containerSemanticData ) );
 		$parserData->pushSemanticDataToParserOutput();
-		
+		$parserData->updateStore();
+
+		// Below it works event with maintenance function
+		// $store = \SMW\StoreFactory::getStore();
+		// $store->updateData( $parserData->getSemanticData() );
 		
 		return true;
 	}
