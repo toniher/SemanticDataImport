@@ -111,29 +111,34 @@ class RebuildJSONData extends Maintenance {
 				// var_dump( $wgRequest );
 
 
-				$token = $user->getEditToken();
+				$token = $user->getEditToken( '', $wgRequest );
+                $json = $wikipage->getContent()->getNativeData();
+                #$jsonObj = json_decode( $json, true );
+                #$jsonObj["meta"]["xxx"] = "tal";
+                #$json = json_encode( $jsonObj );
 				$apiParams = [
                                                 'action' => 'sdimport',
                                                 'title' => $wikipage->getTitle()->getPrefixedText(),
                                                 'format' => 'json',
                                                 'model' => 'json',
-                                                'token' => $token,
                                                 'overwrite' => true,
-                                                'text' => $wikipage->getContent()->getNativeData()
+                                                'text' => $json
 				];
+				// var_dump( $wgRequest->getSessionArray() );
 
-
-				$apiRequest = new FauxRequest( $apiParams, true, $wgRequest->getSessionArray() );
-
-
-				$context = new DerivativeContext( new RequestContext() );
+				// $apiRequest = new FauxRequest( $apiParams, true, $wgRequest->getSessionArray() );
+				$apiRequest = new DerivativeRequest( $wgRequest, $apiParams, /* $wasPosted = */ true );
+				$apiRequest->setIP( '127.0.0.1' );
+				$context = RequestContext::getMain();
 				$context->setUser( $user );
 				
 				$context->setRequest( $apiRequest );
 				$api = new ApiMain( $context, true );
-				$result = $api->execute();
+				wfRunHooks( 'ApiBeforeMain', array( &$api ) );
+				//var_dump( $api );
+				$api->execute();
 
-				// var_dump( $result );
+				// var_dump( $api->getResult()->getResultData() );
 
 /**
 action	sdimport
