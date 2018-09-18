@@ -24,10 +24,6 @@ install:
   - bash ./tests/travis/install-mediawiki.sh
   - bash ./tests/travis/install-semantic-data-import.sh
 
-script:
-
-after_success:
-
 notifications:
   email:
     on_success: change
