@@ -28,6 +28,7 @@ call_user_func( function () {
 	$GLOBALS['wgAutoloadClasses']['SDImportData'] = __DIR__ . '/includes/SDImportData.php';
 	$GLOBALS['wgAutoloadClasses']['SDImportDataParser'] = __DIR__ . '/includes/SDImportData.parser.php';
 	$GLOBALS['wgAutoloadClasses']['SDImportApi'] = __DIR__ . '/includes/SDImportApi.php';
+	$GLOBALS['wgAutoloadClasses']['SDImportJob'] = __DIR__ . '/includes/SDImportJob.php';
 
 	$GLOBALS['wgAPIModules']['sdimport'] = 'SDImportApi';
 

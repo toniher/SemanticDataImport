@@ -130,6 +130,46 @@ class SDImportData {
 	}
 	
 	/**
+	 * Function for importing Properties straight into the wiko
+	 * @param $propertyTypes array
+	 * @param $overwrite boolean
+	 * @param $user User
+	 * 
+	 * @return array
+	*/
+	public static function importProperties( $propertyTypes, $overwrite=false, $user=null) {
+		
+		$edit_summary = "Adding property via SDImport";
+		$listProps = array();
+		
+		foreach ( $propertyTypes as $prop => $type ) {
+			
+			// TODO: to consider not hardcoding NS
+			$propPageName = "Property:".$prop;
+			
+			$propTitle = Title::newFromText( $propPageName );
+			
+			$wikiPage = new WikiPage( $propTitle );
+			
+			if ( ! $wikiPage->exists() || ( $wikiPage->exists() && $overwrite ) ) {
+				
+				$text = "[[Has Type::".$type."]]";
+				
+				$new_content = new WikitextContent( $text );
+				$status = $wikiPage->doEditContent( $new_content, $edit_summary );
+				
+				// Adding list
+				// TODO: ideally handling Status 
+				array_push( $listProps, $prop );
+			}
+			
+		}
+		
+		
+		return $listProps;
+	}
+	
+	/**
 	 * @param $pageTitle Title
 	 * @param $object string
 	 * @param struct object
