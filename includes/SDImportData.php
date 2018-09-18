@@ -58,13 +58,16 @@ class SDImportData {
 						
 							$object = self::getSelector( $args, $nsRepo, "rowobject" ); // String
 							$fields = self::getSelector( $args, $nsRepo, "rowfields" ); // Array
-							$props = self::getSelector( $args, $nsRepo, "typefields" ); // Array
+							$types = self::getSelector( $args, $nsRepo, "typefields" ); // Array
 							$refs = self::getSelector( $args, $nsRepo, "ref" ); // Hash
 							$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
 							$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
 							$single = self::getSelector( $args, $nsRepo, "single" ); // Boolean
 		
-							// TODO: Should we add props here if they don't exist?
+							// Adding properties, unless they exist
+							$propertyTypes = self::addPropertyTypes( $fields, $types );
+							// TODO: Handling failing, etc.
+							self::importProperties( $propertyTypes );
 		
 							$dprops = array();
 
@@ -129,8 +132,35 @@ class SDImportData {
 		return true;
 	}
 	
+	
 	/**
-	 * Function for importing Properties straight into the wiko
+	 * Function for combining properties and types
+	 * @param $props array
+	 * @param $types array
+	 * 
+	 * @return array
+	*/
+	public static function addPropertyTypes( $props, $types ) {
+		
+		$count = 0;
+		
+		foreach ( $types as $type ) {
+			
+			if ( array_key_exists( $count, $props ) ) {
+				
+				$prop = $props[ $count ];
+				$propertyTypes[ $prop ] = $type;
+			}
+			
+			$count++;
+			
+		}
+		
+		return $propertyTypes;
+	}
+	
+	/**
+	 * Function for importing Properties straight into the wiki
 	 * @param $propertyTypes array
 	 * @param $overwrite boolean
 	 * @param $user User
@@ -144,23 +174,28 @@ class SDImportData {
 		
 		foreach ( $propertyTypes as $prop => $type ) {
 			
-			// TODO: to consider not hardcoding NS
-			$propPageName = "Property:".$prop;
-			
-			$propTitle = Title::newFromText( $propPageName );
-			
-			$wikiPage = new WikiPage( $propTitle );
-			
-			if ( ! $wikiPage->exists() || ( $wikiPage->exists() && $overwrite ) ) {
+			// Consider going ahead it type is not null
+			if ( $type ) {
+
+				// TODO: to consider not hardcoding NS
+				$propPageName = "Property:".$prop;
 				
-				$text = "[[Has Type::".$type."]]";
+				$propTitle = Title::newFromText( $propPageName );
 				
-				$new_content = new WikitextContent( $text );
-				$status = $wikiPage->doEditContent( $new_content, $edit_summary );
+				$wikiPage = new WikiPage( $propTitle );
 				
-				// Adding list
-				// TODO: ideally handling Status 
-				array_push( $listProps, $prop );
+				if ( ! $wikiPage->exists() || ( $wikiPage->exists() && $overwrite ) ) {
+					
+					$text = "[[Has Type::".$type."]]";
+					
+					$new_content = new WikitextContent( $text );
+					$status = $wikiPage->doEditContent( $new_content, $edit_summary );
+					
+					// Adding list
+					// TODO: ideally handling Status 
+					array_push( $listProps, $prop );
+				}
+			
 			}
 			
 		}

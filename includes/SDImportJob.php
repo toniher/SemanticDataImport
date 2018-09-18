@@ -54,8 +54,8 @@ class SDImportJob extends Job {
           // TODO: to evaluate if check destination page here or before
 
           // Handle JSON new content
-    			$contentModel = $wikipage->getContentModel();
-    			if ( $contentModel === "json" || ! $wikipage->exists() ) {
+    			$contentModel = $wikiPage->getContentModel();
+    			if ( $contentModel === "json" || ! $wikiPage->exists() ) {
     				$new_content = new JSONContent( $text );
     			}
 
