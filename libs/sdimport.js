@@ -17,6 +17,7 @@ var formSDImport = {};
 		var extrarows = 0;
 		var numdata = 0;
 		var typefields = null;
+		var readfields = null;
 		
 		var SDIJSONpage = false;
 		
@@ -60,6 +61,12 @@ var formSDImport = {};
 					
 					typefields = actualNS.typefields;
 				}
+				
+				if ( actualNS.hasOwnProperty("readfields") ) {
+					
+					readfields = actualNS.readfields;
+				}			
+				
 				
 				if ( actualNS.hasOwnProperty("form") ) {
 					
@@ -118,6 +125,11 @@ var formSDImport = {};
 						if ( celldata.meta.hasOwnProperty("rowobject") ) {
 							rowobj = celldata.meta.rowobject;
 						}
+						
+						if ( celldata.meta.hasOwnProperty("readfields") ) {
+							readfields = celldata.meta.readfields;
+						}
+						
 					}
 					
 					// Endpoint where to add - Put as first child
@@ -128,6 +140,8 @@ var formSDImport = {};
 					if ( ! formmode || singleStr === "" ) {
 				
 						var container  = document.getElementById( divval );
+
+						// TODO: Handle readonly columns instead of all
 
 						var table = new Handsontable( container, {
 							data: celldata.data,
