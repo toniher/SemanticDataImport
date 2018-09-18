@@ -1,6 +1,7 @@
 # SemanticDataImport
 
 [![Build Status](https://secure.travis-ci.org/toniher/SemanticDataImport.svg?branch=master)](http://travis-ci.org/toniher/SemanticDataImport)
+[![Code Coverage](https://scrutinizer-ci.com/g/toniher/SemanticDataImport/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/toniher/SemanticDataImport/?branch=master)
 
 Extension for importing CSV-like structured data into MediaWiki pages using [Semantic MediaWiki](https://www.semantic-mediawiki.org).
 
