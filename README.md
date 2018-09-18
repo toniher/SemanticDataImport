@@ -1,5 +1,7 @@
 # SemanticDataImport
 
+[![Build Status](https://secure.travis-ci.org/toniher/SemanticDataImport.svg?branch=master)](http://travis-ci.org/toniher/SemanticDataImport)
+
 Extension for importing CSV-like structured data into MediaWiki pages using [Semantic MediaWiki](https://www.semantic-mediawiki.org).
 
 It basically turns CSV rows into [Semantic Subobjects](https://www.semantic-mediawiki.org/wiki/Subobject).
