@@ -17,7 +17,7 @@ var formSDImport = {};
 		var extrarows = 0;
 		var numdata = 0;
 		var typefields = null;
-		var readfields = null;
+		var readOnlyfields = null;
 		
 		var SDIJSONpage = false;
 		
@@ -62,9 +62,9 @@ var formSDImport = {};
 					typefields = actualNS.typefields;
 				}
 				
-				if ( actualNS.hasOwnProperty("readfields") ) {
+				if ( actualNS.hasOwnProperty("readOnlyfields") ) {
 					
-					readfields = actualNS.readfields;
+					readOnlyfields = actualNS.readOnlyfields;
 				}			
 				
 				
@@ -94,6 +94,7 @@ var formSDImport = {};
 				
 				var cols = null;
 				var rowobj = null;
+				var tcols = [];
 
 				// Create Handsontable from content
 				var celldata = createTableFromJSON( data );
@@ -126,11 +127,31 @@ var formSDImport = {};
 							rowobj = celldata.meta.rowobject;
 						}
 						
-						if ( celldata.meta.hasOwnProperty("readfields") ) {
-							readfields = celldata.meta.readfields;
+						if ( celldata.meta.hasOwnProperty("readOnlyfields") ) {
+							readOnlyfields = celldata.meta.readOnlyfields;
 						}
 						
 					}
+					
+					// Handle specific cols readonly permissions. cols structure is changes
+					if ( readOnlyfields ) {
+						
+						if ( cols ) {
+							
+							for ( var c=0; c < cols.length; c++ ) {
+								
+								if ( readOnlyfields.includes( cols[c] ) ) {
+									
+									tcols.push( c );
+									
+								}
+
+							}
+														
+						}
+						
+					}
+					
 					
 					// Endpoint where to add - Put as first child
 					$("#mw-content-text").prepend("<div id='"+divval+"'"+singleStr+refStr+">");
@@ -138,20 +159,40 @@ var formSDImport = {};
 					// TODO: Handle edit mode
 
 					if ( ! formmode || singleStr === "" ) {
-				
+						
+						var contextmenu = true;
+						
+						if ( readonly ) {
+							contextmenu = false;
+						}
+						
 						var container  = document.getElementById( divval );
-
-						// TODO: Handle readonly columns instead of all
-
+						
 						var table = new Handsontable( container, {
 							data: celldata.data,
 							readOnly: readonly,
 							minSpareRows: extrarows,
 							colHeaders: cols,
 							rowHeaders: rowobj,
-							contextMenu: true,
+							contextMenu: contextmenu,
 							columnSorting: true
 						});
+						
+						if ( tcols.length > 0 ) {
+
+							table.updateSettings({
+								cells: function (row, col) {
+									var cellProperties = {};
+							  
+									if ( tcols.includes( col ) ) {
+										cellProperties.readOnly = true;
+									}
+							  
+									return cellProperties;
+								}
+							});
+						
+						}
 					
 						// Let's store in global variable
 						tableSDImport[ divval ] = table;
@@ -168,7 +209,7 @@ var formSDImport = {};
 					} else {
 						// Only when form and single modes
 						
-						var jsonForm = createFormFromData( celldata.data, cols, typefields );
+						var jsonForm = createFormFromData( celldata.data, cols, typefields, readOnlyfields );
 						
 						formSDImport[divval] = new Survey.Model( jsonForm );
 						
@@ -956,7 +997,7 @@ var formSDImport = {};
 	
 	/** Create from from data info. Only for single cases **/
 	
-	function createFormFromData( data, cols, typefields ) {
+	function createFormFromData( data, cols, typefields, readOnlyfields ) {
 		
 		// TODO: Handling separator config maybe for multiple values
 		var separator = ";";
@@ -970,6 +1011,10 @@ var formSDImport = {};
 			question.name = cols[c];
 			question.type = "text"; // TODO: This to be changed with typefields
 			question.title = cols[c];
+			
+			if ( readOnlyfields && readOnlyfields.includes( cols[c] ) ) {
+				question.readOnly = true;
+			}
 			
 			var vals = [];
 			for ( var d = 0; d < data.length; d ++ ) {
