@@ -257,7 +257,9 @@ var formSDImport = {};
 			var model = "json";
 			var rowobj = null;
 			var reflink = null;
-			
+			var readOnlyfields = null;
+			var tcols = [];
+
 			var table;
 			
 			// Let's check if content in title
@@ -265,6 +267,32 @@ var formSDImport = {};
 				pagetitle = $(linkcontainer).data('title');
 			}
 	
+			// Retrieve namespace content
+			var detectTableNS = getNamespace( pagetitle );		
+	
+			var pageConfig = mw.config.get( "wgSDImportDataPage" );
+			
+			if ( pageConfig ) {
+				
+				if ( pageConfig.hasOwnProperty( detectTableNS ) ) {
+					
+					var actualNS = pageConfig[ detectTableNS ];
+					
+					if ( actualNS.hasOwnProperty( "edit" ) ) {
+						
+						readonly = ! actualNS.edit; // Opposite of edit
+					}
+					
+					if ( actualNS.hasOwnProperty("readOnlyfields") ) {
+						
+						readOnlyfields = actualNS.readOnlyfields;
+					}
+					
+				}
+				
+			}
+	
+			// Retrive other data stuff
 			if ( $(linkcontainer).data('model') ) {
 				model = $(linkcontainer).data('model');
 			}
@@ -277,6 +305,10 @@ var formSDImport = {};
 				reflink = $(linkcontainer).data('ref');
 			}
 
+			if ( $(linkcontainer).data('readOnlyfields') ) {
+				readOnlyfields = $(linkcontainer).data('readOnlyfields');
+			}
+			
 			// TODO: Refactor with SDIJSONpage part
 			if ( pagetitle ) {
 		
@@ -318,6 +350,10 @@ var formSDImport = {};
 							if ( celldata.meta.hasOwnProperty("rowobject") ) {
 								rowobj = celldata.meta.rowobject;
 							}
+							
+							if ( celldata.meta.hasOwnProperty("readOnlyfields") ) {
+								readOnlyfields = celldata.meta.readOnlyfields;
+							}
 
 						}
 
@@ -332,7 +368,26 @@ var formSDImport = {};
 						if ( reflink && reflink !== "" ) {
 							$( container ).attr("data-ref", JSON.stringify( reflink ) );
 						}
-				
+
+						// Handle specific cols readonly permissions. cols structure is changes
+						if ( readOnlyfields ) {
+							
+							if ( cols ) {
+								
+								for ( var c=0; c < cols.length; c++ ) {
+									
+									if ( readOnlyfields.includes( cols[c] ) ) {
+										
+										tcols.push( c );
+										
+									}
+	
+								}
+															
+							}
+							
+						}
+
 						// Create Handsontable from content
 						table = new Handsontable( container, {
 							data: celldata.data,
@@ -343,6 +398,22 @@ var formSDImport = {};
 							contextMenu: true,
 							columnSorting: true
 						});
+						
+						if ( tcols.length > 0 ) {
+
+							table.updateSettings({
+								cells: function (row, col) {
+									var cellProperties = {};
+							  
+									if ( tcols.includes( col ) ) {
+										cellProperties.readOnly = true;
+									}
+							  
+									return cellProperties;
+								}
+							});
+						
+						}
 		
 						// Let's store in global variable
 						tableSDImport[ divval ] = table;
@@ -1062,6 +1133,21 @@ var formSDImport = {};
 		}
 		
 		return rowfields;
+	}
+	
+	/** This can change for better system of detecting namespace **/
+	function getNamespace( pagetitle ){
+		
+		var parts = pagetitle.split( ":", 2 );
+		
+		var namespace = "_";
+		
+		if ( parts.length === 2 ) {
+			namespace = parts[0];
+		}
+		
+		return namespace;
+		
 	}
 	
 

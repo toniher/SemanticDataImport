@@ -144,13 +144,14 @@ class SDImportDataParser {
 		$wgOut = $parser->getOutput();
 		$wgOut->addModules( 'ext.sdimport' );
 		
-		$attrs_allowed = array( "title", "model", "readonly", "ref" );
+		$attrs_allowed = array( "title", "model", "readonly", "ref", "readOnlyfields" );
 		
 		$attrs = array();
 		$output = "";
 		$model = "json"; // Let's use by default JSON model
 		$pagetitle = null; // No page default. Do nothing
 		$ref = null; // No ref hash by default
+		$readOnlyfields = null; // No readonlyfields by default
 		
 		foreach ( $args as $arg ) {
 			$arg_clean = trim( $frame->expand( $arg ) );
@@ -177,6 +178,11 @@ class SDImportDataParser {
 			$ref = str_replace( "[", "{", $attrs['ref'] );
 			$ref = str_replace( "]", "}", $ref );
 		}
+
+		if ( array_key_exists( "readOnlyfields", $attrs ) ) {
+			$readOnlyfields = str_replace( "[", "{", $attrs['readOnlyfields'] );
+			$readOnlyfields = str_replace( "]", "}", $readOnlyfields );
+		}
 		
 		if ( $pagetitle ) {
 			
@@ -188,6 +194,10 @@ class SDImportDataParser {
 			
 			if ( $ref ) {
 				$dataAttrsStr.= " data-ref='$ref'";
+			}
+			
+			if ( $readOnlyfields ) {
+				$dataAttrsStr.= " data-readOnlyfields='$readOnlyfields'";
 			}
 			
 			$dataAttrsStr.= " data-model='$model'";
