@@ -266,31 +266,14 @@ var formSDImport = {};
 			if ( $(linkcontainer).data('title') ) {
 				pagetitle = $(linkcontainer).data('title');
 			}
-	
-			// Retrieve namespace content
-			var detectTableNS = getNamespace( pagetitle );		
-	
-			var pageConfig = mw.config.get( "wgSDImportDataPage" );
 			
-			if ( pageConfig ) {
-				
-				if ( pageConfig.hasOwnProperty( detectTableNS ) ) {
-					
-					var actualNS = pageConfig[ detectTableNS ];
-					
-					if ( actualNS.hasOwnProperty( "edit" ) ) {
-						
-						readonly = ! actualNS.edit; // Opposite of edit
-					}
-					
-					if ( actualNS.hasOwnProperty("readOnlyfields") ) {
-						
-						readOnlyfields = actualNS.readOnlyfields;
-					}
-					
-				}
-				
+			var edit = getDefaultCols( pagetitle, "edit" );
+			
+			if ( edit === false ) {
+				readonly = true;
 			}
+			
+			readOnlyfields = getDefaultCols( pagetitle, "readOnlyfields" );
 	
 			// Retrive other data stuff
 			if ( $(linkcontainer).data('model') ) {
@@ -395,7 +378,7 @@ var formSDImport = {};
 							minSpareRows: extrarows,
 							colHeaders: cols,
 							rowHeaders: rowobj,
-							contextMenu: true,
+							contextMenu: readonly,
 							columnSorting: true
 						});
 						
@@ -1027,7 +1010,7 @@ var formSDImport = {};
 		
 		if ( pageTitle ) {
 			
-			var parts = pageTitle.split(":");
+			var parts = pageTitle.split(":", 2 );
 			
 			var detectTableNS = null;
 			
@@ -1133,21 +1116,6 @@ var formSDImport = {};
 		}
 		
 		return rowfields;
-	}
-	
-	/** This can change for better system of detecting namespace **/
-	function getNamespace( pagetitle ){
-		
-		var parts = pagetitle.split( ":", 2 );
-		
-		var namespace = "_";
-		
-		if ( parts.length === 2 ) {
-			namespace = parts[0];
-		}
-		
-		return namespace;
-		
 	}
 	
 
