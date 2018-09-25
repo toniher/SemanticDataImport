@@ -36,7 +36,6 @@ call_user_func( function () {
 	$GLOBALS['wgHooks']['PageContentSaveComplete'][] = 'SDImportData::saveJSONData';
 
     $GLOBALS['wgAutoloadClasses']['SpecialSDImport'] = __DIR__ . '/includes/SDImport.special.php';
-	$GLOBALS['wgAutoloadClasses']['SDImportReader'] = __DIR__ . '/includes/SDImportReader.php';
 
     # SpecialPage referencing
     $GLOBALS['wgSpecialPages']['SDImport'] = 'SpecialSDImport';
@@ -81,20 +80,20 @@ call_user_func( function () {
 	$GLOBALS['$wgSDImportDataPageFileLimitSize'] = '1073741824';
 	
 	# Example NS definition
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"] = array();
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["edit"] = false;
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["editfields"] = false;
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["separator"] = "\t";
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["delimiter"] = '"';
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["rowobject"] = "SDImport";
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["rowfields"] = array("Page1", "Page2");
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["typefields"] = array("Page", "Page");
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["ref"] = array("ref" => "{{PAGENAME}}");
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["prefields"] = array( "", "" );
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["postfields"] = array( "", "" );
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["json"] = false; # Whether content is stored directly in JSON
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["single"] = false; # Whether to store straight properties-values, but not Subobject (rowobject is ignored)
-	#$GLOBALS["wgSDImportDataPage"]["SDImport"]["form"] = false; # Whether to use form instead of spreadsheet (only when single)
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport] = array();
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["edit"] = false;
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["editfields"] = false;
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["separator"] = "\t";
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["delimiter"] = '"';
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["rowobject"] = NS_SDImport;
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["rowfields"] = array("Page1", "Page2");
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["typefields"] = array("Page", "Page");
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["ref"] = array("ref" => "{{PAGENAME}}");
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["prefields"] = array( "", "" );
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["postfields"] = array( "", "" );
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["json"] = false; # Whether content is stored directly in JSON
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["single"] = false; # Whether to store straight properties-values, but not Subobject (rowobject is ignored)
+	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["form"] = false; # Whether to use form instead of spreadsheet (only when single)
 	#define("NS_SDImport", 2000);
 	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
 	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;

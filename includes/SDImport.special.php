@@ -20,11 +20,15 @@ class SpecialSDImport extends SpecialPage {
 	
 	private static function getKeyOptionsWithBlank( $keys ) {
 		
+		global $wgContLang;
+		
 		$list_namespaces = array( "" => "" );
 		
 		foreach ( $keys as $key ) {
 			
-			$list_namespaces[ $key ] = $key;
+			$keyName = $wgContLang->getNsText( $key );
+			
+			$list_namespaces[ $key ] = $keyName;
 		}
 		
 		return $list_namespaces;
@@ -106,90 +110,8 @@ class SpecialSDImport extends SpecialPage {
 	
 	static function processCSV( $formData ) {
 
-		global $wgOut;
-		global $wgSDImportDataPage;
-		global $wgSDImportDataPageFileLimitSize;
-		
-		$pathInput =  sys_get_temp_dir(); // TODO: This might change, let's use for now tempdir
-		
-		# First of all, we check namespaces
-		$separator = "\t";
-		$delimiter = "\"";
-		$jsonContent = false;
-		
-		if ( $formData['namespace'] ) {
-			
-			if ( ! empty( $formData['namespace'] ) ) {
-				
-				if ( array_key_exists( $formData['namespace'], $wgSDImportDataPage ) ) {
-					
-					$namespace = $wgSDImportDataPage[ $formData['namespace'] ];
-					
-					if ( array_key_exists( "separator", $namespace ) ) {
-						$separator = $namespace["separator"];
-					}
-					if ( array_key_exists( "delimiter", $namespace ) ) {
-						$delimiter = $namespace["delimiter"];
-					}
-					if ( array_key_exists( "json", $namespace ) ) {
-						$jsonContent = $namespace["json"];
-					}
-
-				}
-			}
-		}	
-		
-		
-		if ( $formData['separator'] ) {
-			$separator = $formData["separator"];
-			if ( $separator === "{TAB}" ) {
-				$separator = "\t"; // TODO: To check if to be done in a better way
-			}
-		}
-
-		if ( $formData['delimiter'] ) {
-			$delimiter = $formData["delimiter"];
-		}
-		
-		if ( $wgSDImportDataPageFileLimitSize ) {
-		
-			if ( $_FILES['wpfileupload']['size'] > $wgSDImportDataPageFileLimitSize ) {
-			
-				$kb = $wgSDImportDataPageFileLimitSize/(1024*1024);
-			
-				return ("Sorry. Files larger than ".$kb." are not allowed." );
-			}
-		
-		}
-		
-		if ( $_FILES['wpfileupload']['error'] == 0 ) {
-		
-			$dt = new DateTime();
-			$md5sum = md5($_FILES['wpfileupload']['tmp_name'].$dt->format('U') );
-			$pathtempfile = $pathInput."/".$md5sum;
-			
-			if (!file_exists($pathInput)) {
-				mkdir($pathInput, 0755, true);
-			}
-
-			if ( move_uploaded_file($_FILES["wpfileupload"]["tmp_name"], $pathtempfile) ) {
-
-				$params = array();
-				$params["format"] = "csv";
-				$params["separator"] = $separator;
-				$params["delimiter"] = $delimiter;
-				$params["json"] = $jsonContent;
-				$params["namespace"] = $formData['namespace'];
-				
-				$reader = new SDImportReader( $params );
-				$status = $reader->loadFile( $pathtempfile );
-
-
-				return 'Done';
-			
-			}
-		
-		}
+		// Everything handled via Javascript. Nothing done here...
+		return true;
 	}
 	
 }

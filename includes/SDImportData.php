@@ -39,12 +39,7 @@ class SDImportData {
 
 			if ( is_object( $pageTitle ) ) {
 
-				$ns = $pageTitle->getNsText();
-				
-				if ( $ns === "" ) {
-					
-					$ns = "_"; // Handle main namespace
-				}
+				$ns = $pageTitle->getNamespace();
 
 				if ( key_exists( $ns, $wgSDImportDataPage ) ) {
 
@@ -614,12 +609,7 @@ class SDImportData {
 		
 		$extraInfo = "";
 
-		$ns = $title->getSubjectNsText();
-		
-		# Handle main namespace with _
-		if ( $ns == "" ) {
-			$ns = "_";
-		}
+		$ns = $pageTitle->getNamespace();
 
 		if ( $GLOBALS["wgSDImportDataPage"] && array_key_exists( $ns, $GLOBALS["wgSDImportDataPage"] ) ) {
 
@@ -864,12 +854,7 @@ class SDImportData {
 			$title = $context->getTitle();
 			if ( $title ) {
 				
-				$ns = $title->getSubjectNsText();
-				
-				# Handle main namespace with _
-				if ( $ns == "" ) {
-					$ns = "_";
-				}
+				$ns = $pageTitle->getNamespace();
 				
 				if ( array_key_exists( $ns, $wgSDImportDataPage ) ) {
 					

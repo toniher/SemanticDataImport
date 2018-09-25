@@ -35,9 +35,6 @@ $("#sdform form").on( "submit", function(event) {
 
 	// Handle main namespace
 	let checkNS = namespace;
-	if ( ! checkNS || checkNS == "" ) {
-		checkNS = "_";
-	}
 	
 	let single = false;
 	if ( $( "#mw-input-wpsingle").is(':checked') ) {
@@ -170,9 +167,7 @@ function mainCsv(input)
 						let namespace = document.getElementById("mw-input-wpnamespace").value;
 						
 						let checkNS = namespace;
-						if ( ! checkNS || checkNS == "" ) {
-							checkNS = "_";
-						}
+
 						rowfields = getRowParameter( checkNS, 'rowfields' );
 						rowobj = getRowParameter( checkNS, 'rowobject' );
 						
@@ -337,7 +332,7 @@ function changeTableHeader( divval, instance, start ) {
 	});
 }
 
-function getRowParameter( namespace, param ) {
+function getRowParameter( namespace, param="rowfields" ) {
 	
 	var parameters = mw.config.get( "wgSDImportDataPage" );
 	var paramValue = null;

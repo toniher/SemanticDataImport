@@ -25,14 +25,8 @@ var formSDImport = {};
 		// If JSON namespace
 		
 		// TODO: Handle alias, etc.
-		var detectTableNS = mw.config.get( "wgCanonicalNamespace" );
-		var pageTitle = mw.config.get("wgTitle");
-		
-		if ( detectTableNS !== "" ) {
-			pageTitle = detectTableNS + ":" + pageTitle;
-		} else {
-			detectTableNS = "_"; // Chosen for main namespace
-		}
+		var detectTableNS = mw.config.get( "wgNamespaceNumber" );
+		var pageTitle = mw.config.get("wgPageName");
 		
 		var pageConfig = mw.config.get( "wgSDImportDataPage" );
 		
@@ -267,13 +261,15 @@ var formSDImport = {};
 				pagetitle = $(linkcontainer).data('title');
 			}
 			
-			var edit = getDefaultCols( pagetitle, "edit" );
+			var namespace = getNamespaceFromTitle( pagetitle );
+			
+			var edit = getRowParameter( namespace, "edit" );
 			
 			if ( edit === false ) {
 				readonly = true;
 			}
 			
-			readOnlyfields = getDefaultCols( pagetitle, "readOnlyfields" );
+			readOnlyfields = getRowParameter( namespace, "readOnlyfields" );
 	
 			// Retrive other data stuff
 			if ( $(linkcontainer).data('model') ) {
@@ -303,7 +299,7 @@ var formSDImport = {};
 				param.formatversion = 2;
 				param.titles = pagetitle;
 
-				rowobj = getDefaultCols( pagetitle, "rowobject" );
+				rowobj = getRowParameter( namespace, "rowobject" );
 
 				var posting = $.post( mw.config.get( "wgScriptPath" ) + "/api.php", param );
 				posting.done(function( data ) {
@@ -312,8 +308,7 @@ var formSDImport = {};
 					
 					if ( celldata && celldata.hasOwnProperty( "data" ) ) {
 						
-						// TODO: Replace with getRowParemeter			
-						cols = getDefaultCols( pagetitle );
+						cols = getRowParameter( namespace, "rowfields" );
 						var singleStr = "";
 						var refStr = "";
 
@@ -403,8 +398,7 @@ var formSDImport = {};
 
 					} else {
 						
-						// TODO: Replace with getRowParemeter			
-						cols = getDefaultCols( pagetitle );
+						cols = getRowParameter( namespace, "rowfields" );
 						celldata = [ [ "", "", "" ] ];
 						extrarows = 3;
 
@@ -417,9 +411,10 @@ var formSDImport = {};
 						if ( pagetitle ) {
 							pagetitleStr = "data-title='"+pagetitle+"'";
 						}
+
 						$( container ).append("<p class='smwdata-commit-json' " + pagetitleStr + " data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 	
-						editfields = getDefaultCols( pagetitle, "editfields" );
+						editfields = getRowParameter( namespace, "editfields" );
 						
 						if ( editfields ) {
 
@@ -436,8 +431,7 @@ var formSDImport = {};
 			
 			} else {
 
-				// TODO: Replace with getRowParemeter			
-				cols = getDefaultCols( pagetitle );
+				cols = getRowParameter( namespace, "rowfields" );
 				celldata = [ [ "", "", "" ] ];
 				extrarows = 3;
 			
@@ -451,7 +445,7 @@ var formSDImport = {};
 					}
 					$( container ).append("<p class='smwdata-commit-json' " + pagetitleStr + " data-selector='"+divval+"'>"+mw.message( 'sdimport-commit' ).text()+"</p>");
 
-					editfields = getDefaultCols( pagetitle, "editfields" );
+					editfields = getRowParameter( namespace, "editfields" );
 					
 					if ( editfields ) {
 
@@ -562,14 +556,8 @@ var formSDImport = {};
 		}
 
 		param.num = parseInt( selector.replace( "#SMWData-", "" ), 10 );
-	
-		var namespace = mw.config.get( "wgCanonicalNamespace" );
 		
-		var pagetitle = mw.config.get("wgTitle");
-		
-		if ( namespace !== "" ) {
-			pagetitle = namespace + ":" + pagetitle;
-		}
+		var pagetitle = mw.config.get("wgPageName");
 	
 		param.title = pagetitle;
 	
@@ -622,8 +610,7 @@ var formSDImport = {};
 		var pagetitle = $(div).attr('data-title');
 
 		if ( ! pagetitle ) {
-			// TODO: Handle main namespace here
-			pagetitle = mw.config.get( "wgCanonicalNamespace" ) + ":" + mw.config.get("wgTitle");
+			pagetitle = mw.config.get( "wgPageName" );
 		}
 
 		// Get if form
@@ -641,6 +628,8 @@ var formSDImport = {};
 		var cols = null;
 		var rowobj = null;
 		var numrows = 0;
+		
+		var namespace = getNamespaceFromTitle( pagetitle );
 
 		if ( result ) {
 			
@@ -721,12 +710,11 @@ var formSDImport = {};
 			meta.ref = ref;
 		}
 		
-		// TODO: Replace getDefaultCols
-		if ( rowfields && JSON.stringify( rowfields ) != JSON.stringify( getDefaultCols( pagetitle ) ) ) {
+		if ( rowfields && JSON.stringify( rowfields ) != JSON.stringify( getRowParameter( namespace, "rowfields" ) ) ) {
 			meta.rowfields = rowfields;
 		}
 		
-		if ( rowobj && rowobj !== getDefaultCols( pagetitle, "rowobject" ) ) {
+		if ( rowobj && rowobj !== getRowParameter( namespace, "rowobject" ) ) {
 			meta.rowobject = rowobj;
 		}
 
@@ -986,6 +974,7 @@ var formSDImport = {};
 	}
 	
 	
+	/** Prepare a handsontable object with empty content **/
 	function fillEmptyTable( container, divval, celldata, cols, extrarows, readonly ) {
 		
 		var table = new Handsontable( container, {
@@ -1001,52 +990,6 @@ var formSDImport = {};
 		tableSDImport[ divval ] = table;
 		
 		return table;
-	}
-
-	/** Get default columns from pageTitle **/	
-	function getDefaultCols( pageTitle, param="rowfields" ) {
-		
-		var paramValue = null;
-		
-		if ( pageTitle ) {
-			
-			var parts = pageTitle.split(":", 2 );
-			
-			var detectTableNS = null;
-			
-			if ( parts.length > 1 ) {
-				
-				detectTableNS = parts[0];
-			} else {
-				detectTableNS = "_";
-			}
-			
-			if ( detectTableNS ) {
-		
-				var pageConfig = mw.config.get( "wgSDImportDataPage" );
-				
-				if ( pageConfig ) {
-					
-					if ( pageConfig.hasOwnProperty( detectTableNS ) ) {
-						
-						var actualNS = pageConfig[ detectTableNS ];
-						
-						if ( actualNS.hasOwnProperty( param ) ) {
-							
-							paramValue = actualNS[ param ];
-						}
-						
-					}
-					
-				}
-			
-			}
-
-		}
-		
-		return paramValue;
-		
-		
 	}
 	
 	/** Create from from data info. Only for single cases **/
@@ -1091,8 +1034,8 @@ var formSDImport = {};
 		
 	}
 	
-	/** TODO: Redundant, in another file **/
-	function getRowParameter( namespace, param ) {
+	/**  Extract default parameters from configuration **/
+	function getRowParameter( namespace, param="rowfields" ) {
 	
 		var parameters = mw.config.get( "wgSDImportDataPage" );
 		var paramValue = null;
@@ -1106,6 +1049,42 @@ var formSDImport = {};
 		}
 	
 		return paramValue;	
+	}
+	
+	
+	/** Function for retrieving namespace from title **/
+	function getNamespaceFromTitle( pagetitle ) {
+
+		var namespace = -1; //Avoid any value given -> Nothing can be stored in Special Page
+		
+		if ( pagetitle ) {
+			
+			var parts = pagetitle.split(":", 2 );
+			
+			var detectTableNS = null;
+			
+			if ( parts.length > 1 ) {
+				
+				detectTableNS = parts[0];
+				
+				var listNS = mw.config.get( "wgFormattedNamespaces" );
+				
+				for ( var n in listNS ) {
+					
+					if ( listNS.hasOwnProperty(n) ) {
+						
+						if ( listNS[n] === detectTableNS ) {
+							namespace = n;
+						}
+					}
+					
+				}
+			}
+						
+		}
+		
+		return namespace;
+		
 	}
 
 	/** TODO: Redundant, in another file **/
