@@ -851,8 +851,8 @@ class SDImportData {
 		
 		$context = RequestContext::getMain();
 		if ( $context ) {
-			$title = $context->getTitle();
-			if ( $title ) {
+			$pageTitle = $context->getTitle();
+			if ( $pageTitle ) {
 				
 				$ns = $pageTitle->getNamespace();
 				

@@ -28,7 +28,7 @@ class SpecialSDImport extends SpecialPage {
 			
 			$keyName = $wgContLang->getNsText( $key );
 			
-			$list_namespaces[ $key ] = $keyName;
+			$list_namespaces[ $keyName ] = $key;
 		}
 		
 		return $list_namespaces;
