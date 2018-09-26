@@ -35,8 +35,6 @@ At the time of writting, mappings of CSV columns against Semantic MediaWiki prop
 	$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
 ```
 
-Canonical namespaces are used. For Main namespace, we use "_" instead;
-
 ## SDImport interface
 
 There is a preliminary SDImport Special Page (```Special:SDImport```) that simplifies uploading content (especially for JSON pages)
