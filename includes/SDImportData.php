@@ -39,12 +39,7 @@ class SDImportData {
 
 			if ( is_object( $pageTitle ) ) {
 
-				$ns = $pageTitle->getNsText();
-				
-				if ( $ns === "" ) {
-					
-					$ns = "_"; // Handle main namespace
-				}
+				$ns = $pageTitle->getNamespace();
 
 				if ( key_exists( $ns, $wgSDImportDataPage ) ) {
 
@@ -57,17 +52,26 @@ class SDImportData {
 							list( $args, $table ) = self::getJSONContent( $content );
 						
 							$object = self::getSelector( $args, $nsRepo, "rowobject" ); // String
-							$fields = self::getSelector( $args, $nsRepo, "rowfields" ); // Array
-							$types = self::getSelector( $args, $nsRepo, "typefields" ); // Array
+							$fields = self::getSelector( $args, $nsRepo, "rowfields", "Array" );
+							$types = self::getSelector( $args, $nsRepo, "typefields", "Array" ); // Array
 							$refs = self::getSelector( $args, $nsRepo, "ref" ); // Hash
 							$pre = self::getSelector( $args, $nsRepo, "prefields" ); // Array
 							$post = self::getSelector( $args, $nsRepo, "postfields" ); // Array
 							$single = self::getSelector( $args, $nsRepo, "single" ); // Boolean
-		
+
 							// Adding properties, unless they exist
 							$propertyTypes = self::addPropertyTypes( $fields, $types );
 							// TODO: Handling failing, etc.
 							self::importProperties( $propertyTypes );
+							
+							// No more properties added than their types
+							if ( sizeof( array_keys( $fields ) ) > sizeof( $propertyTypes ) ) {
+								
+								for ( $f = sizeof( array_keys( $fields ) ); $f >= sizeof( $propertyTypes ); $f-- ) {
+									array_pop( $fields );
+								}
+								
+							}
 		
 							$dprops = array();
 
@@ -186,7 +190,7 @@ class SDImportData {
 				
 				if ( ! $wikiPage->exists() || ( $wikiPage->exists() && $overwrite ) ) {
 					
-					$text = "[[Has Type::".$type."]]";
+					$text = "[[Has type::".$type."]]";
 					
 					$new_content = new WikitextContent( $text );
 					$status = $wikiPage->doEditContent( $new_content, $edit_summary );
@@ -384,7 +388,7 @@ class SDImportData {
 
 	* @return variable (depending on case)
 	*/
-	public static function getSelector( $first, $second, $key ) {
+	public static function getSelector( $first, $second, $key, $opt=null ) {
 		
 		if ( key_exists( $key, $first ) ) {
 			// Here process
@@ -397,8 +401,7 @@ class SDImportData {
 				$keyvals = explode( ",", $first[ $key ] );
 			}
 			
-			
-			if ( self::isAssocArray( $keyvals ) ) {
+			if ( self::isAssocArray( $keyvals ) || ( $opt && $opt === "Array" ) ) {
 				
 				return $keyvals;
 			
@@ -614,12 +617,7 @@ class SDImportData {
 		
 		$extraInfo = "";
 
-		$ns = $title->getSubjectNsText();
-		
-		# Handle main namespace with _
-		if ( $ns == "" ) {
-			$ns = "_";
-		}
+		$ns = $pageTitle->getNamespace();
 
 		if ( $GLOBALS["wgSDImportDataPage"] && array_key_exists( $ns, $GLOBALS["wgSDImportDataPage"] ) ) {
 
@@ -861,15 +859,10 @@ class SDImportData {
 		
 		$context = RequestContext::getMain();
 		if ( $context ) {
-			$title = $context->getTitle();
-			if ( $title ) {
+			$pageTitle = $context->getTitle();
+			if ( $pageTitle ) {
 				
-				$ns = $title->getSubjectNsText();
-				
-				# Handle main namespace with _
-				if ( $ns == "" ) {
-					$ns = "_";
-				}
+				$ns = $pageTitle->getNamespace();
 				
 				if ( array_key_exists( $ns, $wgSDImportDataPage ) ) {
 					
