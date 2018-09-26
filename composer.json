@@ -18,8 +18,8 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.0",
-		"mediawiki/semantic-media-wiki": "~2.3"
+		"php": ">=5.6.0",
+		"mediawiki/semantic-media-wiki": "~2.5"
 	},
 	"autoload": {
 		"files" : [

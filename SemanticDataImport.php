@@ -6,8 +6,8 @@ if (!defined('MEDIAWIKI')) { die(-1); }
 if ( !defined( 'SMW_VERSION' ) ) {
 	die( '<b>Error:</b> You need to have <a href="https://semantic-mediawiki.org/">Semantic MediaWiki</a> installed in order to use Semantic Data Import.' );
 }
-if ( version_compare( SMW_VERSION, '1.9', '<' ) ) {
-	die( '<b>Error:</b> Semantic Data Import requires Semantic MediaWiki 1.9 or above.' );
+if ( version_compare( SMW_VERSION, '2.5', '<' ) ) {
+	die( '<b>Error:</b> Semantic Data Import requires Semantic MediaWiki 2.5 or above.' );
 }
 
 call_user_func( function () {
@@ -17,7 +17,7 @@ call_user_func( function () {
 			'path' => __FILE__,
 			'name' => 'Semantic Data Import',
 			'author' => array('Toni Hermoso'),
-			'version' => '0.3.3',
+			'version' => '0.4.0',
 			'url' => 'https://github.com/toniher/SemanticDataImport',
 			'descriptionmsg' => 'sdimport-desc'
 	);
@@ -80,6 +80,7 @@ call_user_func( function () {
 	$GLOBALS['$wgSDImportDataPageFileLimitSize'] = '1073741824';
 	
 	# Example NS definition
+	#define("NS_SDImport", 2000);
 	#$GLOBALS["wgSDImportDataPage"][NS_SDImport] = array();
 	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["edit"] = false;
 	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["editfields"] = false;
@@ -94,7 +95,6 @@ call_user_func( function () {
 	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["json"] = false; # Whether content is stored directly in JSON
 	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["single"] = false; # Whether to store straight properties-values, but not Subobject (rowobject is ignored)
 	#$GLOBALS["wgSDImportDataPage"][NS_SDImport]["form"] = false; # Whether to use form instead of spreadsheet (only when single)
-	#define("NS_SDImport", 2000);
 	#$wgExtraNamespaces[NS_SDImport] = "SDImport";
 	#$GLOBALS['smwgNamespacesWithSemanticLinks'][NS_SDImport] = true;
 
