@@ -27,12 +27,7 @@ class SDImportDataParser {
 
 		if ( is_object( $pageTitle ) ) {
 
-			$ns = $pageTitle->getNsText();
-			
-			# Handle main namespace with _
-			if ( $ns == "" ) {
-				$ns = "_";
-			}
+			$ns = $pageTitle->getNamespace();
 
 			if ( key_exists( $ns, $wgSDImportDataPage ) ) {
 
@@ -107,6 +102,7 @@ class SDImportDataParser {
 		if ( !empty( $input ) ) {
 			$wgOut = $parser->getOutput();
 
+			// TODO: Revisit if this still needs handled this way
 			global $wgScriptPath;
 			$handsonpath = $wgScriptPath."/extensions/SemanticDataImport/libs/handsontable/handsontable.full.js";
 			$wgOut->addHeadItem( '<script src="'.$handsonpath.'"></script>' ); //Hack because of handsontable for last versions :/

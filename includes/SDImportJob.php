@@ -9,7 +9,7 @@
 class SDImportJob extends Job {
 
    function __construct( $title, $params = '', $id = 0 ) {
-       parent::__construct( 'dtImport', $title, $params, $id );
+       parent::__construct( 'sdImport', $title, $params, $id );
    }
 
    /**
@@ -20,7 +20,7 @@ class SDImportJob extends Job {
        wfProfileIn( __METHOD__ );
 
        if ( is_null( $this->title ) ) {
-           $this->error = "dtImport: Invalid title";
+           $this->error = "sdImport: Invalid title";
            wfProfileOut( __METHOD__ );
            return false;
        }
@@ -28,7 +28,7 @@ class SDImportJob extends Job {
        if ( method_exists( 'WikiPage', 'getContent' ) ) {
            $wikiPage = new WikiPage( $this->title );
            if ( !$wikiPage ) {
-               $this->error = 'dtImport: Wiki page not found "' . $this->title->getPrefixedDBkey() . '"';
+               $this->error = 'sdImport: Wiki page not found "' . $this->title->getPrefixedDBkey() . '"';
                wfProfileOut( __METHOD__ );
                return false;
            }

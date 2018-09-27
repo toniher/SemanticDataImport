@@ -39,8 +39,14 @@
                 $jsonStr = json_encode( $obj );
                 //print_r($jsonStr);
                 if ( ! empty( $title ) ) {
-                  $status = SDImportData::importJSON( $jsonStr, $namespace.":".$title, true );
-                  echo "Data ".$title." completed\n";
+                    
+                    $fulltitle = $title;
+                    if ( $namespace !== "" ) {
+                        $fulltitle = $namespace.":".$title;
+                    }
+                    
+                    $status = SDImportData::importJSON( $jsonStr, $fulltitle, true );
+                    echo "Data ".$title." completed\n";
                 }
             }
             echo "\nHas been successfully completed\n";
@@ -118,7 +124,7 @@ EOF;
     }
 
     function isJSON($string){
-       return is_string($string) && is_array(json_decode($string, true)) ? true : false;
+        return is_string($string) && is_array(json_decode($string, true)) ? true : false;
     }
 
 
