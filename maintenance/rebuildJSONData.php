@@ -107,11 +107,10 @@ class RebuildJSONData extends Maintenance {
 				$statusValue->setOK(true);
 				$status = new Status();
 				$status->wrap( $statusValue );
-	
+
                 // TODO: To be fixed	
-				$status = SDImportData::saveJSONData( $wikipage, $user, $wikipage->getContent(), "Rebuild JSON", 0, null, null, 2, $wikipage->getRevision(), $status, false );
+				SDImportData::saveJSONData( $wikipage, $user, $wikipage->getContent(), "Rebuild JSON", 0, null, null, 2, $wikipage->getRevision(), $status, false );
 				// $status = $wikipage->doEditContent( $wikipage->getContent(), "Rebuild", EDIT_FORCE_BOT, false, $user );
-				// var_dump( $status );
 				// $status = SDImportData::importJSON( $wikipage->getContent()->getNativeData(), $wikipage->getTitle()->getPrefixedText(), true );
 			}
 		}

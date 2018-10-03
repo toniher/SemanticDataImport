@@ -295,9 +295,10 @@ class SDImportData {
 		// This part is used to add the subobject the the main subject
 		$parserData->pushSemanticDataToParserOutput();
 		$parserData->updateStore();
+		
 		// Below it works event with maintenance function
-		// $store = \SMW\StoreFactory::getStore();
-		// $store->updateData( $parserData->getSemanticData() );
+		$store = \SMW\StoreFactory::getStore();
+		$store->updateData( $parserData->getSemanticData() );
 		
 		return true;
 	}	
@@ -374,8 +375,8 @@ class SDImportData {
 		$parserData->updateStore();
 
 		// Below it works event with maintenance function
-		// $store = \SMW\StoreFactory::getStore();
-		// $store->updateData( $parserData->getSemanticData() );
+		$store = \SMW\StoreFactory::getStore();
+		$store->updateData( $parserData->getSemanticData() );
 		
 		return true;
 	}
