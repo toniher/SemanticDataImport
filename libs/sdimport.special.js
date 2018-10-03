@@ -102,18 +102,14 @@ $("#sdform form").on( "submit", function(event) {
 		postObj.text = JSON.stringify( obj );
 		postObj.title = namespace;
 
-		// TODO: Generate JSON  {"meta":{"app":"SDI","version":0.1,"rowfields":["Pueblo","Gente","C"]},"data":[["Barcelona'Sant Andreu de la Barca","505","xxx"],["Sabadell'Terrasa","2038","yyy"],["Martorell","134001","zzzz"]]}
 		$.ajax({
 			url : "/w/api.php",
 			type: "POST",
 			data : postObj,
 			processData: true,
-			//contentType: false,
 			success:function(data, textStatus, jqXHR){
 
-				//console.log( textStatus);
-				if(textStatus === "success")
-				{
+				if(textStatus === "success") {
 					$("#sdform").empty();
 					$("#sdpreview").empty();
 			    	//This alert informs user succes

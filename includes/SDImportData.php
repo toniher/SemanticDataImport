@@ -742,7 +742,26 @@ class SDImportData {
 		$jsonObj = json_decode( $text, true );
 		$dataObj = $jsonObj["data"];
 		$dataHash = array();
+		
+		// If namespace is numeric, check if in config
+		if ( is_numeric( $namespace ) ) {
+			
+			global $wgContLang;
+			
+			if ( $namespace == 0 ) {
 				
+				$namespace = "";
+				
+			} else {
+			
+				if ( $wgContLang->getNsText( intval( $namespace, 10 ) ) ) {
+					
+					$namespace = $wgContLang->getNsText( intval( $namespace, 10 ) );
+				}
+			
+			}
+		}
+		
 		for ( $x=0; $x <count($dataObj); $x++ ) {
 
 			if ( count( $dataObj[$x] ) > 1 ) {
