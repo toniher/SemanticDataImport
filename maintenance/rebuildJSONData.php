@@ -10,7 +10,8 @@ require_once $basePath . '/maintenance/Maintenance.php';
  */
 
 class RebuildJSONData extends Maintenance {
-		public function __construct() {
+	
+	public function __construct() {
 		parent::__construct();
 		$this->addDescription( "\n" .
 			"Script for rebuilding data stored in JSON stores\n"
