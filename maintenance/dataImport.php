@@ -25,7 +25,8 @@ class ImportJSONData extends Maintenance {
 		$this->addOption( 'rowfields', 'Comma-separated list of fields to consider', false, true, "f" );
 		$this->addOption( 'rowobject', 'Subobject row property', false, true, "r" );
         $this->addOption( 'user', 'Username to which edits should be attributed. ' .'Default: "Maintenance script"', false, true, 'u' );
-        $this->addOption( 'single', 'Enable single mode import', false, false, 'i' );        
+        $this->addOption( 'single', 'Enable single mode import', false, false, 'i' );
+        $this->addOption( 'overwrite', 'Whether to overwrite existing content', false, false, 'w' );        
         // $this->addArg( 'file', 'Data files to be imported' );
     }
 
@@ -41,6 +42,7 @@ class ImportJSONData extends Maintenance {
         $rowfields = $this->getOption( "rowfields", null );
         $userName = $this->getOption( 'user', false );
         $single = $this->getOption( 'single', false );
+        $overwrite = $this->getOption( 'overwrite', true );
 
         // Get all the arguments. A loop is required since Maintenance doesn't
         // suppport an arbitrary number of arguments.
@@ -118,8 +120,8 @@ class ImportJSONData extends Maintenance {
                         $fulltitle = $namespace.":".$title;
                     }
                     
-                    $status = SDImportData::importJSON( $jsonStr, $fulltitle, true );
-                    echo "Data ".$title." completed\n";
+                    $status = SDImportData::importJSON( $jsonStr, $fulltitle, $overwrite );
+                    echo "Data ".$fulltitle." completed\n";
                 }
             }
             echo "\nHas been successfully completed\n";
