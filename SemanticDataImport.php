@@ -3,13 +3,6 @@
 # Avoids illegal processing, doesn't cost much, but unnecessary on a correct installation
 if (!defined('MEDIAWIKI')) { die(-1); } 
 
-if ( !defined( 'SMW_VERSION' ) ) {
-	die( '<b>Error:</b> You need to have <a href="https://semantic-mediawiki.org/">Semantic MediaWiki</a> installed in order to use Semantic Data Import.' );
-}
-if ( version_compare( SMW_VERSION, '2.5', '<' ) ) {
-	die( '<b>Error:</b> Semantic Data Import requires Semantic MediaWiki 2.5 or above.' );
-}
-
 call_user_func( function () {
 
 	# Extension Declaration
